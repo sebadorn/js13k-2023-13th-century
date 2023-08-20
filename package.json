@@ -1,0 +1,12 @@
+{
+  "name": "js13k-2023",
+  "version": "0.1.0",
+  "description": "js13k 2023 – Theme: 13. Century",
+  "main": "dev/index-dev.html",
+  "author": "Sebastian Dorn",
+  "license": "MIT",
+  "private": true,
+  "devDependencies": {
+    "eslint": "^8.47.0"
+  }
+}
