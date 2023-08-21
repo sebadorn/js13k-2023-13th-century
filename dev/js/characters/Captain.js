@@ -24,7 +24,7 @@ js13k.Captain = class extends js13k.Character {
 	 */
 	draw( ctx ) {
 		ctx.fillStyle = '#ff0000';
-		ctx.fillRect( Math.round( this.x ), Math.round( this.y ), this.w, this.h );
+		ctx.fillRect( Math.round( this.pos.x ), Math.round( this.pos.y ), this.w, this.h );
 	}
 
 

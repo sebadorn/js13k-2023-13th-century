@@ -14,17 +14,12 @@ js13k.LevelObject = class {
      * @param {number} data.h - Height
      */
 	constructor( data ) {
-		this.x = data.x || 0;
-		this.y = data.y || 0;
+		this.pos = new js13k.Vector2D( data.x, data.y );
 		this.w = data.w || 0;
 		this.h = data.h || 0;
 
-		this.speed = {
-			x: 0,
-			y: 0,
-		};
-
 		this.health = Infinity;
+		this.speed = new js13k.Vector2D();
 	}
 
 
@@ -37,15 +32,26 @@ js13k.LevelObject = class {
 
 	/**
 	 *
-	 * @param {number} dt 
-	 * @param {object} dir 
-	 * @param {number} dir.x
-	 * @param {number} dir.y
+	 * @param  {js13k.Vector2D} point
+	 * @return {boolean}
+	 */
+	isPointInHitbox( point ) {
+		return (
+			this.pos.x <= point.x && point.x <= this.pos.x + this.w &&
+			this.pos.y <= point.y && point.y <= this.pos.y + this.h
+		);
+	}
+
+
+	/**
+	 *
+	 * @param {number}         dt 
+	 * @param {js13k.Vector2D} dir 
 	 */
 	update( dt, dir ) {
 		if( dir ) {
-			this.x += Math.round( dt * dir.x * this.speed.x );
-			this.y += Math.round( dt * dir.y * this.speed.y );
+			this.pos.x += Math.round( dt * dir.x * this.speed.x );
+			this.pos.y += Math.round( dt * dir.y * this.speed.y );
 		}
 	}
 

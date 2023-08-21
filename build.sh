@@ -29,6 +29,7 @@ sed -E -i'' 's/<script src="([a-zA-Z0-9_-]+\/)+[a-zA-Z0-9_.-]{2,}\.js"><\/script
 # Minify and combine the JS files.
 terser \
 	'js13k.js' \
+	'Vector2D.js' \
 	'Audio.js' \
 	'Input.js' \
 	'Renderer.js' \

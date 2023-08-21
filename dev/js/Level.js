@@ -12,7 +12,9 @@ js13k.Level = class {
 		this.isGameOver = false;
 		this.timer = 0;
 
+		/** @type {js13k.LevelObject[]} */
 		this.objects = [];
+		/** @type {js13k.Character[]} */
 		this.characters = [];
 
 		this.selectedCharacter = {
@@ -29,6 +31,30 @@ js13k.Level = class {
 	addCharacters( ...characters ) {
 		this.characters.push( ...characters );
 		this.objects.push( ...characters );
+	}
+
+
+	/**
+	 *
+	 * @param {object} mouse
+	 * @param {number} mouse.x
+	 * @param {number} mouse.y
+	 */
+	clickAt( mouse ) {
+		if( this.isGameOver ) {
+			return;
+		}
+
+		for( const character of this.characters ) {
+			if(
+				character.isPointInHitbox( mouse ) &&
+				// The chosen character also has to be free right now
+				this.selectedCharacter.p2 !== character
+			) {
+				this.selectedCharacter.p1 = character;
+				break;
+			}
+		}
 	}
 
 

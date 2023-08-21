@@ -33,10 +33,7 @@ js13k.Input = {
 
 	gamepads: {},
 	keystate: {},
-	mouse: {
-		x: null,
-		y: null,
-	},
+	mouse: new js13k.Vector2D(),
 	numGamepads: 0,
 
 
@@ -376,7 +373,7 @@ js13k.Input = {
 		};
 
 		document.body.onclick = _ev => {
-			this._on.click.forEach( cb => cb( this.mouse ) );
+			this._on.click.forEach( cb => cb( this.mouse.clone() ) );
 		};
 
 		window.addEventListener( 'gamepadconnected', ev => {
