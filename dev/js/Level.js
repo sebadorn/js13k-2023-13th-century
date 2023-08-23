@@ -16,6 +16,8 @@ js13k.Level = class {
 		this.objects = [];
 		/** @type {js13k.Character[]} */
 		this.characters = [];
+		/** @type {js13k.PlayerShip?} */
+		this.ship = null;
 
 		this.selectedCharacter = {
 			p1: null,
@@ -67,15 +69,8 @@ js13k.Level = class {
 			return;
 		}
 
-		this.drawBackground( js13k.Renderer.ctx );
 		this.objects.forEach( o => o.draw( js13k.Renderer.ctx ) );
 	}
-
-
-	/**
-	 *
-	 */
-	drawBackground() {}
 
 
 	/**
@@ -88,7 +83,7 @@ js13k.Level = class {
 		ctx.font = 'bold 36px ' + js13k.FONT;
 		ctx.textAlign = 'center';
 		ctx.fillStyle = '#DDD';
-		ctx.fillText( 'GAME OVER', center, center );
+		ctx.fillText( 'GAME OVER', center.x, center.y );
 	}
 
 
@@ -105,10 +100,15 @@ js13k.Level = class {
 			}
 		}
 		else {
-			this.objects.sort( ( a, b ) => a.y - b.y );
+			if( this.ship ) {
+				const R = js13k.Renderer;
+				R.translateX = R.center.x + this.ship.pos.x - this.ship.w / 2;
+				R.translateY = R.center.y + this.ship.pos.y - this.ship.h / 2 - 64;
+			}
 
 			const dir = js13k.Input.getDirections();
 
+			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 			this.objects.forEach( o => {
 				if( o === this.selectedCharacter.p1 ) {
 					o.update( dt, dir );

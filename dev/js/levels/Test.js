@@ -11,10 +11,13 @@ js13k.Level.Test = class extends js13k.Level {
 	constructor() {
 		super();
 
-		this.addCharacters(
-			new js13k.Captain( { x: window.innerWidth / 2, y: window.innerHeight / 2 } ),
-			new js13k.Captain( { x: window.innerWidth / 2 + 200, y: window.innerHeight / 2 } ),
-		);
+		const cap1 = new js13k.Captain();
+		this.addCharacters( cap1 );
+
+		this.ship = new js13k.PlayerShip( { x: 0, y: 0 } );
+		this.ship.add( cap1 );
+
+		this.objects.push( this.ship );
 
 		this.selectedCharacter.p1 = this.characters[0];
 	}

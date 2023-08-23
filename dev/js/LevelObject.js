@@ -7,13 +7,13 @@ js13k.LevelObject = class {
 	/**
      * 
      * @constructor
-     * @param {object} data
-     * @param {number} data.x - X coordinate
-     * @param {number} data.y - Y coordinate
-     * @param {number} data.w - Width
-     * @param {number} data.h - Height
+     * @param {object?} data
+     * @param {number}  data.x - X coordinate
+     * @param {number}  data.y - Y coordinate
+     * @param {number}  data.w - Width
+     * @param {number}  data.h - Height
      */
-	constructor( data ) {
+	constructor( data = {} ) {
 		this.pos = new js13k.Vector2D( data.x, data.y );
 		this.w = data.w || 0;
 		this.h = data.h || 0;
@@ -40,6 +40,15 @@ js13k.LevelObject = class {
 			this.pos.x <= point.x && point.x <= this.pos.x + this.w &&
 			this.pos.y <= point.y && point.y <= this.pos.y + this.h
 		);
+	}
+
+
+	/**
+	 * Get the render sorting priority.
+	 * @return {number}
+	 */
+	prio() {
+		return this.pos.y + this.h;
 	}
 
 

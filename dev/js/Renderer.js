@@ -11,19 +11,23 @@ js13k.Renderer = {
 	// Leaving them as comment to know they (will) exist.
 	// --------------------------------------------------
 	//
-	// center: 0,
+	// images: null,
 	// last: 0,
 	// level: null,
 	//
-	// // Canvas for background, player
 	// cnv: null,
 	// ctx: null,
 	//
 	// cnvUI: null,
 	// ctxUI: null,
 
+	// Center position for the canvas content
+	center: new js13k.Vector2D(),
+
 	// Scaling factor. Updated in resize().
 	scale: 1,
+	translateX: 0,
+	translateY: 0,
 
 
 	/**
@@ -39,6 +43,9 @@ js13k.Renderer = {
 	 * Draw to the canvas.
 	 */
 	draw() {
+		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
+		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+
 		this.clear();
 		this.level && this.level.draw();
 	},
@@ -58,7 +65,7 @@ js13k.Renderer = {
 		this.ctxUI.font = 'normal 56px ' + js13k.FONT;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
-		this.ctxUI.fillText( 'PAUSED', this.center, 60 );
+		this.ctxUI.fillText( 'PAUSED', this.center.x, 60 );
 	},
 
 
@@ -93,8 +100,26 @@ js13k.Renderer = {
 		this.ctxUI = this.cnvUI.getContext( '2d', { alpha: true } );
 		this.ctxUI.imageSmoothingEnabled = false;
 
-		this.registerEvents();
-		cb();
+		this.loadAssets( () => {
+			this.registerEvents();
+			cb();
+		} );
+	},
+
+
+	/**
+	 *
+	 * @param {function} cb
+	 */
+	loadAssets( cb ) {
+		const img = new Image();
+
+		img.onload = () => {
+			this.images = img;
+			cb();
+		};
+
+		img.src = 'i.png';
 	},
 
 
@@ -113,9 +138,6 @@ js13k.Renderer = {
 
 			this.ctx.imageSmoothingEnabled = false;
 			this.ctxUI.imageSmoothingEnabled = false;
-
-			this.ctx.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
-			this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
 
 			if( this.isPaused ) {
 				this.drawPause();
@@ -207,6 +229,9 @@ js13k.Renderer = {
 
 		this.cnvUI.width = window.innerWidth;
 		this.cnvUI.height = window.innerHeight;
+
+		this.center.x = Math.floor( this.cnv.width / 2 );
+		this.center.y = Math.floor( this.cnv.height / 2 );
 
 		if( this.isPaused ) {
 			clearTimeout( this._timeoutDrawPause );

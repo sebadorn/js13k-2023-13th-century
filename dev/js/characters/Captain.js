@@ -10,9 +10,6 @@ js13k.Captain = class extends js13k.Character {
 	 * @constructor
 	 */
 	constructor( data ) {
-		data.w ??= 32;
-		data.h ??= 48;
-
 		super( data );
 	}
 

@@ -9,13 +9,14 @@ if [ -d 'build' ]; then
 	rm -r 'build'
 fi
 
-mkdir -p 'build/characters'
-mkdir -p 'build/levels'
+mkdir -p build/{characters,levels,objects}
 
 cp 'dev/index-dev.html' 'build/'
+cp 'dev/i.png' 'build/'
 cp 'dev/js/'*.js 'build/'
 cp 'dev/js/characters/'*.js 'build/characters/'
 cp 'dev/js/levels/'*.js 'build/levels/'
+cp 'dev/js/objects/'*.js 'build/objects/'
 
 cd 'build' > '/dev/null'
 
@@ -39,7 +40,9 @@ terser \
 	'characters/Builder.js' \
 	'characters/Captain.js' \
 	'characters/Fighter.js' \
-	--ecma 11 --warn \
+	'levels/Test.js' \
+	'objects/Ship.js' \
+	--ecma 12 --warn \
 	--compress --toplevel \
 	--mangle --mangle-props \
 	-o 'i.js'

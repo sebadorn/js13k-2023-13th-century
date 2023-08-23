@@ -44,4 +44,15 @@ js13k.Vector2D = class {
 	}
 
 
+	/**
+	 *
+	 * @param {number} x
+	 * @param {number} y
+	 */
+	set( x, y ) {
+		this.x = x;
+		this.y = y;
+	}
+
+
 };
