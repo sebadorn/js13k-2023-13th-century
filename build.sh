@@ -37,11 +37,8 @@ terser \
 	'Level.js' \
 	'LevelObject.js' \
 	'Character.js' \
-	'characters/Builder.js' \
-	'characters/Captain.js' \
 	'characters/Fighter.js' \
 	'levels/Test.js' \
-	'objects/Ship.js' \
 	--ecma 12 --warn \
 	--compress --toplevel \
 	--mangle --mangle-props \

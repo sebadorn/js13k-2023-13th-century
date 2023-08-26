@@ -19,7 +19,9 @@ js13k.LevelObject = class {
 		this.h = data.h || 0;
 
 		this.health = Infinity;
+		this.facing = new js13k.Vector2D( 1, 0 );
 		this.speed = new js13k.Vector2D();
+		this.state = js13k.STATE_IDLE;
 	}
 
 
@@ -54,13 +56,25 @@ js13k.LevelObject = class {
 
 	/**
 	 *
-	 * @param {number}         dt 
-	 * @param {js13k.Vector2D} dir 
+	 * @param {number}          dt 
+	 * @param {js13k.Vector2D?} dir 
 	 */
 	update( dt, dir ) {
+		this.state = js13k.STATE_IDLE;
+
 		if( dir ) {
 			this.pos.x += Math.round( dt * dir.x * this.speed.x );
 			this.pos.y += Math.round( dt * dir.y * this.speed.y );
+
+			// Only update facing direction if object moved
+			if( dir.x || dir.y ) {
+				this.state = js13k.STATE_WALKING;
+
+				this.facing.set(
+					dir.x == 0 ? 0 : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
+					dir.y == 0 ? 0 : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
+				);
+			}
 		}
 	}
 

@@ -10,12 +10,12 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {object?} data
 	 */
 	constructor( data = {} ) {
-		data.w = 64;
-		data.h = 64;
+		data.w = js13k.TILE_SIZE;
+		data.h = js13k.TILE_SIZE;
 		super( data );
 
-		this.speed.x = 8;
-		this.speed.y = 8;
+		this.level = null;
+		this.speed.set( 6, 6 );
 	}
 
 
@@ -28,14 +28,14 @@ js13k.Character = class extends js13k.LevelObject {
 	update( dt, dir ) {
 		super.update( dt, dir );
 
-		if( this.ship ) {
+		if( this.level ) {
 			this.pos.x = Math.min(
-				this.ship.pos.x + this.ship.w - this.w,
-				Math.max( this.ship.pos.x, this.pos.x )
+				this.level.limits.x + this.level.limits.w - this.w,
+				Math.max( this.level.limits.x, this.pos.x )
 			);
 			this.pos.y = Math.min(
-				this.ship.pos.y + this.ship.h - this.h,
-				Math.max( this.ship.pos.y, this.pos.y )
+				this.level.limits.y + this.level.limits.h - this.h,
+				Math.max( this.level.limits.y, this.pos.y )
 			);
 		}
 	}

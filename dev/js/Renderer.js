@@ -34,7 +34,9 @@ js13k.Renderer = {
 	 * Clear the canvas.
 	 */
 	clear() {
+		this.ctx.setTransform( 1, 0, 0, 1, 0, 0 );
 		this.ctx.clearRect( 0, 0, window.innerWidth, window.innerHeight );
+		this.ctxUI.setTransform( 1, 0, 0, 1, 0, 0 );
 		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
 	},
 
@@ -43,10 +45,9 @@ js13k.Renderer = {
 	 * Draw to the canvas.
 	 */
 	draw() {
+		this.clear();
 		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
 		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
-
-		this.clear();
 		this.level && this.level.draw();
 	},
 

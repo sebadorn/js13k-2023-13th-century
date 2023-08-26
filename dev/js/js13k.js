@@ -11,7 +11,11 @@ const js13k = {
 	// Config
 	DEBUG: true,
 	FONT: '"Courier New", monospace',
-	TARGET_FPS: 60,
+	TARGET_FPS: 120,
+	TILE_SIZE: 96,
+
+	STATE_IDLE: 1,
+	STATE_WALKING: 2,
 
 
 	/**

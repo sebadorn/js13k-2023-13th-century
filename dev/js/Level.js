@@ -10,14 +10,13 @@ js13k.Level = class {
 	 */
 	constructor() {
 		this.isGameOver = false;
+		this.limits = {};
 		this.timer = 0;
 
 		/** @type {js13k.LevelObject[]} */
 		this.objects = [];
 		/** @type {js13k.Character[]} */
 		this.characters = [];
-		/** @type {js13k.PlayerShip?} */
-		this.ship = null;
 
 		this.selectedCharacter = {
 			p1: null,
@@ -31,8 +30,19 @@ js13k.Level = class {
 	 * @param {js13k.Character[]} characters
 	 */
 	addCharacters( ...characters ) {
+		characters.forEach( c => c.level = this );
 		this.characters.push( ...characters );
 		this.objects.push( ...characters );
+	}
+
+
+	/**
+	 *
+	 * @param  {...js13k.LevelObject[]} objects
+	 */
+	addObjects( ...objects ) {
+		objects.forEach( o => o.level = this );
+		this.objects.push( ...objects );
 	}
 
 
@@ -69,6 +79,7 @@ js13k.Level = class {
 			return;
 		}
 
+		this.drawBackground( js13k.Renderer.ctx );
 		this.objects.forEach( o => o.draw( js13k.Renderer.ctx ) );
 	}
 
@@ -100,17 +111,19 @@ js13k.Level = class {
 			}
 		}
 		else {
-			if( this.ship ) {
+			const p1 = this.selectedCharacter.p1;
+
+			if( p1 ) {
 				const R = js13k.Renderer;
-				R.translateX = R.center.x + this.ship.pos.x - this.ship.w / 2;
-				R.translateY = R.center.y + this.ship.pos.y - this.ship.h / 2 - 64;
+				R.translateX = R.center.x - p1.pos.x - p1.w / 2;
+				R.translateY = R.center.y - p1.pos.y - p1.h / 2;
 			}
 
 			const dir = js13k.Input.getDirections();
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 			this.objects.forEach( o => {
-				if( o === this.selectedCharacter.p1 ) {
+				if( o === p1 ) {
 					o.update( dt, dir );
 				}
 				else {
