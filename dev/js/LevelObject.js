@@ -18,6 +18,8 @@ js13k.LevelObject = class {
 		this.w = data.w || 0;
 		this.h = data.h || 0;
 
+		this._animTimerState = 0;
+
 		this.health = Infinity;
 		this.facing = new js13k.Vector2D( 1, 0 );
 		this.speed = new js13k.Vector2D();
@@ -30,6 +32,18 @@ js13k.LevelObject = class {
 	 * @param {CanvasRenderingContext2D} _ctx
 	 */
 	draw( _ctx ) {}
+
+
+	/**
+	 *
+	 * @return {object}
+	 */
+	getOffsetCenter() {
+		return {
+			x: this.pos.x + this.w / 2,
+			y: this.pos.y + this.h / 2,
+		};
+	}
 
 
 	/**
@@ -60,7 +74,9 @@ js13k.LevelObject = class {
 	 * @param {js13k.Vector2D?} dir 
 	 */
 	update( dt, dir ) {
-		this.state = js13k.STATE_IDLE;
+		let newState = js13k.STATE_IDLE;
+
+		this._animTimerState += dt;
 
 		if( dir ) {
 			this.pos.x += Math.round( dt * dir.x * this.speed.x );
@@ -68,14 +84,20 @@ js13k.LevelObject = class {
 
 			// Only update facing direction if object moved
 			if( dir.x || dir.y ) {
-				this.state = js13k.STATE_WALKING;
+				newState = js13k.STATE_WALKING;
 
 				this.facing.set(
-					dir.x == 0 ? 0 : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
-					dir.y == 0 ? 0 : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
+					dir.x == 0 ? this.facing.x : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
+					dir.y == 0 ? this.facing.y : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
 				);
 			}
 		}
+
+		if( this.state != newState ) {
+			this._animTimerState = 0;
+		}
+
+		this.state = newState;
 	}
 
 

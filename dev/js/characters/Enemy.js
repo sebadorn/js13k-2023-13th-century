@@ -1,7 +1,7 @@
 'use strict';
 
 
-js13k.Fighter = class extends js13k.Character {
+js13k.Enemy = class extends js13k.Character {
 
 
 	/**
@@ -34,7 +34,7 @@ js13k.Fighter = class extends js13k.Character {
 
 		ctx.drawImage(
 			js13k.Renderer.images,
-			sx, 16, 16, 16,
+			sx, 32, 16, 16,
 			x, y, js13k.TILE_SIZE, js13k.TILE_SIZE
 		);
 

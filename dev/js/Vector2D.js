@@ -30,17 +30,27 @@ js13k.Vector2D = class {
 	 * @return {number} Length of the vector.
 	 */
 	length() {
+		if( this.x + this.y === 0 ) {
+			return 0;
+		}
+
 		return Math.sqrt( this.x * this.x + this.y * this.y );
 	}
 
 
 	/**
 	 * Normalize the vector.
+	 * @return {js13k.Vector2D}
 	 */
 	normalize() {
 		const length = this.length();
-		this.x /= length;
-		this.y /= length;
+
+		if( length ) {
+			this.x /= length;
+			this.y /= length;
+		}
+
+		return this;
 	}
 
 

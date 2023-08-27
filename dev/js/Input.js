@@ -11,6 +11,7 @@ js13k.Input = {
 		PAUSE: 1,
 		DO: 2,
 		CANCEL: 3,
+		ATTACK: 4,
 
 		LEFT: 10,
 		UP: 11,
@@ -62,10 +63,14 @@ js13k.Input = {
 				keyboard: ['ArrowRight', 'KeyD'],
 				gamepad: [15]
 			},
-			[this.ACTION.DO]: {
+			[this.ACTION.ATTACK]: {
 				keyboard: ['Space', 'Enter'],
 				gamepad: [0]
-			}
+			},
+			[this.ACTION.DO]: {
+				keyboard: ['Enter'],
+				gamepad: [0]
+			},
 		};
 	},
 

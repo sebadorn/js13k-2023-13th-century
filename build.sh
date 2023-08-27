@@ -37,6 +37,7 @@ terser \
 	'Level.js' \
 	'LevelObject.js' \
 	'Character.js' \
+	'characters/Enemy.js' \
 	'characters/Fighter.js' \
 	'levels/Test.js' \
 	--ecma 12 --warn \

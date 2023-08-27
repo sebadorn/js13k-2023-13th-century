@@ -3,5 +3,6 @@
 /node_modules/
 
 # Files
+/assets/*old*.aseprite
 package-lock.json
 TODO.md

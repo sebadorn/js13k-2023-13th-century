@@ -31,6 +31,17 @@ js13k.Renderer = {
 
 
 	/**
+	 *
+	 * @param {js13k.LevelObject} o
+	 */
+	centerOn( o ) {
+		const oc = o.getOffsetCenter();
+		this.translateX = this.center.x - oc.x;
+		this.translateY = this.center.y - oc.y;
+	},
+
+
+	/**
 	 * Clear the canvas.
 	 */
 	clear() {
@@ -164,6 +175,14 @@ js13k.Renderer = {
 		this.last = timestamp;
 
 		requestAnimationFrame( t => this.mainLoop( t ) );
+	},
+
+
+	/**
+	 *
+	 */
+	resetTransform() {
+		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
 	},
 
 

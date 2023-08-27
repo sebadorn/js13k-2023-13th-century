@@ -114,19 +114,20 @@ js13k.Level = class {
 			const p1 = this.selectedCharacter.p1;
 
 			if( p1 ) {
-				const R = js13k.Renderer;
-				R.translateX = R.center.x - p1.pos.x - p1.w / 2;
-				R.translateY = R.center.y - p1.pos.y - p1.h / 2;
-			}
+				js13k.Renderer.centerOn( p1 );
 
-			const dir = js13k.Input.getDirections();
+				if( js13k.Input.isPressed( js13k.Input.ACTION.ATTACK, true ) ) {
+					p1.attack();
+				}
+
+				let dir = js13k.Input.getDirections();
+				dir = new js13k.Vector2D( dir.x, dir.y );
+				p1.update( dt, dir.normalize() );
+			}
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 			this.objects.forEach( o => {
-				if( o === p1 ) {
-					o.update( dt, dir );
-				}
-				else {
+				if( o !== p1 ) {
 					o.update( dt );
 				}
 			} );
