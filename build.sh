@@ -34,6 +34,7 @@ terser \
 	'Audio.js' \
 	'Input.js' \
 	'Renderer.js' \
+	'Timer.js' \
 	'Level.js' \
 	'LevelObject.js' \
 	'Character.js' \

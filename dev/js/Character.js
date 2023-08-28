@@ -14,9 +14,9 @@ js13k.Character = class extends js13k.LevelObject {
 		data.h = js13k.TILE_SIZE;
 		super( data );
 
-		this._animTimerAttack = 0;
-
+		this._attackTimer = null;
 		this.isAttacking = false;
+
 		this.health = 100;
 		this.item = data.item || js13k.ITEM_NONE;
 		this.level = null;
@@ -90,7 +90,7 @@ js13k.Character = class extends js13k.LevelObject {
 		let dy = this.pos.y + this.h / 2 - 6;
 
 		if( this.isAttacking ) {
-			dx += Math.max( 0, Math.sin( this._animTimerAttack / js13k.TARGET_FPS * 24 ) * 32 );
+			dx += Math.max( 0, Math.sin( this._attackTimer.progress() * Math.PI * 2 ) * js13k.TILE_SIZE / 2 );
 		}
 
 		ctx.drawImage(
@@ -110,6 +110,20 @@ js13k.Character = class extends js13k.LevelObject {
 		let dx = this.pos.x - this.w + 8;
 		let dy = this.pos.y;
 
+		let rotate = 0;
+		let oc = {
+			x: dx + js13k.TILE_SIZE * 2 - 24,
+			y: dy + js13k.TILE_SIZE / 4,
+		};
+
+		if( this.isAttacking ) {
+			let progress = this._attackTimer.progress();
+			rotate = progress * progress * Math.PI;
+			ctx.translate( oc.x, oc.y );
+			ctx.rotate( rotate );
+			ctx.translate( -oc.x, -oc.y );
+		}
+
 		ctx.drawImage(
 			js13k.Renderer.images,
 			0, 56, 32, 8,
@@ -117,8 +131,26 @@ js13k.Character = class extends js13k.LevelObject {
 		);
 
 		if( this.isAttacking ) {
-			// TODO: animation
+			ctx.translate( oc.x, oc.y );
+			ctx.rotate( -rotate );
+			ctx.translate( -oc.x, -oc.y );
 		}
+	}
+
+
+	/**
+	 *
+	 * @private
+	 * @return {number}
+	 */
+	_getWeaponAnimTime() {
+		// Animation time in seconds
+		const map = {
+			[js13k.ITEM_FIST]: 0.24,
+			[js13k.ITEM_SWORD]: 0.25,
+		};
+
+		return map[this.item] || 0;
 	}
 
 
@@ -134,8 +166,10 @@ js13k.Character = class extends js13k.LevelObject {
 			return;
 		}
 
+		this._attackTimer = this._attackTimer || new js13k.Timer( this.level );
+		this._attackTimer.set( this._getWeaponAnimTime() );
+
 		this.isAttacking = true;
-		this._animTimerAttack = 0;
 	}
 
 
@@ -157,13 +191,8 @@ js13k.Character = class extends js13k.LevelObject {
 	update( dt, dir ) {
 		super.update( dt, dir );
 
-		if( this.isAttacking ) {
-			this._animTimerAttack += dt;
-
-			if( this._animTimerAttack / js13k.TARGET_FPS > 0.24 ) {
-				this.isAttacking = false;
-				this._animTimerAttack = 0;
-			}
+		if( this.isAttacking && this._attackTimer.elapsed() ) {
+			this.isAttacking = false;
 		}
 
 		if( this.level ) {
