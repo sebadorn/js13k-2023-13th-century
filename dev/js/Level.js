@@ -129,6 +129,10 @@ js13k.Level = class {
 			this.objects.forEach( o => {
 				if( o !== p1 ) {
 					o.update( dt );
+
+					if( p1?.isAttacking && p1.item.checkHit( o ) ) {
+						o.takeDamage( p1.item );
+					}
 				}
 			} );
 		}

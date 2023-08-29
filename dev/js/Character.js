@@ -14,13 +14,19 @@ js13k.Character = class extends js13k.LevelObject {
 		data.h = js13k.TILE_SIZE;
 		super( data );
 
-		this._attackTimer = null;
+		this.attackTimer = null;
 		this.isAttacking = false;
 
+		this.healthTotal = 100;
 		this.health = 100;
-		this.item = data.item || js13k.ITEM_NONE;
+
+		this.item = data.item;
 		this.level = null;
 		this.speed.set( 12, 12 );
+
+		if( this.item ) {
+			this.item.owner = this;
+		}
 	}
 
 
@@ -56,101 +62,43 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @private
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	_drawItem( ctx ) {
-		if( !this.hasWeapon() ) {
+	_drawHealth( ctx ) {
+		if( this.health == this.healthTotal ) {
 			return;
 		}
 
+		let percent = this.health / this.healthTotal;
+		let x = this.pos.x + 16;
+		let y = this.pos.y - 24;
+		let w = this.w - 32;
+
+		// Bar background
+		ctx.fillStyle = '#000';
+		ctx.fillRect( x, y, w, 8 );
+
+		// Fill level
+		ctx.fillStyle = '#f00';
+		ctx.fillRect( x, y, w * percent, 8 );
+	}
+
+
+	/**
+	 *
+	 * @private
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	_drawItem( ctx ) {
 		const mirror = this.facing.x < 0;
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
 		}
 
-		if( this.item === js13k.ITEM_FIST ) {
-			this._drawItemFist( ctx );
-		}
-		else if( this.item === js13k.ITEM_SWORD ) {
-			this._drawItemSword( ctx );
-		}
+		this.item?.draw( ctx );
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
 		}
-	}
-
-
-	/**
-	 *
-	 * @private
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	_drawItemFist( ctx ) {
-		let dx = this.pos.x + this.w - 20;
-		let dy = this.pos.y + this.h / 2 - 6;
-
-		if( this.isAttacking ) {
-			dx += Math.max( 0, Math.sin( this._attackTimer.progress() * Math.PI * 2 ) * js13k.TILE_SIZE / 2 );
-		}
-
-		ctx.drawImage(
-			js13k.Renderer.images,
-			0, 48, 8, 8,
-			dx, dy, js13k.TILE_SIZE / 2, js13k.TILE_SIZE / 2
-		);
-	}
-
-
-	/**
-	 *
-	 * @private
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	_drawItemSword( ctx ) {
-		let dx = this.pos.x - this.w + 8;
-		let dy = this.pos.y;
-
-		let rotate = 0;
-		let oc = {
-			x: dx + js13k.TILE_SIZE * 2 - 24,
-			y: dy + js13k.TILE_SIZE / 4,
-		};
-
-		if( this.isAttacking ) {
-			let progress = this._attackTimer.progress();
-			rotate = progress * progress * Math.PI;
-			ctx.translate( oc.x, oc.y );
-			ctx.rotate( rotate );
-			ctx.translate( -oc.x, -oc.y );
-		}
-
-		ctx.drawImage(
-			js13k.Renderer.images,
-			0, 56, 32, 8,
-			dx, dy, js13k.TILE_SIZE * 2, js13k.TILE_SIZE / 2
-		);
-
-		if( this.isAttacking ) {
-			ctx.translate( oc.x, oc.y );
-			ctx.rotate( -rotate );
-			ctx.translate( -oc.x, -oc.y );
-		}
-	}
-
-
-	/**
-	 *
-	 * @private
-	 * @return {number}
-	 */
-	_getWeaponAnimTime() {
-		// Animation time in seconds
-		const map = {
-			[js13k.ITEM_FIST]: 0.24,
-			[js13k.ITEM_SWORD]: 0.25,
-		};
-
-		return map[this.item] || 0;
 	}
 
 
@@ -158,27 +106,42 @@ js13k.Character = class extends js13k.LevelObject {
 	 * Start an attack with the current weapon.
 	 */
 	attack() {
-		if( this.isAttacking || !this.hasWeapon() ) {
+		if( this.isAttacking || !this.item ) {
 			return;
 		}
 
-		if( this.item === js13k.ITEM_NONE ) {
-			return;
-		}
-
-		this._attackTimer = this._attackTimer || new js13k.Timer( this.level );
-		this._attackTimer.set( this._getWeaponAnimTime() );
+		this.attackTimer = this.attackTimer || new js13k.Timer( this.level );
+		this.attackTimer.set( this.item.animDuration );
 
 		this.isAttacking = true;
 	}
 
 
 	/**
-	 * Check if character has a weapon they can attack with.
-	 * @return {boolean}
+	 *
+	 * @override
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	hasWeapon() {
-		return this.item && this.item !== js13k.ITEM_NONE;
+	draw( ctx ) {
+		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
+
+		if( this.state === js13k.STATE_WALKING ) {
+			this._applyWalking( ctx );
+		}
+
+		if( this.item ) {
+			this._drawItem( ctx );
+		}
+
+		this._drawHealth( ctx );
+
+		ctx.drawImage(
+			js13k.Renderer.images,
+			sx, this.imgSY, this.imgSW, this.imgSH,
+			this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
+		);
+
+		js13k.Renderer.resetTransform();
 	}
 
 
@@ -191,7 +154,7 @@ js13k.Character = class extends js13k.LevelObject {
 	update( dt, dir ) {
 		super.update( dt, dir );
 
-		if( this.isAttacking && this._attackTimer.elapsed() ) {
+		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
 		}
 

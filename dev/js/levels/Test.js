@@ -18,8 +18,8 @@ js13k.Level.Test = class extends js13k.Level {
 			h: js13k.TILE_SIZE * 8,
 		};
 
-		const fighter1 = new js13k.Fighter( { x: 400, y: 400, item: js13k.ITEM_SWORD } );
-		const enem1 = new js13k.Enemy( { x: 600, y: 400, item: js13k.ITEM_SWORD } );
+		const fighter1 = new js13k.Fighter( { x: 400, y: 400, item: new js13k.WeaponSword() } );
+		const enem1 = new js13k.Enemy( { x: 600, y: 400, item: new js13k.WeaponSword() } );
 		enem1.facing.x = -1;
 
 		this.addCharacters( fighter1, enem1 );

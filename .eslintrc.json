@@ -23,6 +23,7 @@
             "error",
             "unix"
         ],
+        "no-empty": 0,
         "no-unused-vars": [
             "error",
             {

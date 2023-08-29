@@ -14,10 +14,6 @@ const js13k = {
 	TARGET_FPS: 60,
 	TILE_SIZE: 96,
 
-	ITEM_NONE: 1,
-	ITEM_FIST: 2,
-	ITEM_SWORD: 3,
-
 	STATE_IDLE: 1,
 	STATE_WALKING: 2,
 
