@@ -30,9 +30,8 @@ js13k.Level = class {
 	 * @param {js13k.Character[]} characters
 	 */
 	addCharacters( ...characters ) {
-		characters.forEach( c => c.level = this );
 		this.characters.push( ...characters );
-		this.objects.push( ...characters );
+		this.addObjects( ...characters );
 	}
 
 
@@ -130,7 +129,14 @@ js13k.Level = class {
 				if( o !== p1 ) {
 					o.update( dt );
 
-					if( p1?.isAttacking && p1.item.checkHit( o ) ) {
+					if(
+						// Is the player attacking?
+						p1?.isAttacking &&
+						// Is the target currently invincible, e.g. due to a prio hit?
+						( !o.noDamageTimer || o.noDamageTimer.elapsed() ) &&
+						// Does the attack hit?
+						p1.item.checkHit( o )
+					) {
 						o.takeDamage( p1.item );
 					}
 				}

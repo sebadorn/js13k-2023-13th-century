@@ -21,7 +21,6 @@ js13k.Character = class extends js13k.LevelObject {
 		this.health = 100;
 
 		this.item = data.item;
-		this.level = null;
 		this.speed.set( 12, 12 );
 
 		if( this.item ) {

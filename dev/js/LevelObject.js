@@ -19,11 +19,14 @@ js13k.LevelObject = class {
 		this.h = data.h || 0;
 
 		this._animTimerState = 0;
+		/** @type {js13k.Timer} */
+		this.noDamageTimer = null;
 
 		this.healthTotal = Infinity;
 		this.health = Infinity;
 
 		this.facing = new js13k.Vector2D( 1, 0 );
+		this.level = null;
 		this.speed = new js13k.Vector2D();
 		this.state = js13k.STATE_IDLE;
 	}
@@ -75,7 +78,11 @@ js13k.LevelObject = class {
 	 * @param {js13k.Weapon} fromItem
 	 */
 	takeDamage( fromItem ) {
+		this.noDamageTimer = this.noDamageTimer || new js13k.Timer( this.level );
+		this.noDamageTimer.set( 0.5 );
+
 		this.health = Math.max( 0, this.health - fromItem.damage );
+
 		// TODO: trigger other effects like a knockback
 	}
 

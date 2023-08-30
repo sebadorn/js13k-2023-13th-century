@@ -70,15 +70,69 @@ js13k.WeaponSword = class extends js13k.Weapon {
 			ctx.rotate( -rotate );
 			ctx.translate( -oc.x, -oc.y );
 		}
+
+		// if( js13k.DEBUG ) {
+		// 	ctx.strokeStyle = '#f00';
+		// 	ctx.lineWidth = 1;
+		// 	ctx.strokeRect(
+		// 		this.owner.pos.x + this.owner.w,
+		// 		this.owner.pos.y,
+		// 		js13k.TILE_SIZE * 1.7,
+		// 		js13k.TILE_SIZE
+		// 	);
+		// 	ctx.strokeRect(
+		// 		this.owner.pos.x + this.owner.w,
+		// 		this.owner.pos.y - js13k.TILE_SIZE * 0.7,
+		// 		js13k.TILE_SIZE,
+		// 		js13k.TILE_SIZE * 2.4
+		// 	);
+		// }
 	}
 
 
 	/**
 	 * Check if an attack with this weapon would hit the given LevelObject right now.
-	 * @param {js13k.LevelObject} o
+	 * @param  {js13k.LevelObject} o
+	 * @return {boolean} True if hit, false otherwise
 	 */
 	checkHit( o ) {
-		// TODO:
+		const wpAABB = [
+			// more width than height
+			{
+				x: this.owner.pos.x + this.owner.w,
+				y: this.owner.pos.y,
+				w: js13k.TILE_SIZE * 1.7,
+				h: js13k.TILE_SIZE,
+			},
+			// more height than width
+			{
+				x: this.owner.pos.x + this.owner.w,
+				y: this.owner.pos.y - js13k.TILE_SIZE * 0.7,
+				w: js13k.TILE_SIZE,
+				h: js13k.TILE_SIZE * 2.4,
+			}
+		];
+
+		// Adjust for facing the other direction
+		if( this.owner.facing.x < 0 ) {
+			wpAABB[0].x -= this.owner.w + wpAABB[0].w;
+			wpAABB[1].x -= this.owner.w + wpAABB[1].w;
+		}
+
+		const aabb = {
+			x: o.pos.x,
+			y: o.pos.y,
+			w: o.w,
+			h: o.h,
+		};
+
+		for( let i = 0; i < wpAABB.length; i++ ) {
+			if( js13k.overlap( aabb, wpAABB[i] ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 
