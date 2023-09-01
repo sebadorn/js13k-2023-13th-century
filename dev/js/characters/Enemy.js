@@ -19,4 +19,18 @@ js13k.Enemy = class extends js13k.Character {
 	}
 
 
+	/**
+	 *
+	 * @override
+	 * @param {js13k.Weapon} fromItem 
+	 */
+	takeDamage( fromItem ) {
+		if( this.health <= 0 ) {
+			return;
+		}
+
+		super.takeDamage( fromItem );
+	}
+
+
 };

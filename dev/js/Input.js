@@ -12,6 +12,7 @@ js13k.Input = {
 		DO: 2,
 		CANCEL: 3,
 		ATTACK: 4,
+		INTERACT: 5,
 
 		LEFT: 10,
 		UP: 11,
@@ -69,6 +70,10 @@ js13k.Input = {
 			},
 			[this.ACTION.DO]: {
 				keyboard: ['Enter'],
+				gamepad: [0]
+			},
+			[this.ACTION.INTERACT]: {
+				keyboard: ['KeyE'],
 				gamepad: [0]
 			},
 		};

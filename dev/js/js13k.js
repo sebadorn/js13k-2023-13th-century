@@ -13,6 +13,7 @@ const js13k = {
 	FONT: '"Courier New", monospace',
 	TARGET_FPS: 60,
 	TILE_SIZE: 96,
+	TILE_SIZE_HALF: 48,
 
 	STATE_IDLE: 1,
 	STATE_WALKING: 2,

@@ -122,6 +122,10 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
+		if( this.health <= 0 ) {
+			return;
+		}
+
 		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
 
 		if( this.state === js13k.STATE_WALKING ) {
@@ -141,6 +145,54 @@ js13k.Character = class extends js13k.LevelObject {
 		);
 
 		js13k.Renderer.resetTransform();
+	}
+
+
+	/**
+	 * Drop the currently hold item (if it can be dropped).
+	 */
+	dropItem() {
+		this.item?.drop();
+
+		// Default to fists if character is still alive.
+		if( this.health > 0 ) {
+			this.item = new js13k.WeaponFist();
+			this.item.owner = this;
+		}
+	}
+
+
+	/**
+	 *
+	 * @override
+	 * @return {object}
+	 */
+	getInteractHitbox() {
+		const hb = {
+			x: this.pos.x,
+			y: this.pos.y + this.h,
+			w: this.w,
+			h: js13k.TILE_SIZE_HALF / 2
+		};
+
+		hb.y -= hb.h;
+
+		return hb;
+	}
+
+
+	/**
+	 *
+	 * @param {js13k.LevelObject} item
+	 */
+	takeItem( item ) {
+		// Drop the currently hold item
+		this.item?.drop();
+
+		this.item = item;
+		item.highlight = false;
+		item.owner = this;
+		this.level.removeItem( item );
 	}
 
 

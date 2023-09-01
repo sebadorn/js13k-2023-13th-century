@@ -17,6 +17,8 @@ js13k.Level = class {
 		this.objects = [];
 		/** @type {js13k.Character[]} */
 		this.characters = [];
+		/** @type {js13k.LevelObject[]} */
+		this.items = [];
 
 		this.selectedCharacter = {
 			p1: null,
@@ -37,6 +39,16 @@ js13k.Level = class {
 
 	/**
 	 *
+	 * @param  {js13k.LevelObject[]} items
+	 */
+	addItems( ...items ) {
+		this.items.push( ...items );
+		this.addObjects( ...items );
+	}
+
+
+	/**
+	 *
 	 * @param  {...js13k.LevelObject[]} objects
 	 */
 	addObjects( ...objects ) {
@@ -47,24 +59,19 @@ js13k.Level = class {
 
 	/**
 	 *
-	 * @param {object} mouse
-	 * @param {number} mouse.x
-	 * @param {number} mouse.y
+	 * @param {js13k.LevelObject} item
 	 */
-	clickAt( mouse ) {
-		if( this.isGameOver ) {
-			return;
+	removeItem( item ) {
+		let index = this.items.indexOf( item );
+
+		if( index >= 0 ) {
+			this.items.splice( index, 1 );
 		}
 
-		for( const character of this.characters ) {
-			if(
-				character.isPointInHitbox( mouse ) &&
-				// The chosen character also has to be free right now
-				this.selectedCharacter.p2 !== character
-			) {
-				this.selectedCharacter.p1 = character;
-				break;
-			}
+		index = this.objects.indexOf( item );
+
+		if( index >= 0 ) {
+			this.objects.splice( index, 1 );
 		}
 	}
 
@@ -122,6 +129,23 @@ js13k.Level = class {
 				let dir = js13k.Input.getDirections();
 				dir = new js13k.Vector2D( dir.x, dir.y );
 				p1.update( dt, dir.normalize() );
+
+				const p1HB = p1.getInteractHitbox();
+
+				this.items.forEach( item => {
+					item.highlight = false;
+
+					if(
+						item.canInteract &&
+						js13k.overlap( item.getInteractHitbox(), p1HB )
+					) {
+						item.highlight = true;
+
+						if( js13k.Input.isPressed( js13k.Input.ACTION.INTERACT, true ) ) {
+							p1.takeItem( item );
+						}
+					}
+				} );
 			}
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
@@ -134,6 +158,7 @@ js13k.Level = class {
 						p1?.isAttacking &&
 						// Is the target currently invincible, e.g. due to a prio hit?
 						( !o.noDamageTimer || o.noDamageTimer.elapsed() ) &&
+						o.health > 0 &&
 						// Does the attack hit?
 						p1.item.checkHit( o )
 					) {

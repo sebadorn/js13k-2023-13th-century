@@ -224,11 +224,6 @@ js13k.Renderer = {
 		keys.keyboard.forEach( key => js13k.Input.onKeyUp( key, cbPause ) );
 
 		js13k.Input.on( 'gp_disconnect', () => this.pause() );
-		js13k.Input.on( 'click', mouse => {
-			if( !this.isPaused ) {
-				this.level && this.level.clickAt( mouse );
-			}
-		} );
 	},
 
 

@@ -22,10 +22,11 @@ js13k.LevelObject = class {
 		/** @type {js13k.Timer} */
 		this.noDamageTimer = null;
 
+		this.canInteract = false;
+		this.facing = new js13k.Vector2D( 1, 0 );
 		this.healthTotal = Infinity;
 		this.health = Infinity;
-
-		this.facing = new js13k.Vector2D( 1, 0 );
+		this.highlight = false;
 		this.level = null;
 		this.speed = new js13k.Vector2D();
 		this.state = js13k.STATE_IDLE;
@@ -43,24 +44,25 @@ js13k.LevelObject = class {
 	 *
 	 * @return {object}
 	 */
-	getOffsetCenter() {
+	getInteractHitbox() {
 		return {
-			x: this.pos.x + this.w / 2,
-			y: this.pos.y + this.h / 2,
+			x: this.pos.x,
+			y: this.pos.y,
+			w: this.w,
+			h: this.h
 		};
 	}
 
 
 	/**
 	 *
-	 * @param  {js13k.Vector2D} point
-	 * @return {boolean}
+	 * @return {object}
 	 */
-	isPointInHitbox( point ) {
-		return (
-			this.pos.x <= point.x && point.x <= this.pos.x + this.w &&
-			this.pos.y <= point.y && point.y <= this.pos.y + this.h
-		);
+	getOffsetCenter() {
+		return {
+			x: this.pos.x + this.w / 2,
+			y: this.pos.y + this.h / 2,
+		};
 	}
 
 
@@ -84,6 +86,10 @@ js13k.LevelObject = class {
 		this.health = Math.max( 0, this.health - fromItem.damage );
 
 		// TODO: trigger other effects like a knockback
+
+		if( this.health <= 0 ) {
+			this.dropItem();
+		}
 	}
 
 
@@ -93,6 +99,10 @@ js13k.LevelObject = class {
 	 * @param {js13k.Vector2D?} dir 
 	 */
 	update( dt, dir ) {
+		if( this.health <= 0 || this.owner ) {
+			return;
+		}
+
 		let newState = js13k.STATE_IDLE;
 
 		this._animTimerState += dt;
