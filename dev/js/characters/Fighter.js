@@ -12,6 +12,7 @@ js13k.Fighter = class extends js13k.Character {
 	 */
 	constructor( data ) {
 		super( data );
+
 		this.imgSX = 0;
 		this.imgSY = 16;
 		this.imgSW = 16;

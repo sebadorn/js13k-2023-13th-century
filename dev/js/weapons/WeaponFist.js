@@ -48,9 +48,10 @@ js13k.WeaponFist = class extends js13k.Weapon {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {CanvasRenderingContext2D}              ctx
+	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
 	 */
-	draw( ctx ) {
+	draw( ctx, image ) {
 		let dx = this.pos.x;
 		let dy = this.pos.y;
 
@@ -65,10 +66,29 @@ js13k.WeaponFist = class extends js13k.Weapon {
 		}
 
 		ctx.drawImage(
-			js13k.Renderer.images,
+			image || js13k.Renderer.images,
 			40, 16, 8, 8,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
 		);
+	}
+
+
+	/**
+	 *
+	 * @override
+	 * @param  {js13k.LevelObject} target
+	 * @return {function}
+	 */
+	getHitEffect( target ) {
+		if( !( target instanceof js13k.Character ) ) {
+			return;
+		}
+
+		return function() {
+			target.dropItem();
+
+			return true;
+		};
 	}
 
 

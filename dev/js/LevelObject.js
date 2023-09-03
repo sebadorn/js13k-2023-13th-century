@@ -22,7 +22,9 @@ js13k.LevelObject = class {
 		/** @type {js13k.Timer} */
 		this.noDamageTimer = null;
 
+		this.afflicted = {};
 		this.canInteract = false;
+		this.effects = [];
 		this.facing = new js13k.Vector2D( 1, 0 );
 		this.healthTotal = Infinity;
 		this.health = Infinity;
@@ -30,6 +32,23 @@ js13k.LevelObject = class {
 		this.level = null;
 		this.speed = new js13k.Vector2D();
 		this.state = js13k.STATE_IDLE;
+	}
+
+
+	/**
+	 *
+	 * @private
+	 * @param {number} dt
+	 */
+	_updateEffects( dt ) {
+		for( let i = this.effects.length - 1; i >= 0; i-- ) {
+			const effectFn = this.effects[i];
+			const isDone = effectFn( dt );
+
+			if( isDone ) {
+				this.effects.splice( i, 1 );
+			}
+		}
 	}
 
 
@@ -67,6 +86,37 @@ js13k.LevelObject = class {
 
 
 	/**
+	 *
+	 * @private
+	 * @param  {js13k.Vector2D} dir 
+	 * @param  {number}         dt 
+	 * @param  {number}         newState 
+	 * @return {number}
+	 */
+	moveInDir( dir, dt, newState ) {
+		// Cannot move at the moment
+		if( this.afflicted.stun ) {
+			return newState;
+		}
+
+		this.pos.x += Math.round( dt * dir.x * this.speed.x );
+		this.pos.y += Math.round( dt * dir.y * this.speed.y );
+
+		// Only update facing direction if object moved
+		if( dir.x || dir.y ) {
+			newState = js13k.STATE_WALKING;
+
+			this.facing.set(
+				dir.x == 0 ? this.facing.x : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
+				dir.y == 0 ? this.facing.y : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
+			);
+		}
+
+		return newState;
+	}
+
+
+	/**
 	 * Get the render sorting priority.
 	 * @return {number}
 	 */
@@ -85,7 +135,11 @@ js13k.LevelObject = class {
 
 		this.health = Math.max( 0, this.health - fromItem.damage );
 
-		// TODO: trigger other effects like a knockback
+		const effect = fromItem.getHitEffect( this );
+
+		if( effect ) {
+			this.effects.push( effect );
+		}
 
 		if( this.health <= 0 ) {
 			this.dropItem();
@@ -106,20 +160,10 @@ js13k.LevelObject = class {
 		let newState = js13k.STATE_IDLE;
 
 		this._animTimerState += dt;
+		this._updateEffects( dt );
 
 		if( dir ) {
-			this.pos.x += Math.round( dt * dir.x * this.speed.x );
-			this.pos.y += Math.round( dt * dir.y * this.speed.y );
-
-			// Only update facing direction if object moved
-			if( dir.x || dir.y ) {
-				newState = js13k.STATE_WALKING;
-
-				this.facing.set(
-					dir.x == 0 ? this.facing.x : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
-					dir.y == 0 ? this.facing.y : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
-				);
-			}
+			newState = this.moveInDir( dir, dt, newState );
 		}
 
 		if( this.state != newState ) {

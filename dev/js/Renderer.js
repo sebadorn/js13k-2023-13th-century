@@ -12,6 +12,8 @@ js13k.Renderer = {
 	// --------------------------------------------------
 	//
 	// images: null,
+	// imagesWhite: null,
+	//
 	// last: 0,
 	// level: null,
 	//
@@ -28,6 +30,38 @@ js13k.Renderer = {
 	scale: 1,
 	translateX: 0,
 	translateY: 0,
+
+
+	/**
+	 *
+	 * @private
+	 * @param  {HTMLImageElement} img
+	 * @return {HTMLCanvasElement}
+	 */
+	_renderToWhite( img ) {
+		const [canvas, ctx] = this.getOffscreenCanvas( img.width, img.height );
+		ctx.drawImage( img, 0, 0 );
+
+		const imgData = ctx.getImageData( 0, 0, img.width, img.height );
+
+		for( let y = 0; y < img.height; y++ ) {
+			for( let x = 0; x < img.width; x++ ) {
+				const index = ( y * img.width + x ) * 4;
+				const alpha = imgData.data[index + 3];
+
+				// Set to white if not transparent
+				if( alpha !== 0 ) {
+					imgData.data[index + 0] = 255; // R
+					imgData.data[index + 1] = 255; // G
+					imgData.data[index + 2] = 255; // B
+				}
+			}
+		}
+
+		ctx.putImageData( imgData, 0, 0 );
+
+		return canvas;
+	},
 
 
 	/**
@@ -85,7 +119,7 @@ js13k.Renderer = {
 	 * Get an offset canvas and its context.
 	 * @param  {number} w
 	 * @param  {number} h
-	 * @return {array} [HTMLCanvasElement, CanvasRenderingContext2D]
+	 * @return {[HTMLCanvasElement, CanvasRenderingContext2D]}
 	 */
 	getOffscreenCanvas( w, h ) {
 		const canvas = document.createElement( 'canvas' );
@@ -128,6 +162,8 @@ js13k.Renderer = {
 
 		img.onload = () => {
 			this.images = img;
+			this.imagesWhite = this._renderToWhite( img );
+
 			cb();
 		};
 

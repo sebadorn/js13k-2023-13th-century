@@ -38,6 +38,7 @@ terser \
 	'Level.js' \
 	'LevelObject.js' \
 	'Character.js' \
+	'Puppeteer.js' \
 	'Weapon.js' \
 	'characters/Enemy.js' \
 	'characters/Fighter.js' \

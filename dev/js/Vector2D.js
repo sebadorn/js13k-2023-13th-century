@@ -39,6 +39,19 @@ js13k.Vector2D = class {
 
 
 	/**
+	 * Multiply with a number.
+	 * @param  {number} v
+	 * @return {js13k.Vector2D}
+	 */
+	mul( v ) {
+		this.x *= v;
+		this.y *= v;
+
+		return this;
+	}
+
+
+	/**
 	 * Normalize the vector.
 	 * @return {js13k.Vector2D}
 	 */

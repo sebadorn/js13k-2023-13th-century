@@ -26,6 +26,10 @@ js13k.WeaponSword = class extends js13k.Weapon {
 	 * @override
 	 */
 	_setDropPos() {
+		if( !this.owner ) {
+			return;
+		}
+
 		this.pos.set(
 			this.owner.pos.x + this.owner.w / 2,
 			this.owner.pos.y - this.owner.h + this.h / 2
@@ -81,9 +85,10 @@ js13k.WeaponSword = class extends js13k.Weapon {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {CanvasRenderingContext2D}              ctx
+	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
 	 */
-	draw( ctx ) {
+	draw( ctx, image ) {
 		let dx = this.pos.x;
 		let dy = this.pos.y;
 
@@ -130,7 +135,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		}
 
 		ctx.drawImage(
-			js13k.Renderer.images,
+			image || js13k.Renderer.images,
 			32, 16, 8, 32,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE * 2
 		);
@@ -148,6 +153,51 @@ js13k.WeaponSword = class extends js13k.Weapon {
 				this._drawHighlight( ctx );
 			}
 		}
+	}
+
+
+	/**
+	 *
+	 * @override
+	 * @param  {js13k.LevelObject} target
+	 * @return {function}
+	 */
+	getHitEffect( target ) {
+		if( !( target instanceof js13k.Character ) ) {
+			return;
+		}
+
+		const startPos = target.pos.clone();
+
+		const c1 = this.owner.getOffsetCenter();
+		const c2 = target.getOffsetCenter();
+
+		const dir = new js13k.Vector2D(
+			c2.x - c1.x,
+			c2.y - c1.y
+		);
+		dir.normalize();
+
+		const timer = new js13k.Timer( this.owner.level, 0.3 );
+		const distance = js13k.TILE_SIZE * 1.5;
+
+		target.afflicted.stun = true;
+
+		return function() {
+			if( timer.elapsed() ) {
+				target.afflicted.stun = false;
+				return true;
+			}
+
+			const progress = timer.progress();
+
+			target.pos.set(
+				startPos.x + dir.x * distance * progress,
+				startPos.y + dir.y * distance * progress
+			);
+
+			return false;
+		};
 	}
 
 

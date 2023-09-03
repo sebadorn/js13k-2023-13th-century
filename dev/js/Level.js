@@ -150,20 +150,26 @@ js13k.Level = class {
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 			this.objects.forEach( o => {
-				if( o !== p1 ) {
-					o.update( dt );
+				if( o === p1 ) {
+					return;
+				}
 
-					if(
-						// Is the player attacking?
-						p1?.isAttacking &&
-						// Is the target currently invincible, e.g. due to a prio hit?
-						( !o.noDamageTimer || o.noDamageTimer.elapsed() ) &&
-						o.health > 0 &&
-						// Does the attack hit?
-						p1.item.checkHit( o )
-					) {
-						o.takeDamage( p1.item );
-					}
+				o.update( dt );
+
+				if(
+					// Is the player attacking?
+					p1?.isAttacking &&
+					// Is the target currently invincible, e.g. due to a prio hit?
+					( !o.noDamageTimer || o.noDamageTimer.elapsed() ) &&
+					o.health > 0 &&
+					// Does the attack hit?
+					p1.item.checkHit( o )
+				) {
+					o.takeDamage( p1.item );
+				}
+
+				if( !o.action ) {
+					js13k.Puppeteer.decideAction( o, p1 );
 				}
 			} );
 		}

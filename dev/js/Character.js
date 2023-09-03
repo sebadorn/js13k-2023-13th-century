@@ -14,6 +14,11 @@ js13k.Character = class extends js13k.LevelObject {
 		data.h = js13k.TILE_SIZE;
 		super( data );
 
+		this._walkAnimSpeed = 42 / js13k.TARGET_FPS;
+
+		// Action to perform, NPCs only
+		this.action = null;
+
 		this.attackTimer = null;
 		this.isAttacking = false;
 
@@ -51,7 +56,7 @@ js13k.Character = class extends js13k.LevelObject {
 	_applyWalking( ctx ) {
 		const oc = this.getOffsetCenter();
 		ctx.translate( oc.x, oc.y );
-		ctx.rotate( 0.1 * Math.sin( this._animTimerState / js13k.TARGET_FPS * 48 ) );
+		ctx.rotate( 0.1 * Math.sin( this._animTimerState * this._walkAnimSpeed ) );
 		ctx.translate( -oc.x, -oc.y );
 	}
 
@@ -84,16 +89,17 @@ js13k.Character = class extends js13k.LevelObject {
 	/**
 	 *
 	 * @private
-	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {CanvasRenderingContext2D}              ctx
+	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
 	 */
-	_drawItem( ctx ) {
+	_drawItem( ctx, image ) {
 		const mirror = this.facing.x < 0;
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
 		}
 
-		this.item?.draw( ctx );
+		this.item?.draw( ctx, image );
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
@@ -127,19 +133,32 @@ js13k.Character = class extends js13k.LevelObject {
 		}
 
 		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
+		let image = js13k.Renderer.images;
+
+		if( this.noDamageTimer && !this.noDamageTimer.elapsed() ) {
+			const progress = this.noDamageTimer.progress();
+
+			if(
+				( progress >= 0 && progress <= 0.2 ) ||
+				( progress >= 0.4 && progress <= 0.6 ) ||
+				( progress >= 0.8 && progress <= 1 )
+			) {
+				image = js13k.Renderer.imagesWhite;
+			}
+		}
 
 		if( this.state === js13k.STATE_WALKING ) {
 			this._applyWalking( ctx );
 		}
 
 		if( this.item ) {
-			this._drawItem( ctx );
+			this._drawItem( ctx, image );
 		}
 
 		this._drawHealth( ctx );
 
 		ctx.drawImage(
-			js13k.Renderer.images,
+			image,
 			sx, this.imgSY, this.imgSW, this.imgSH,
 			this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
 		);
@@ -203,7 +222,26 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {js13k.Vector2D} dir 
 	 */
 	update( dt, dir ) {
-		super.update( dt, dir );
+		if( this.health <= 0 ) {
+			return;
+		}
+
+		let newState = js13k.STATE_IDLE;
+
+		this._animTimerState += dt;
+		this._updateEffects( dt );
+
+		if( dir ) {
+			newState = this.moveInDir( dir, dt, newState );
+		}
+
+		if( this.action ) {
+			newState = this.action( dt ) || newState;
+		}
+
+		if( this.state != newState ) {
+			this._animTimerState = 0;
+		}
 
 		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
@@ -219,6 +257,8 @@ js13k.Character = class extends js13k.LevelObject {
 				Math.max( this.level.limits.y, this.pos.y )
 			);
 		}
+
+		this.state = newState;
 	}
 
 
