@@ -253,8 +253,8 @@ js13k.Character = class extends js13k.LevelObject {
 				Math.max( this.level.limits.x, this.pos.x )
 			);
 			this.pos.y = Math.min(
-				this.level.limits.y + this.level.limits.h - this.h,
-				Math.max( this.level.limits.y, this.pos.y )
+				this.level.limits.y + this.level.limits.h - this.h - 8,
+				Math.max( this.level.limits.y - js13k.TILE_SIZE_HALF, this.pos.y )
 			);
 		}
 

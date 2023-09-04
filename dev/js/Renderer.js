@@ -13,6 +13,7 @@ js13k.Renderer = {
 	//
 	// images: null,
 	// imagesWhite: null,
+	// patternWater: null,
 	//
 	// last: 0,
 	// level: null,
@@ -163,6 +164,14 @@ js13k.Renderer = {
 		img.onload = () => {
 			this.images = img;
 			this.imagesWhite = this._renderToWhite( img );
+
+			const [canvas, ctx] = this.getOffscreenCanvas( js13k.TILE_SIZE, js13k.TILE_SIZE );
+			ctx.drawImage(
+				this.images,
+				16, 0, 16, 16,
+				0, 0, js13k.TILE_SIZE, js13k.TILE_SIZE
+			);
+			this.patternWater = ctx.createPattern( canvas, 'repeat' );
 
 			cb();
 		};

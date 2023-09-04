@@ -87,7 +87,14 @@ js13k.Level = class {
 
 		this.drawBackground( js13k.Renderer.ctx );
 		this.objects.forEach( o => o.draw( js13k.Renderer.ctx ) );
+		this.drawForeground( js13k.Renderer.ctx );
 	}
+
+
+	/**
+	 *
+	 */
+	drawForeground() {}
 
 
 	/**
@@ -169,7 +176,7 @@ js13k.Level = class {
 				}
 
 				if( !o.action ) {
-					js13k.Puppeteer.decideAction( o, p1 );
+					// js13k.Puppeteer.decideAction( o, p1 );
 				}
 			} );
 		}
