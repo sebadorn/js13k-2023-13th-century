@@ -16,7 +16,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 
 		this.animDuration = 0.25;
 		this.canInteract = true;
-		this.damage = 25;
+		this.damage = 34;
 	}
 
 
@@ -129,9 +129,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		}
 
 		if( rotate ) {
-			ctx.translate( oc.x, oc.y );
-			ctx.rotate( rotate );
-			ctx.translate( -oc.x, -oc.y );
+			js13k.Renderer.rotateCenter( ctx, rotate, oc );
 		}
 
 		ctx.drawImage(
@@ -141,9 +139,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		);
 
 		if( rotate && this.owner?.isAttacking ) {
-			ctx.translate( oc.x, oc.y );
-			ctx.rotate( -rotate );
-			ctx.translate( -oc.x, -oc.y );
+			js13k.Renderer.rotateCenter( ctx, -rotate, oc );
 		}
 
 		if( !this.owner ) {

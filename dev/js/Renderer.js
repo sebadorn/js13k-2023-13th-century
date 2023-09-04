@@ -196,6 +196,9 @@ js13k.Renderer = {
 			this.ctx.imageSmoothingEnabled = false;
 			this.ctxUI.imageSmoothingEnabled = false;
 
+			this.ctx.lineWidth = 1;
+			this.ctx.textBaseline = 'alphabetic';
+
 			if( this.isPaused ) {
 				this.drawPause();
 				return; // Stop the loop.
@@ -301,15 +304,41 @@ js13k.Renderer = {
 
 
 	/**
+	 * Rotate around a given coordinate.
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {number}                   rad - Rotation in radians.
+	 * @param {object}                   c
+	 * @param {number}                   c.x - X coordinate to rotate around
+	 * @param {number}                   c.y - Y coordinate to rotate around
+	 */
+	rotateCenter( ctx, rad, c ) {
+		ctx.translate( c.x, c.y );
+		ctx.rotate( rad );
+		ctx.translate( -c.x, -c.y );
+	},
+
+
+	/**
+	 * Scale around a given coordinate.
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {number}                   sx
+	 * @param {number}                   sy
+	 * @param {object}                   c
+	 * @param {number}                   c.x - X coordinate to scale around
+	 * @param {number}                   c.y - Y coordinate to scale around
+	 */
+	scaleCenter( ctx, sx, sy, c ) {
+		ctx.translate( c.x, c.y );
+		ctx.scale( sx, sy );
+		ctx.translate( -c.x, -c.y );
+	},
+
+
+	/**
 	 *
 	 */
 	togglePause() {
-		if( this.isPaused ) {
-			this.unpause();
-		}
-		else {
-			this.pause();
-		}
+		this.isPaused ? this.unpause() : this.pause();
 	},
 
 

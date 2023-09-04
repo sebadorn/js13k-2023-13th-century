@@ -1,7 +1,7 @@
 'use strict';
 
 
-js13k.Level.Test = class extends js13k.Level {
+js13k.Level.Ship = class extends js13k.Level {
 
 
 	/**
@@ -85,38 +85,47 @@ js13k.Level.Test = class extends js13k.Level {
 	drawForeground( ctx ) {
 		const lineWidth = js13k.TILE_SIZE / 16;
 
+		// Waves against the ship
+		for( let i = 0; i < 11; i++ ) {
+			ctx.drawImage(
+				js13k.Renderer.images,
+				32, 0, 16, 16,
+				i * js13k.TILE_SIZE * 1.5, this.limits.h, js13k.TILE_SIZE, js13k.TILE_SIZE
+			);
+		}
+
 		if( this._cnvRailing ) {
 			ctx.drawImage(
 				this._cnvRailing,
 				-lineWidth, this.limits.h - js13k.TILE_SIZE_HALF * 1.5
 			);
-			return;
 		}
+		else {
+			const width = 3 * lineWidth + this.limits.w;
+			const height = js13k.TILE_SIZE;
 
-		const width = 3 * lineWidth + this.limits.w;
-		const height = js13k.TILE_SIZE;
+			const [canvasFg, ctxFg] = js13k.Renderer.getOffscreenCanvas( width, height );
+			ctxFg.fillStyle = '#5a3c2e';
+			ctxFg.lineWidth = lineWidth;
 
-		const [canvasFg, ctxFg] = js13k.Renderer.getOffscreenCanvas( width, height );
-		ctxFg.fillStyle = '#5a3c2e';
-		ctxFg.lineWidth = lineWidth;
-
-		// Railing top
-		ctxFg.fillRect(
-			0, 0,
-			this.limits.w + ctxFg.lineWidth * 2, 10
-		);
-
-		// Railing bars
-		const num = ( this.limits.w + ctxFg.lineWidth * 2 ) / js13k.TILE_SIZE;
-
-		for( let i = 0; i <= num; i++ ) {
+			// Railing top
 			ctxFg.fillRect(
-				i * js13k.TILE_SIZE, 0,
-				12, js13k.TILE_SIZE
+				0, 0,
+				this.limits.w + ctxFg.lineWidth * 2, 10
 			);
-		}
 
-		this._cnvRailing = canvasFg;
+			// Railing bars
+			const num = ( this.limits.w + ctxFg.lineWidth * 2 ) / js13k.TILE_SIZE;
+
+			for( let i = 0; i <= num; i++ ) {
+				ctxFg.fillRect(
+					i * js13k.TILE_SIZE, 0,
+					12, js13k.TILE_SIZE
+				);
+			}
+
+			this._cnvRailing = canvasFg;
+		}
 	}
 
 

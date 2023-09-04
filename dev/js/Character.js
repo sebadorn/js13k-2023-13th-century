@@ -41,10 +41,7 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {number}                   scaleX
 	 */
 	_applyMirroring( ctx, scaleX ) {
-		const oc = this.getOffsetCenter();
-		ctx.translate( oc.x, oc.y );
-		ctx.scale( scaleX, 1 );
-		ctx.translate( -oc.x, -oc.y );
+		js13k.Renderer.scaleCenter( ctx, scaleX, 1, this.getOffsetCenter() );
 	}
 
 
@@ -54,10 +51,11 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	_applyWalking( ctx ) {
-		const oc = this.getOffsetCenter();
-		ctx.translate( oc.x, oc.y );
-		ctx.rotate( 0.1 * Math.sin( this._animTimerState * this._walkAnimSpeed ) );
-		ctx.translate( -oc.x, -oc.y );
+		js13k.Renderer.rotateCenter(
+			ctx,
+			0.1 * Math.sin( this._animTimerState * this._walkAnimSpeed ),
+			this.getOffsetCenter()
+		);
 	}
 
 

@@ -2,20 +2,21 @@
 
 cd $(dirname "$0")
 
-OUT_FILE='js13k-2023.zip'
+OUT_FILE='js13k-2023-13th-century.zip'
 MAX_SIZE=13312
 
 if [ -d 'build' ]; then
 	rm -r 'build'
 fi
 
-mkdir -p build/{characters,levels,weapons}
+mkdir -p build/{characters,levels,lib,weapons}
 
 cp 'dev/index-dev.html' 'build/'
 cp 'dev/i.png' 'build/'
 cp 'dev/js/'*.js 'build/'
 cp 'dev/js/characters/'*.js 'build/characters/'
 cp 'dev/js/levels/'*.js 'build/levels/'
+cp 'dev/js/lib/'*.js 'build/lib/'
 cp 'dev/js/weapons/'*.js 'build/weapons/'
 
 cd 'build' > '/dev/null'
@@ -29,6 +30,7 @@ sed -E -i'' 's/<script src="([a-zA-Z0-9_-]+\/)+[a-zA-Z0-9_.-]{2,}\.js"><\/script
 
 # Minify and combine the JS files.
 terser \
+	'lib/ZzFXMicro.min.js' \
 	'js13k.js' \
 	'Vector2D.js' \
 	'Audio.js' \
@@ -44,7 +46,8 @@ terser \
 	'characters/Fighter.js' \
 	'weapons/WeaponFist.js' \
 	'weapons/WeaponSword.js' \
-	'levels/Test.js' \
+	'levels/Start.js' \
+	'levels/Ship.js' \
 	--ecma 12 --warn \
 	--compress --toplevel \
 	--mangle --mangle-props \

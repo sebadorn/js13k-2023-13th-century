@@ -10,7 +10,7 @@ const js13k = {
 
 	// Config
 	DEBUG: true,
-	FONT: '"Courier New", monospace',
+	FONT: 'Arial, sans-serif',
 	TARGET_FPS: 60,
 	TILE_SIZE: 96,
 	TILE_SIZE_HALF: 48,
@@ -27,7 +27,7 @@ const js13k = {
 		js13k.Audio.init();
 
 		js13k.Renderer.init( () => {
-			js13k.Renderer.level = new js13k.Level.Test();
+			js13k.Renderer.level = new js13k.Level.Start();
 			js13k.Renderer.mainLoop();
 		} );
 	},
