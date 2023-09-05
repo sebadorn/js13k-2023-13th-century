@@ -39,7 +39,7 @@ js13k.Level.Ship = class extends js13k.Level {
 
 		// Water
 		ctx.fillStyle = R.patternWater;
-		ctx.fillRect( -R.translateX, -R.translateY, R.cnv.width, R.cnv.height );
+		js13k.Renderer.fillBackground();
 
 		if( this._cnvRailing ) {
 			ctx.drawImage( this._cnvRailing, -js13k.TILE_SIZE / 16, -js13k.TILE_SIZE );

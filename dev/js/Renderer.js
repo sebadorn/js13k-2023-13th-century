@@ -71,8 +71,8 @@ js13k.Renderer = {
 	 */
 	centerOn( o ) {
 		const oc = o.getOffsetCenter();
-		this.translateX = this.center.x - oc.x;
-		this.translateY = this.center.y - oc.y;
+		this.translateX = ( this.center.x - oc.x ) * this.scale;
+		this.translateY = ( this.center.y - oc.y ) * this.scale;
 	},
 
 
@@ -102,17 +102,29 @@ js13k.Renderer = {
 	 * Draw the pause screen.
 	 */
 	drawPause() {
-		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+		this.ctxUI.setTransform( 1, 0, 0, 1, 0, 0 );
 		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
 
+		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
 		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
-		this.ctxUI.fillRect( 0, 0, window.innerWidth, window.innerHeight );
+		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
 		this.ctxUI.font = 'normal 56px ' + js13k.FONT;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
-		this.ctxUI.fillText( 'PAUSED', this.center.x, 60 );
+		this.ctxUI.fillText( 'PAUSED', this.center.x, this.center.y - 56 );
+	},
+
+
+	/**
+	 *
+	 */
+	fillBackground() {
+		this.ctx.fillRect(
+			-this.translateX / this.scale, -this.translateY / this.scale,
+			this.cnv.width / this.scale, this.cnv.height / this.scale
+		);
 	},
 
 
@@ -210,27 +222,22 @@ js13k.Renderer = {
 			// Draw FPS info
 			if( js13k.DEBUG ) {
 				this.ctxUI.fillStyle = '#000';
-				this.ctxUI.fillRect( 40, window.innerHeight - 45, 140, 28 );
+				this.ctxUI.fillRect( 60, this.cnv.height / this.scale - 74, 140, 28 );
 
 				this.ctxUI.fillStyle = '#FFF';
-				this.ctxUI.font = 'bold 16px ' + js13k.FONT;
+				this.ctxUI.font = '16px monospace';
 				this.ctxUI.textAlign = 'right';
 				this.ctxUI.textBaseline = 'bottom';
-				this.ctxUI.fillText( ~~( js13k.TARGET_FPS / dt ) + ' FPS / ' + this.scale, 160, window.innerHeight - 22 );
+				this.ctxUI.fillText(
+					~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 100 ) / 100,
+					192, this.cnv.height / this.scale - 50
+				);
 			}
 		}
 
 		this.last = timestamp;
 
 		requestAnimationFrame( t => this.mainLoop( t ) );
-	},
-
-
-	/**
-	 *
-	 */
-	resetTransform() {
-		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
 	},
 
 
@@ -284,17 +291,44 @@ js13k.Renderer = {
 
 
 	/**
+	 *
+	 */
+	resetTransform() {
+		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
+	},
+
+
+	/**
 	 * Resize the canvas.
 	 */
 	resize() {
-		this.cnv.width = window.innerWidth;
-		this.cnv.height = window.innerHeight;
+		const targetRatio = 1920 / 1080;
 
-		this.cnvUI.width = window.innerWidth;
-		this.cnvUI.height = window.innerHeight;
+		let height = window.innerHeight;
+		let width = Math.round( height * targetRatio );
 
-		this.center.x = Math.floor( this.cnv.width / 2 );
-		this.center.y = Math.floor( this.cnv.height / 2 );
+		if( width > window.innerWidth ) {
+			width = window.innerWidth;
+			height = width / targetRatio;
+		}
+
+		this.scale = height / 1080;
+
+		this.center.x = width / 2 / this.scale;
+		this.center.y = height / 2 / this.scale;
+
+		let posTop = ~~( ( window.innerHeight - height ) / 2 ) + 'px';
+		let posLeft = ~~( ( window.innerWidth - width ) / 2 ) + 'px';
+
+		this.cnv.width = width;
+		this.cnv.height = height;
+		this.cnv.style.top = posTop;
+		this.cnv.style.left = posLeft;
+
+		this.cnvUI.width = width;
+		this.cnvUI.height = height;
+		this.cnvUI.style.top = posTop;
+		this.cnvUI.style.left = posLeft;
 
 		if( this.isPaused ) {
 			clearTimeout( this._timeoutDrawPause );

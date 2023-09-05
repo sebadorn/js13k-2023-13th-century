@@ -15,6 +15,9 @@ js13k.Level.Start = class extends js13k.Level {
 		// 1: Continue
 		this.selectedButton = 0;
 		this.numButtons = 2;
+
+		this.textTreasureOldGerman = 'Ez enwas niht anders / wan gestéinẹ unde golt. / unt ob man al die werlde / het dâ von versolt, / sîn wǽré niht mínner / einer marke wert.';
+		this.textSunkenOldGerman = 'Ê daz der künee rîche / wider wære komen, / die wîle hete Hagene / den schaz vil gar genomen. / er sanctẹ in dâ ze Lôche / allen in den Rîn. / er wandẹ er soldẹ in niezen: / des enkunde niht gesîn.';
 	}
 
 
@@ -65,6 +68,9 @@ js13k.Level.Start = class extends js13k.Level {
 		const ctx = js13k.Renderer.ctx;
 		let x = Math.max( js13k.TILE_SIZE * 2, js13k.Renderer.center.x - 500 );
 		let y = Math.max( js13k.TILE_SIZE * 2, js13k.Renderer.center.y - 128 );
+
+		ctx.fillStyle = '#0d161e';
+		js13k.Renderer.fillBackground();
 
 		ctx.font = 'bold 64px ' + js13k.FONT;
 		ctx.textAlign = 'left';
