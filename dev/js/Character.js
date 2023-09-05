@@ -65,7 +65,7 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	_drawHealth( ctx ) {
-		if( this.health == this.healthTotal ) {
+		if( this.health == this.healthTotal || this.isDodging ) {
 			return;
 		}
 
@@ -113,10 +113,29 @@ js13k.Character = class extends js13k.LevelObject {
 			return;
 		}
 
+		js13k.Audio.play( js13k.Audio.ATTACK );
+
 		this.attackTimer = this.attackTimer || new js13k.Timer( this.level );
 		this.attackTimer.set( this.item.animDuration );
 
 		this.isAttacking = true;
+	}
+
+
+	/**
+	 *
+	 */
+	dodge() {
+		if( this.isDodging ) {
+			return;
+		}
+
+		js13k.Audio.play( js13k.Audio.DODGE );
+
+		this.dodgeTimer = this.dodgeTimer || new js13k.Timer( this.level );
+		this.dodgeTimer.set( 0.5 );
+
+		this.isDodging = true;
 	}
 
 
@@ -133,20 +152,31 @@ js13k.Character = class extends js13k.LevelObject {
 		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
 		let image = js13k.Renderer.images;
 
-		if( this.noDamageTimer && !this.noDamageTimer.elapsed() ) {
-			const progress = this.noDamageTimer.progress();
+		if( this.isDodging ) {
+			let rotate = this.dodgeTimer.progress() * 360 * 3 * Math.PI / 180;
 
-			if(
-				( progress >= 0 && progress <= 0.2 ) ||
-				( progress >= 0.4 && progress <= 0.6 ) ||
-				( progress >= 0.8 && progress <= 1 )
-			) {
-				image = js13k.Renderer.imagesWhite;
+			if( this.facing.x < 0 ) {
+				rotate = -rotate;
 			}
-		}
 
-		if( this.state === js13k.STATE_WALKING ) {
-			this._applyWalking( ctx );
+			js13k.Renderer.rotateCenter( ctx, rotate, this.getOffsetCenter() );
+		}
+		else {
+			if( this.noDamageTimer && !this.noDamageTimer.elapsed() ) {
+				const progress = this.noDamageTimer.progress();
+
+				if(
+					( progress >= 0 && progress <= 0.2 ) ||
+					( progress >= 0.4 && progress <= 0.6 ) ||
+					( progress >= 0.8 && progress <= 1 )
+				) {
+					image = js13k.Renderer.imagesWhite;
+				}
+			}
+
+			if( this.state === js13k.STATE_WALKING ) {
+				this._applyWalking( ctx );
+			}
 		}
 
 		if( this.item ) {
@@ -243,6 +273,16 @@ js13k.Character = class extends js13k.LevelObject {
 
 		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
+		}
+
+		if( this.isDodging ) {
+			if( this.dodgeTimer.elapsed() ) {
+				this.isDodging = false;
+			}
+			else {
+				dir = new js13k.Vector2D( this.facing.x < 0 ? -1 : 1, 0 );
+				this.moveInDir( dir, dt, newState );
+			}
 		}
 
 		if( this.level ) {

@@ -103,6 +103,8 @@ js13k.Level.Start = class extends js13k.Level {
 			this.selectedButton++;
 		}
 		else if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
+			js13k.Audio.play( js13k.Audio.SELECT );
+
 			if( this.selectedButton === 0 ) {
 				js13k.Renderer.level = new js13k.Level.Ship();
 			}

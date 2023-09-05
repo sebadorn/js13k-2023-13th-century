@@ -5,7 +5,8 @@
     },
     "extends": "eslint:recommended",
     "globals": {
-        "js13k": true
+        "js13k": true,
+        "zzfx": false
     },
     "ignorePatterns": [
         "/build/",
@@ -24,6 +25,7 @@
             "unix"
         ],
         "no-empty": 0,
+        "no-sparse-arrays": 0,
         "no-unused-vars": [
             "error",
             {

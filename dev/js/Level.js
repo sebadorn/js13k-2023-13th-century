@@ -29,6 +29,50 @@ js13k.Level = class {
 
 	/**
 	 *
+	 * @private
+	 * @param {js13k.Character} player
+	 * @param {number}          dt
+	 */
+	_updatePlayer( player, dt ) {
+		js13k.Renderer.centerOn( player );
+
+		if( !player.isDodging && !player.isAttacking ) {
+			if( js13k.Input.isPressed( js13k.Input.ACTION.DODGE, true ) ) {
+				player.dodge();
+			}
+			else if( js13k.Input.isPressed( js13k.Input.ACTION.ATTACK, true ) ) {
+				player.attack();
+			}
+
+			let dir = js13k.Input.getDirections();
+			dir = new js13k.Vector2D( dir.x, dir.y );
+			player.update( dt, dir.normalize() );
+
+			const p1HB = player.getInteractHitbox();
+
+			this.items.forEach( item => {
+				item.highlight = false;
+
+				if(
+					item.canInteract &&
+					js13k.overlap( item.getInteractHitbox(), p1HB )
+				) {
+					item.highlight = true;
+
+					if( js13k.Input.isPressed( js13k.Input.ACTION.INTERACT, true ) ) {
+						player.takeItem( item );
+					}
+				}
+			} );
+		}
+		else {
+			player.update( dt );
+		}
+	}
+
+
+	/**
+	 *
 	 * @param {js13k.Character[]} characters
 	 */
 	addCharacters( ...characters ) {
@@ -81,7 +125,7 @@ js13k.Level = class {
 	 */
 	draw() {
 		if( this.isGameOver ) {
-			this.drawGameOver( js13k.Renderer.ctx );
+			js13k.Renderer.drawGameOver();
 			return;
 		}
 
@@ -95,20 +139,6 @@ js13k.Level = class {
 	 *
 	 */
 	drawForeground() {}
-
-
-	/**
-	 *
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	drawGameOver( ctx ) {
-		const center = js13k.Renderer.center;
-
-		ctx.font = 'bold 36px ' + js13k.FONT;
-		ctx.textAlign = 'center';
-		ctx.fillStyle = '#DDD';
-		ctx.fillText( 'GAME OVER', center.x, center.y );
-	}
 
 
 	/**
@@ -127,32 +157,12 @@ js13k.Level = class {
 			const p1 = this.selectedCharacter.p1;
 
 			if( p1 ) {
-				js13k.Renderer.centerOn( p1 );
-
-				if( js13k.Input.isPressed( js13k.Input.ACTION.ATTACK, true ) ) {
-					p1.attack();
+				if( p1.health <= 0 ) {
+					this.isGameOver = true;
+					return;
 				}
 
-				let dir = js13k.Input.getDirections();
-				dir = new js13k.Vector2D( dir.x, dir.y );
-				p1.update( dt, dir.normalize() );
-
-				const p1HB = p1.getInteractHitbox();
-
-				this.items.forEach( item => {
-					item.highlight = false;
-
-					if(
-						item.canInteract &&
-						js13k.overlap( item.getInteractHitbox(), p1HB )
-					) {
-						item.highlight = true;
-
-						if( js13k.Input.isPressed( js13k.Input.ACTION.INTERACT, true ) ) {
-							p1.takeItem( item );
-						}
-					}
-				} );
+				this._updatePlayer( p1, dt );
 			}
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
@@ -166,9 +176,8 @@ js13k.Level = class {
 				if(
 					// Is the player attacking?
 					p1?.isAttacking &&
-					// Is the target currently invincible, e.g. due to a prio hit?
-					( !o.noDamageTimer || o.noDamageTimer.elapsed() ) &&
 					o.health > 0 &&
+					o.canTakeDamage() &&
 					// Does the attack hit?
 					p1.item.checkHit( o )
 				) {
@@ -176,7 +185,7 @@ js13k.Level = class {
 				}
 
 				if( !o.action ) {
-					// js13k.Puppeteer.decideAction( o, p1 );
+					js13k.Puppeteer.decideAction( o, p1 );
 				}
 			} );
 		}

@@ -43,6 +43,10 @@ js13k.WeaponSword = class extends js13k.Weapon {
 	 * @return {boolean} True if hit, false otherwise
 	 */
 	checkHit( o ) {
+		if( !this.owner ) {
+			return false;
+		}
+
 		const wpAABB = [
 			// more width than height
 			{

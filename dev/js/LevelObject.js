@@ -54,6 +54,20 @@ js13k.LevelObject = class {
 
 	/**
 	 *
+	 * @return {boolean}
+	 */
+	canTakeDamage() {
+		return (
+			// Is the target currently invincible, e.g. due to a prio hit?
+			( !this.noDamageTimer || this.noDamageTimer.elapsed() ) &&
+			// Is the target currently dodging?
+			( !this.dodgeTimer || this.dodgeTimer.elapsed() )
+		);
+	}
+
+
+	/**
+	 *
 	 * @param {CanvasRenderingContext2D} _ctx
 	 */
 	draw( _ctx ) {}
@@ -130,6 +144,14 @@ js13k.LevelObject = class {
 	 * @param {js13k.Weapon} fromItem
 	 */
 	takeDamage( fromItem ) {
+		if( !this.canTakeDamage() ) {
+			return;
+		}
+
+		if( this === this.level.selectedCharacter.p1 ) {
+			js13k.Audio.play( js13k.Audio.DAMAGE_TAKEN );
+		}
+
 		this.noDamageTimer = this.noDamageTimer || new js13k.Timer( this.level );
 		this.noDamageTimer.set( 0.5 );
 

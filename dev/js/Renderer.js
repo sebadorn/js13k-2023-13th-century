@@ -99,6 +99,25 @@ js13k.Renderer = {
 
 
 	/**
+	 * Draw the game over screen.
+	 */
+	drawGameOver() {
+		this.ctxUI.setTransform( 1, 0, 0, 1, 0, 0 );
+		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
+
+		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
+		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
+
+		this.ctxUI.fillStyle = '#FFF';
+		this.ctxUI.font = '56px ' + js13k.FONT;
+		this.ctxUI.textAlign = 'center';
+		this.ctxUI.textBaseline = 'top';
+		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 56 );
+	},
+
+
+	/**
 	 * Draw the pause screen.
 	 */
 	drawPause() {
@@ -110,7 +129,7 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = 'normal 56px ' + js13k.FONT;
+		this.ctxUI.font = '56px ' + js13k.FONT;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'PAUSED', this.center.x, this.center.y - 56 );
@@ -246,7 +265,6 @@ js13k.Renderer = {
 	 */
 	pause() {
 		this.isPaused = true;
-		js13k.Audio.mute();
 	},
 
 
@@ -382,7 +400,6 @@ js13k.Renderer = {
 	unpause() {
 		if( this.isPaused ) {
 			this.isPaused = false;
-			js13k.Audio.unmute();
 			this.mainLoop();
 		}
 	},

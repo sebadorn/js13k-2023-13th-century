@@ -23,6 +23,10 @@ js13k.WeaponFist = class extends js13k.Weapon {
 	 * @return {boolean} True if hit, false otherwise
 	 */
 	checkHit( o ) {
+		if( !this.owner ) {
+			return false;
+		}
+
 		const wpAABB = {
 			x: this.owner.pos.x + this.owner.w,
 			y: this.owner.pos.y + js13k.TILE_SIZE_HALF / 2,
