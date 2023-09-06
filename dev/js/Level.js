@@ -124,21 +124,14 @@ js13k.Level = class {
 	 *
 	 */
 	draw() {
+		this.drawBackground && this.drawBackground( js13k.Renderer.ctx );
+		this.objects.forEach( o => o.draw( js13k.Renderer.ctx ) );
+		this.drawForeground && this.drawForeground( js13k.Renderer.ctx );
+
 		if( this.isGameOver ) {
 			js13k.Renderer.drawGameOver();
-			return;
 		}
-
-		this.drawBackground( js13k.Renderer.ctx );
-		this.objects.forEach( o => o.draw( js13k.Renderer.ctx ) );
-		this.drawForeground( js13k.Renderer.ctx );
 	}
-
-
-	/**
-	 *
-	 */
-	drawForeground() {}
 
 
 	/**

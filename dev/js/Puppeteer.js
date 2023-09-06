@@ -137,7 +137,7 @@ js13k.Puppeteer = {
 			c2.y - c1.y
 		);
 
-		if( dir.length() > js13k.TILE_SIZE * 4 ) {
+		if( dir.length() > js13k.TILE_SIZE * 5 ) {
 			return false;
 		}
 
@@ -170,7 +170,7 @@ js13k.Puppeteer = {
 	 * @param {js13k.Character} p1   - Player character
 	 */
 	decideAction( char, p1 ) {
-		if( !p1 || char.afflicted.stun || p1.health <= 0 ) {
+		if( char.noPuppet || !p1 || char.afflicted.stun || p1.health <= 0 ) {
 			return;
 		}
 

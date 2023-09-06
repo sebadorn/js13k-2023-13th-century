@@ -13,6 +13,7 @@ js13k.Input = {
 		CANCEL: 3,
 		ATTACK: 4,
 		INTERACT: 5,
+		DODGE: 6,
 
 		LEFT: 10,
 		UP: 11,

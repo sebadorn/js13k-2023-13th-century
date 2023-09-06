@@ -71,8 +71,20 @@ js13k.Renderer = {
 	 */
 	centerOn( o ) {
 		const oc = o.getOffsetCenter();
-		this.translateX = ( this.center.x - oc.x ) * this.scale;
+		this.translateX = this.center.x - oc.x;
 		this.translateY = ( this.center.y - oc.y ) * this.scale;
+
+		// Limit camera offset to horizontal level limits
+		if( o.level ) {
+			const limits = o.level.limits;
+
+			this.translateX = Math.min(
+				limits.x,
+				Math.max( ( limits.x + limits.w - this.center.x ) / -2, this.translateX )
+			);
+		}
+
+		this.translateX *= this.scale;
 	},
 
 
@@ -248,7 +260,7 @@ js13k.Renderer = {
 				this.ctxUI.textAlign = 'right';
 				this.ctxUI.textBaseline = 'bottom';
 				this.ctxUI.fillText(
-					~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 100 ) / 100,
+					~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 1000 ) / 1000,
 					192, this.cnv.height / this.scale - 50
 				);
 			}
