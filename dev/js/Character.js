@@ -251,6 +251,11 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {js13k.LevelObject} item
 	 */
 	takeItem( item ) {
+		// Item already has an owner
+		if( item.owner ) {
+			return;
+		}
+
 		// Drop the currently hold item
 		this.item?.drop();
 
@@ -305,12 +310,12 @@ js13k.Character = class extends js13k.LevelObject {
 
 		if( this.level ) {
 			this.pos.x = Math.min(
-				this.level.limits.x + this.level.limits.w - this.w,
-				Math.max( this.level.limits.x, this.pos.x )
+				this.level.limits.w - this.w,
+				Math.max( 0, this.pos.x )
 			);
 			this.pos.y = Math.min(
-				this.level.limits.y + this.level.limits.h - this.h - 8,
-				Math.max( this.level.limits.y - js13k.TILE_SIZE_HALF, this.pos.y )
+				this.level.limits.h - this.h - 8,
+				Math.max( -js13k.TILE_SIZE_HALF, this.pos.y )
 			);
 		}
 

@@ -1,7 +1,7 @@
 'use strict';
 
 
-js13k.Level.Port = class extends js13k.Level {
+js13k.Level.Tutorial = class extends js13k.Level {
 
 
 	/**
@@ -12,8 +12,6 @@ js13k.Level.Port = class extends js13k.Level {
 		super();
 
 		this.limits = {
-			x: 0,
-			y: 0,
 			w: js13k.TILE_SIZE * 30,
 			h: js13k.TILE_SIZE * 8,
 		};
@@ -101,12 +99,7 @@ js13k.Level.Port = class extends js13k.Level {
 
 		// Grass
 		ctx.fillStyle = '#2e5e26';
-		ctx.fillRect(
-			this.limits.x,
-			this.limits.y,
-			this.limits.x + this.limits.w,
-			this.limits.y + this.limits.h
-		);
+		ctx.fillRect( 0, 0, this.limits.w, this.limits.h );
 
 		ctx.fillStyle = '#a58d2c';
 		// ctx.beginPath();

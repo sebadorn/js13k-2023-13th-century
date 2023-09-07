@@ -13,8 +13,6 @@ js13k.Level.Ship = class extends js13k.Level {
 
 		this.numTilesX = 24;
 		this.limits = {
-			x: 0,
-			y: 0,
 			w: js13k.TILE_SIZE * this.numTilesX,
 			h: js13k.TILE_SIZE * 8,
 		};

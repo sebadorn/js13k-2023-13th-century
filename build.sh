@@ -48,7 +48,7 @@ terser \
 	'weapons/WeaponFist.js' \
 	'weapons/WeaponSword.js' \
 	'levels/Start.js' \
-	'levels/Port.js' \
+	'levels/Tutorial.js' \
 	'levels/Intro.js' \
 	'levels/Ship.js' \
 	'levels/Finale.js' \

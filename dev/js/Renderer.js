@@ -80,9 +80,8 @@ js13k.Renderer = {
 			const limits = o.level.limits;
 
 			this.translateX = Math.min(
-				limits.x,
-				// TODO: must be wrong as it doesn't work in Ship level
-				Math.max( ( limits.w - this.center.x ) / -2, this.translateX )
+				0,
+				Math.max( -limits.w + this.center.x * 2, this.translateX )
 			);
 		}
 
