@@ -61,7 +61,7 @@ js13k.LevelObject = class {
 			// Is the target currently invincible, e.g. due to a prio hit?
 			( !this.noDamageTimer || this.noDamageTimer.elapsed() ) &&
 			// Is the target currently dodging?
-			( !this.dodgeTimer || this.dodgeTimer.elapsed() )
+			!this.isDodging
 		);
 	}
 

@@ -170,7 +170,7 @@ js13k.Puppeteer = {
 	 * @param {js13k.Character} p1   - Player character
 	 */
 	decideAction( char, p1 ) {
-		if( char.noPuppet || !p1 || char.afflicted.stun || p1.health <= 0 ) {
+		if( char instanceof js13k.Dummy || !p1 || char.afflicted.stun || p1.health <= 0 ) {
 			return;
 		}
 

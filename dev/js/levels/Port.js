@@ -19,21 +19,28 @@ js13k.Level.Port = class extends js13k.Level {
 		};
 
 		const fighter1 = new js13k.Fighter( {
-			x: js13k.TILE_SIZE * 10,
+			x: js13k.TILE_SIZE * 3,
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponFist()
 		} );
 
-		const enem1 = new js13k.Enemy( {
-			x: js13k.TILE_SIZE * 24,
+		const enem1 = new js13k.Dummy( {
+			x: js13k.TILE_SIZE * 14,
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponSword()
 		} );
-		enem1.noPuppet = true;
 
 		this.addCharacters( fighter1, enem1 );
 		this.selectedCharacter.p1 = fighter1;
 		this.tutorialEnemy = enem1;
+
+		const gradient = js13k.Renderer.ctx.createLinearGradient(
+			0, 0,
+			0, js13k.Renderer.cnv.height / js13k.Renderer.scale,
+		);
+		gradient.addColorStop( 0, '#0003' );
+		gradient.addColorStop( 1, '#0000' );
+		this.gradientBg = gradient;
 
 		this.tutStep = 0;
 	}
@@ -79,7 +86,7 @@ js13k.Level.Port = class extends js13k.Level {
 		}
 		// Continue
 		else if( this.tutStep === 5 ) {
-			ctx.fillText( 'Your training is complete! Continue on ...', oc.x, oc.y - p1.h );
+			ctx.fillText( 'Your training is complete! Continue on...', oc.x, oc.y - p1.h );
 		}
 	}
 
@@ -101,14 +108,16 @@ js13k.Level.Port = class extends js13k.Level {
 			this.limits.y + this.limits.h
 		);
 
-		// TODO:
-		// Water + pier at the end
-		ctx.fillStyle = js13k.Renderer.patternWater;
-		ctx.fillRect(
-			this.limits.x + this.limits.w - js13k.TILE_SIZE * 4,
-			-js13k.Renderer.translateY / js13k.Renderer.scale,
-			js13k.TILE_SIZE * 4, js13k.Renderer.cnv.height / js13k.Renderer.scale
-		);
+		ctx.fillStyle = '#a58d2c';
+		// ctx.beginPath();
+		// ctx.ellipse();
+		// ctx.closePath();
+		// ctx.fill(
+
+		// );
+
+		ctx.fillStyle = this.gradientBg;
+		js13k.Renderer.fillBackground();
 	}
 
 

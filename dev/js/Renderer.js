@@ -12,6 +12,7 @@ js13k.Renderer = {
 	// --------------------------------------------------
 	//
 	// images: null,
+	// imageShadow: null,
 	// imagesWhite: null,
 	// patternWater: null,
 	//
@@ -80,7 +81,8 @@ js13k.Renderer = {
 
 			this.translateX = Math.min(
 				limits.x,
-				Math.max( ( limits.x + limits.w - this.center.x ) / -2, this.translateX )
+				// TODO: must be wrong as it doesn't work in Ship level
+				Math.max( ( limits.w - this.center.x ) / -2, this.translateX )
 			);
 		}
 
@@ -153,8 +155,10 @@ js13k.Renderer = {
 	 */
 	fillBackground() {
 		this.ctx.fillRect(
-			-this.translateX / this.scale, -this.translateY / this.scale,
-			this.cnv.width / this.scale, this.cnv.height / this.scale
+			-this.translateX / this.scale - js13k.TILE_SIZE,
+			-this.translateY / this.scale - js13k.TILE_SIZE,
+			this.cnv.width / this.scale + js13k.TILE_SIZE * 2,
+			this.cnv.height / this.scale + js13k.TILE_SIZE * 2
 		);
 	},
 
@@ -208,13 +212,39 @@ js13k.Renderer = {
 			this.images = img;
 			this.imagesWhite = this._renderToWhite( img );
 
-			const [canvas, ctx] = this.getOffscreenCanvas( js13k.TILE_SIZE, js13k.TILE_SIZE );
-			ctx.drawImage(
+
+			// Repeating water pattern
+
+			const [cnvWater, ctxWater] = this.getOffscreenCanvas( js13k.TILE_SIZE, js13k.TILE_SIZE );
+
+			ctxWater.drawImage(
 				this.images,
 				16, 0, 16, 16,
 				0, 0, js13k.TILE_SIZE, js13k.TILE_SIZE
 			);
-			this.patternWater = ctx.createPattern( canvas, 'repeat' );
+
+			this.patternWater = ctxWater.createPattern( cnvWater, 'repeat' );
+
+
+			// Radial shadow
+
+			const [cnvShadow, ctxShadow] = js13k.Renderer.getOffscreenCanvas( js13k.TILE_SIZE, js13k.TILE_SIZE );
+
+			const gradient = ctxShadow.createRadialGradient(
+				// Circle inner: x0, y0, r0
+				js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF, 0,
+				// Circle outer: x1, y1, r1
+				js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
+			);
+			gradient.addColorStop( 0, '#000a' );
+			gradient.addColorStop( 0.9, '#0002' );
+			gradient.addColorStop( 1, '#0000' );
+
+			ctxShadow.fillStyle = gradient;
+			ctxShadow.fillRect( 0, 0, js13k.TILE_SIZE, js13k.TILE_SIZE );
+
+			this.imageShadow = cnvShadow;
+
 
 			cb();
 		};

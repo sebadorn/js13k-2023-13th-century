@@ -106,10 +106,23 @@ js13k.Character = class extends js13k.LevelObject {
 
 
 	/**
+	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	_drawShadow( ctx ) {
+		ctx.drawImage(
+			js13k.Renderer.imageShadow,
+			this.pos.x, this.pos.y + this.h - 12,
+			this.w, 24
+		);
+	}
+
+
+	/**
 	 * Start an attack with the current weapon.
 	 */
 	attack() {
-		if( this.isAttacking || !this.item ) {
+		if( this.isAttacking || this.isDodging || !this.item ) {
 			return;
 		}
 
@@ -151,6 +164,8 @@ js13k.Character = class extends js13k.LevelObject {
 
 		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
 		let image = js13k.Renderer.images;
+
+		this._drawShadow( ctx );
 
 		if( this.isDodging ) {
 			let rotate = this.dodgeTimer.progress() * 360 * 3 * Math.PI / 180;
@@ -205,6 +220,9 @@ js13k.Character = class extends js13k.LevelObject {
 		if( this.health > 0 ) {
 			this.item = new js13k.WeaponFist();
 			this.item.owner = this;
+		}
+		else {
+			this.item = null;
 		}
 	}
 

@@ -43,6 +43,7 @@ terser \
 	'Puppeteer.js' \
 	'Weapon.js' \
 	'characters/Enemy.js' \
+	'characters/Dummy.js' \
 	'characters/Fighter.js' \
 	'weapons/WeaponFist.js' \
 	'weapons/WeaponSword.js' \

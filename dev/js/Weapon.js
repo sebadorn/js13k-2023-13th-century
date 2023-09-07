@@ -34,10 +34,12 @@ js13k.Weapon = class extends js13k.LevelObject {
 	 * @private
 	 */
 	_setDropPos() {
-		this.pos.set(
-			this.owner.pos.x + this.owner.w / 2,
-			this.owner.pos.y - this.owner.h
-		);
+		if( this.owner ) {
+			this.pos.set(
+				this.owner.pos.x + this.owner.w / 2,
+				this.owner.pos.y - this.owner.h
+			);
+		}
 	}
 
 
@@ -47,7 +49,7 @@ js13k.Weapon = class extends js13k.LevelObject {
 	drop() {
 		if( this.canInteract ) {
 			this._setDropPos();
-			this.owner.level.addItems( this );
+			this.owner?.level.addItems( this );
 		}
 
 		this.owner = null;
