@@ -69,7 +69,7 @@ js13k.Level.Start = class extends js13k.Level {
 		ctx.fillStyle = '#0d161e';
 		js13k.Renderer.fillBackground();
 
-		ctx.font = 'bold 64px ' + js13k.FONT;
+		ctx.font = '600 64px ' + js13k.FONT;
 		ctx.textAlign = 'left';
 		ctx.fillStyle = '#fa0';
 		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y + 3 );

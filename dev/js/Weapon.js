@@ -19,13 +19,36 @@ js13k.Weapon = class extends js13k.LevelObject {
 	/**
 	 *
 	 * @private
-	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	_drawHighlight( ctx ) {
+	_drawHighlight() {
+		/** @type {js13k.Renderer} */
+		const R = js13k.Renderer;
 		const hb = this.getInteractHitbox();
-		ctx.strokeStyle = '#f00';
-		ctx.lineWidth = 2;
-		ctx.strokeRect( hb.x, hb.y, hb.w, hb.h );
+
+		let progress = Math.sin( R.level.timer / 25 );
+		let x = hb.x + hb.w / 2 + R.translateX;
+		let y = hb.y - js13k.TILE_SIZE_HALF * 1.5 + R.translateY;
+
+		R.ctxUI.drawImage(
+			R.imageArrow,
+			x, y + progress * 8,
+			5 * 6, 3 * 6
+		);
+
+		R.ctxUI.fillStyle = '#fff';
+
+		let offset = progress * 2;
+		x = hb.x - 6 + R.translateX - offset;
+		y = hb.y + hb.h + R.translateY + offset;
+
+		R.ctxUI.fillRect( x, y, 6, 12 );
+		R.ctxUI.fillRect( x, y + 6, 12, 6 );
+
+		x = hb.x + hb.w + R.translateX + offset;
+		y = hb.y - 6 + R.translateY - offset;
+
+		R.ctxUI.fillRect( x - 6, y, 12, 6 );
+		R.ctxUI.fillRect( x, y, 6, 12 );
 	}
 
 

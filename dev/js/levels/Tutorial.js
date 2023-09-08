@@ -12,7 +12,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		super();
 
 		this.limits = {
-			w: js13k.TILE_SIZE * 30,
+			w: js13k.Renderer.center.x * 2,
 			h: js13k.TILE_SIZE * 8,
 		};
 
@@ -32,14 +32,6 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		this.selectedCharacter.p1 = fighter1;
 		this.tutorialEnemy = enem1;
 
-		const gradient = js13k.Renderer.ctx.createLinearGradient(
-			0, 0,
-			0, js13k.Renderer.cnv.height / js13k.Renderer.scale,
-		);
-		gradient.addColorStop( 0, '#0003' );
-		gradient.addColorStop( 1, '#0000' );
-		this.gradientBg = gradient;
-
 		this.tutStep = 0;
 	}
 
@@ -54,7 +46,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		/** @type {CanvasRenderingContext2D} */
 		const ctx = js13k.Renderer.ctx;
 
-		ctx.font = '32px ' + js13k.FONT;
+		ctx.font = '600 23px "Courier New", monospace';
 		ctx.fillStyle = '#fff7';
 		ctx.textAlign = 'center';
 
@@ -68,7 +60,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		}
 		// Disarm
 		else if( this.tutStep === 1 ) {
-			ctx.fillText( 'Attack with [Enter]', enemOC.x, enemOC.y - this.tutorialEnemy.h * 2 );
+			ctx.fillText( 'Attack with [ENTER]', enemOC.x, enemOC.y - this.tutorialEnemy.h * 2 );
 		}
 		// Pick up weapon
 		else if( this.tutStep === 2 ) {
@@ -94,23 +86,62 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
+		/** @type {js13k.Renderer} */
+		const R = js13k.Renderer;
+
 		ctx.fillStyle = '#273325';
-		js13k.Renderer.fillBackground();
+		R.fillBackground();
 
 		// Grass
-		ctx.fillStyle = '#2e5e26';
+		ctx.fillStyle = '#4d571b';
 		ctx.fillRect( 0, 0, this.limits.w, this.limits.h );
 
 		ctx.fillStyle = '#a58d2c';
-		// ctx.beginPath();
-		// ctx.ellipse();
-		// ctx.closePath();
-		// ctx.fill(
+		ctx.beginPath();
+		ctx.ellipse(
+			this.limits.w / 2, this.limits.h / 2,
+			this.limits.w / 2 - js13k.TILE_SIZE, this.limits.h / 2 - js13k.TILE_SIZE,
+			0, 0, Math.PI * 4
+		);
+		ctx.closePath();
+		ctx.fill();
 
-		// );
+		ctx.fillStyle = R.createLinearGradient(
+			0, 0,
+			0, this.limits.h,
+			'#0003', '#0000'
+		);
+		ctx.fillRect( 0, 0, this.limits.w, this.limits.h );
+	}
 
-		ctx.fillStyle = this.gradientBg;
-		js13k.Renderer.fillBackground();
+
+	/**
+	 *
+	 * @override
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	drawForeground( ctx ) {
+		if( this.tutStep !== 5 ) {
+			return;
+		}
+
+		/** @type {js13k.Renderer} */
+		const R = js13k.Renderer;
+
+		const progress = Math.sin( this.timer / 25 );
+		let x = this.limits.w - js13k.TILE_SIZE + progress * 8;
+		let y = this.limits.h / 2 + 9;
+		const center = { x: x, y: y };
+
+		let rot = -Math.PI / 2;
+
+		R.rotateCenter( ctx, rot, center );
+		ctx.drawImage(
+			R.imageArrow,
+			x, y,
+			5 * 6, 3 * 6
+		);
+		R.rotateCenter( ctx, -rot, center );
 	}
 
 
@@ -156,15 +187,14 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		else if( this.tutStep === 4 ) {
 			if( Input.isPressed( Input.ACTION.DODGE ) ) {
 				this.tutStep = 5;
-				this.limits.w = js13k.TILE_SIZE * 50;
 			}
 		}
 		// Check if level end has been reached
 		else if( this.tutStep === 5 ) {
 			const oc = p1.getOffsetCenter();
 
-			if( oc.x >= this.limits.w - js13k.TILE_SIZE * 2 ) {
-				js13k.Renderer.level = new js13k.Level.Ship();
+			if( oc.x >= this.limits.w - js13k.TILE_SIZE ) {
+				js13k.Renderer.changeLevel( new js13k.Level.Ship() );
 				return;
 			}
 		}

@@ -90,6 +90,16 @@ js13k.Renderer = {
 
 
 	/**
+	 *
+	 * @param {js13k.Level} level
+	 */
+	changeLevel( level ) {
+		// TODO: transition animation
+		this.level = level;
+	},
+
+
+	/**
 	 * Clear the canvas.
 	 */
 	clear() {
@@ -97,6 +107,25 @@ js13k.Renderer = {
 		this.ctx.clearRect( 0, 0, window.innerWidth, window.innerHeight );
 		this.ctxUI.setTransform( 1, 0, 0, 1, 0, 0 );
 		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
+	},
+
+
+	/**
+	 *
+	 * @param  {number} x0 
+	 * @param  {number} y0 
+	 * @param  {number} x1 
+	 * @param  {number} y1 
+	 * @param  {string} colorStart 
+	 * @param  {string} colorEnd 
+	 * @return {CanvasGradient}
+	 */
+	createLinearGradient( x0, y0, x1, y1, colorStart = '#0003', colorEnd = '#fff1' ) {
+		const gradient = this.ctx.createLinearGradient( x0, y0, x1, y1 );
+		gradient.addColorStop( 0, colorStart );
+		gradient.addColorStop( 1, colorEnd );
+
+		return gradient;
 	},
 
 
@@ -210,6 +239,36 @@ js13k.Renderer = {
 		img.onload = () => {
 			this.images = img;
 			this.imagesWhite = this._renderToWhite( img );
+
+
+			// Pickup arrow
+
+			const [cnvArrow, ctxArrow] = this.getOffscreenCanvas( 5, 3 );
+
+			const imgData = new ImageData( 5, 3 );
+			imgData.data.set( [
+				// Top row
+				255, 255, 255, 196,
+				255, 255, 255, 255,
+				255, 255, 255, 255,
+				255, 255, 255, 255,
+				255, 255, 255, 196,
+				// Second row
+				0, 0, 0, 0,
+				255, 255, 255, 196,
+				255, 255, 255, 255,
+				255, 255, 255, 196,
+				0, 0, 0, 0,
+				// Bottom row
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+				255, 255, 255, 196,
+				0, 0, 0, 0,
+				0, 0, 0, 0,
+			] );
+			ctxArrow.putImageData( imgData, 0, 0 );
+
+			this.imageArrow = cnvArrow;
 
 
 			// Repeating water pattern
