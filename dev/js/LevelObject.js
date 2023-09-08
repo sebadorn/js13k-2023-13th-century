@@ -148,7 +148,7 @@ js13k.LevelObject = class {
 			return;
 		}
 
-		if( this === this.level.selectedCharacter.p1 ) {
+		if( this === this.level.player ) {
 			js13k.Audio.play( js13k.Audio.DAMAGE_TAKEN );
 		}
 

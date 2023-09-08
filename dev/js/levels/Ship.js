@@ -27,7 +27,7 @@ js13k.Level.Ship = class extends js13k.Level {
 		const sword1 = new js13k.WeaponSword( { x: js13k.TILE_SIZE * 4, y: js13k.TILE_SIZE * 4.5 } );
 		this.addItems( sword1 );
 
-		this.selectedCharacter.p1 = fighter1;
+		this.player = fighter1;
 	}
 
 

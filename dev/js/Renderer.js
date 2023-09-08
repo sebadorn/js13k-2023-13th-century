@@ -25,7 +25,10 @@ js13k.Renderer = {
 	// cnvUI: null,
 	// ctxUI: null,
 
-	// Center position for the canvas content
+	/**
+	 * Center position for the canvas content
+	 * @type {js13k.Vector2D}
+	 */
 	center: new js13k.Vector2D(),
 
 	// Scaling factor. Updated in resize().
@@ -156,6 +159,53 @@ js13k.Renderer = {
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 56 );
+	},
+
+
+	/**
+	 *
+	 * @param {js13k.Character} char
+	 * @param {string[]}        text
+	 * @param {number}          position - 0: center, 1: bottom, 2: top
+	 */
+	drawMonologueBox( char, text, position ) {
+		let w = js13k.TILE_SIZE * 9;
+		let h = js13k.TILE_SIZE * 2;
+		let x = this.center.x - w / 2;
+		let y = this.center.y - h / 2;
+
+		if( position === 1 ) {
+			y = this.center.y * 2 - h - js13k.TILE_SIZE;
+		}
+		else if( position === 2 ) {
+			y = js13k.TILE_SIZE;
+		}
+
+		this.ctxUI.fillStyle = '#444';
+		this.ctxUI.fillRect( x, y, w, h );
+
+		this.ctxUI.drawImage(
+			this.images,
+			char.imgSX, char.imgSY, char.imgSW, char.imgSH,
+			x, y, js13k.TILE_SIZE * 2, js13k.TILE_SIZE * 2
+		);
+
+		this.ctxUI.lineWidth = 12;
+		this.ctxUI.strokeStyle = '#847e87';
+		this.ctxUI.strokeRect( x + 6, y + 6, js13k.TILE_SIZE * 2 - 12, js13k.TILE_SIZE * 2 - 12 );
+
+		this.ctxUI.fillStyle = '#fff';
+		this.ctxUI.font = '600 31px "Courier New", monospace';
+		this.ctxUI.textAlign = 'left';
+		this.ctxUI.textBaseline = 'alphabetic';
+
+		let xText = x + 24;
+		let yText = y + 38;
+
+		text.forEach( line => {
+			this.ctxUI.fillText( line, xText + js13k.TILE_SIZE * 2, yText );
+			yText +=  38;
+		} );
 	},
 
 

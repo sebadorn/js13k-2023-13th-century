@@ -50,6 +50,7 @@ terser \
 	'levels/Start.js' \
 	'levels/Tutorial.js' \
 	'levels/Intro.js' \
+	'levels/Port.js' \
 	'levels/Ship.js' \
 	'levels/Finale.js' \
 	--ecma 12 --warn \

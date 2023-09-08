@@ -17,22 +17,24 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		};
 
 		const fighter1 = new js13k.Fighter( {
-			x: js13k.TILE_SIZE * 3,
+			x: js13k.TILE_SIZE * 6,
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponFist()
 		} );
+		this.initialPos = fighter1.pos.clone();
 
 		const enem1 = new js13k.Dummy( {
-			x: js13k.TILE_SIZE * 14,
+			x: js13k.TILE_SIZE * 13,
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponSword()
 		} );
 
 		this.addCharacters( fighter1, enem1 );
-		this.selectedCharacter.p1 = fighter1;
+		this.player = fighter1;
 		this.tutorialEnemy = enem1;
 
-		this.tutStep = 0;
+		this.tutStep = -1;
+		this.introTimer = new js13k.Timer( this, 6 );
 	}
 
 
@@ -47,15 +49,19 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const ctx = js13k.Renderer.ctx;
 
 		ctx.font = '600 23px "Courier New", monospace';
-		ctx.fillStyle = '#fff7';
+		ctx.fillStyle = '#fffc';
 		ctx.textAlign = 'center';
 
-		const p1 = this.selectedCharacter.p1;
+		const p1 = this.player;
 		const oc = p1.getOffsetCenter();
 		const enemOC = this.tutorialEnemy.getOffsetCenter();
 
+		if( this.tutStep < 0 ) {
+			ctx.fillStyle = '#111';
+			js13k.Renderer.fillBackground();
+		}
 		// Walking
-		if( this.tutStep === 0 ) {
+		else if( this.tutStep === 0 ) {
 			ctx.fillText( 'Move with [W][A][S][D] or arrow keys', oc.x, oc.y - p1.h );
 		}
 		// Disarm
@@ -64,7 +70,12 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		}
 		// Pick up weapon
 		else if( this.tutStep === 2 ) {
-			ctx.fillText( 'Pick up with [E]', enemOC.x, enemOC.y - this.tutorialEnemy.h );
+			const lo = this.items[0];
+
+			if( lo ) {
+				const hb = lo.getInteractHitbox();
+				ctx.fillText( 'Pick up with [E]', hb.x + hb.w / 2, hb.y - hb.h - js13k.TILE_SIZE_HALF - 8 );
+			}
 		}
 		// Attack
 		else if( this.tutStep === 3 ) {
@@ -72,11 +83,11 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		}
 		// Dodge
 		else if( this.tutStep === 4 ) {
-			ctx.fillText( 'You can dodge roll with [R]', oc.x, oc.y - p1.h );
+			ctx.fillText( 'You can dodge roll with [R]', oc.x, oc.y - p1.h - js13k.TILE_SIZE );
 		}
 		// Continue
 		else if( this.tutStep === 5 ) {
-			ctx.fillText( 'Your training is complete! Continue on...', oc.x, oc.y - p1.h );
+			ctx.fillText( 'Right, that’s how it goes!', js13k.Renderer.center.x, 0 );
 		}
 	}
 
@@ -86,32 +97,35 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
-		/** @type {js13k.Renderer} */
-		const R = js13k.Renderer;
+		if( this.tutStep < 0 ) {
+			return;
+		}
 
-		ctx.fillStyle = '#273325';
-		R.fillBackground();
+		const p1 = this.player;
+		const te = this.tutorialEnemy;
+		const item = this.items[0];
 
-		// Grass
-		ctx.fillStyle = '#4d571b';
-		ctx.fillRect( 0, 0, this.limits.w, this.limits.h );
-
-		ctx.fillStyle = '#a58d2c';
-		ctx.beginPath();
-		ctx.ellipse(
-			this.limits.w / 2, this.limits.h / 2,
-			this.limits.w / 2 - js13k.TILE_SIZE, this.limits.h / 2 - js13k.TILE_SIZE,
-			0, 0, Math.PI * 4
+		ctx.fillStyle = '#222';
+		ctx.fillRect(
+			p1.pos.x - js13k.TILE_SIZE_HALF,
+			p1.pos.y + p1.h - js13k.TILE_SIZE_HALF,
+			js13k.TILE_SIZE * 2, js13k.TILE_SIZE
 		);
-		ctx.closePath();
-		ctx.fill();
-
-		ctx.fillStyle = R.createLinearGradient(
-			0, 0,
-			0, this.limits.h,
-			'#0003', '#0000'
+		ctx.fillRect(
+			te.pos.x - js13k.TILE_SIZE_HALF,
+			te.pos.y + te.h - js13k.TILE_SIZE_HALF,
+			js13k.TILE_SIZE * 2, js13k.TILE_SIZE
 		);
-		ctx.fillRect( 0, 0, this.limits.w, this.limits.h );
+
+		if( item ) {
+			const hb = item.getInteractHitbox();
+
+			ctx.fillRect(
+				hb.x - js13k.TILE_SIZE_HALF,
+				hb.y + hb.h - js13k.TILE_SIZE_HALF * 1.5,
+				js13k.TILE_SIZE * 3, js13k.TILE_SIZE * 1.25
+			);
+		}
 	}
 
 
@@ -121,17 +135,37 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawForeground( ctx ) {
+		const R = js13k.Renderer;
+
+		if( this.tutStep < 0 ) {
+			const progress = this.introTimer.progress();
+			const scale = 1 - ( progress >= 0.5 ? 2 - progress * 2 : 1 );
+
+			R.scaleCenter( R.ctxUI, 1, 1 - scale, R.center );
+			R.drawMonologueBox(
+				this.player,
+				[
+					'Before heading out, let’s',
+					'think back on my training.',
+					'How did it go again?',
+				],
+				0
+			);
+			R.ctxUI.setTransform( R.scale, 0, 0, R.scale, 0, 0 );
+		}
+
 		if( this.tutStep !== 5 ) {
 			return;
 		}
-
-		/** @type {js13k.Renderer} */
-		const R = js13k.Renderer;
 
 		const progress = Math.sin( this.timer / 25 );
 		let x = this.limits.w - js13k.TILE_SIZE + progress * 8;
 		let y = this.limits.h / 2 + 9;
 		const center = { x: x, y: y };
+
+		ctx.fillStyle = '#fff';
+		ctx.textAlign = 'right';
+		ctx.fillText( 'Continue', x - 22, y - 8 );
 
 		let rot = -Math.PI / 2;
 
@@ -151,11 +185,22 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {number} dt
 	 */
 	update( dt ) {
-		const p1 = this.selectedCharacter.p1;
+		const p1 = this.player;
 		const Input = js13k.Input;
 
+		if( this.tutStep === -1 ) {
+			this.player.pos.set( this.initialPos.x, this.initialPos.y );
+
+			if( Input.isPressed( Input.ACTION.DO, true ) ) {
+				this.introTimer.set( 0 );
+			}
+
+			if( this.introTimer.elapsed() ) {
+				this.tutStep = 0;
+			}
+		}
 		// Check for walking
-		if( this.tutStep === 0 ) {
+		else if( this.tutStep === 0 ) {
 			if(
 				Input.isPressed( Input.ACTION.UP ) ||
 				Input.isPressed( Input.ACTION.RIGHT ) ||
@@ -168,6 +213,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		// Check if enemy has been disarmed
 		else if( this.tutStep === 1 ) {
 			if( !( this.tutorialEnemy.item instanceof js13k.WeaponSword ) ) {
+				this.items[0].pos.x = this.tutorialEnemy.pos.x + js13k.TILE_SIZE * 2;
 				this.tutStep = 2;
 			}
 		}
@@ -193,8 +239,8 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		else if( this.tutStep === 5 ) {
 			const oc = p1.getOffsetCenter();
 
-			if( oc.x >= this.limits.w - js13k.TILE_SIZE ) {
-				js13k.Renderer.changeLevel( new js13k.Level.Ship() );
+			if( oc.x >= this.limits.w - js13k.TILE_SIZE_HALF ) {
+				js13k.Renderer.changeLevel( new js13k.Level.Port() );
 				return;
 			}
 		}

@@ -20,10 +20,7 @@ js13k.Level = class {
 		/** @type {js13k.LevelObject[]} */
 		this.items = [];
 
-		this.selectedCharacter = {
-			p1: null,
-			p2: null,
-		};
+		this.player;
 	}
 
 
@@ -147,7 +144,7 @@ js13k.Level = class {
 			}
 		}
 		else {
-			const p1 = this.selectedCharacter.p1;
+			const p1 = this.player;
 
 			if( p1 ) {
 				if( p1.health <= 0 ) {
