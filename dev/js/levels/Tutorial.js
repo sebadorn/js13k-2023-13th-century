@@ -21,7 +21,6 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponFist()
 		} );
-		this.initialPos = fighter1.pos.clone();
 
 		const enem1 = new js13k.Dummy( {
 			x: js13k.TILE_SIZE * 13,
@@ -33,6 +32,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		this.player = fighter1;
 		this.tutorialEnemy = enem1;
 
+		this.locked = true;
 		this.tutStep = -1;
 		this.introTimer = new js13k.Timer( this, 6 );
 	}
@@ -189,13 +189,12 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const Input = js13k.Input;
 
 		if( this.tutStep === -1 ) {
-			this.player.pos.set( this.initialPos.x, this.initialPos.y );
-
 			if( Input.isPressed( Input.ACTION.DO, true ) ) {
 				this.introTimer.set( 0 );
 			}
 
 			if( this.introTimer.elapsed() ) {
+				this.locked = false;
 				this.tutStep = 0;
 			}
 		}

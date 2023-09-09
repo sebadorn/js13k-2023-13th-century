@@ -40,32 +40,57 @@ js13k.Renderer = {
 	/**
 	 *
 	 * @private
-	 * @param  {HTMLImageElement} img
+	 * @param  {number[]}         color
+	 * @param  {number}           sy
+	 * @param  {js13k.Character?} char
 	 * @return {HTMLCanvasElement}
 	 */
-	_renderToWhite( img ) {
-		const [canvas, ctx] = this.getOffscreenCanvas( img.width, img.height );
-		ctx.drawImage( img, 0, 0 );
+	_getCharacter( color, sy, char, sx = 0 ) {
+		const [cnv, ctx] = this.getOffscreenCanvas( 32, 32 );
 
-		const imgData = ctx.getImageData( 0, 0, img.width, img.height );
+		ctx.drawImage(
+			this.images,
+			sx, sy, 32, 16,
+			0, 0, 32, 16
+		);
 
-		for( let y = 0; y < img.height; y++ ) {
-			for( let x = 0; x < img.width; x++ ) {
-				const index = ( y * img.width + x ) * 4;
-				const alpha = imgData.data[index + 3];
+		char && char.drawFace( ctx );
 
-				// Set to white if not transparent
-				if( alpha !== 0 ) {
-					imgData.data[index + 0] = 255; // R
-					imgData.data[index + 1] = 255; // G
-					imgData.data[index + 2] = 255; // B
-				}
+		let imgData = ctx.getImageData( 0, 0, 32, 16 );
+
+		for( let i = 0; i < imgData.data.length; i += 4 ) {
+			let r = imgData.data[i];
+			let g = imgData.data[i + 1];
+			let b = imgData.data[i + 2];
+
+			// Set character color
+			if( r + g + b === 255 * 3 ) {
+				imgData.data[i + 0] = color[0];
+				imgData.data[i + 1] = color[1];
+				imgData.data[i + 2] = color[2];
 			}
 		}
 
 		ctx.putImageData( imgData, 0, 0 );
+		ctx.putImageData( imgData, 0, 16 ); // Copy top row for bottom
 
-		return canvas;
+		// Get bottom row to convert to white
+		imgData = ctx.getImageData( 0, 16, 32, 16 );
+
+		for( let i = 0; i < imgData.data.length; i += 4 ) {
+			const alpha = imgData.data[i + 3];
+
+			// Set to white if not transparent
+			if( alpha !== 0 ) {
+				imgData.data[i + 0] = 255; // R
+				imgData.data[i + 1] = 255; // G
+				imgData.data[i + 2] = 255; // B
+			}
+		}
+
+		ctx.putImageData( imgData, 0, 16 );
+
+		return cnv;
 	},
 
 
@@ -178,16 +203,19 @@ js13k.Renderer = {
 			y = this.center.y * 2 - h - js13k.TILE_SIZE;
 		}
 		else if( position === 2 ) {
-			y = js13k.TILE_SIZE;
+			y = js13k.TILE_SIZE_HALF;
 		}
+
+		this.ctxUI.fillStyle = '#0004';
+		this.ctxUI.fillRect( x - 12, y - 12, w + 24, h + 24 );
 
 		this.ctxUI.fillStyle = '#444';
 		this.ctxUI.fillRect( x, y, w, h );
 
 		this.ctxUI.drawImage(
-			this.images,
-			char.imgSX, char.imgSY, char.imgSW, char.imgSH,
-			x, y, js13k.TILE_SIZE * 2, js13k.TILE_SIZE * 2
+			char.images,
+			0, 0, 16, 16,
+			x, y + js13k.TILE_SIZE * 0.25, js13k.TILE_SIZE * 1.75, js13k.TILE_SIZE * 1.75
 		);
 
 		this.ctxUI.lineWidth = 12;
@@ -288,14 +316,13 @@ js13k.Renderer = {
 
 		img.onload = () => {
 			this.images = img;
-			this.imagesWhite = this._renderToWhite( img );
 
 
 			// Pickup arrow
 
 			const [cnvArrow, ctxArrow] = this.getOffscreenCanvas( 5, 3 );
 
-			const imgData = new ImageData( 5, 3 );
+			let imgData = new ImageData( 5, 3 );
 			imgData.data.set( [
 				// Top row
 				255, 255, 255, 196,
@@ -319,6 +346,14 @@ js13k.Renderer = {
 			ctxArrow.putImageData( imgData, 0, 0 );
 
 			this.imageArrow = cnvArrow;
+
+
+			// Characters
+			this.imagesFighter = this._getCharacter( [255, 255, 0], 16, js13k.Fighter );
+			this.imagesEnemy = this._getCharacter( [255, 0, 0], 16, js13k.Enemy );
+			this.imagesDummy = this._getCharacter( [0, 0, 0], 48 );
+			this.imagesPirate = this._getCharacter( [255, 255, 255], 32 );
+			this.imagesCrate = this._getCharacter( [0, 0, 0], 48, null, 32 );
 
 
 			// Repeating water pattern

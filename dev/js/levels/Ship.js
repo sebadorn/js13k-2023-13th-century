@@ -38,11 +38,7 @@ js13k.Level.Ship = class extends js13k.Level {
 	drawBackground( ctx ) {
 		const R = js13k.Renderer;
 
-		// Water
-		ctx.fillStyle = R.patternWater;
-		ctx.translate( -this.waterMovement, 0 );
-		R.fillBackground();
-		ctx.translate( this.waterMovement, 0 );
+		this.drawWater( ctx, this.waterMovement );
 
 		// Railing in top area
 		if( this._cnvRailing ) {

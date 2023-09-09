@@ -39,10 +39,12 @@ terser \
 	'Timer.js' \
 	'Level.js' \
 	'LevelObject.js' \
+	'Crate.js' \
 	'Character.js' \
 	'Puppeteer.js' \
 	'Weapon.js' \
 	'characters/Enemy.js' \
+	'characters/Pirate.js' \
 	'characters/Dummy.js' \
 	'characters/Fighter.js' \
 	'weapons/WeaponFist.js' \

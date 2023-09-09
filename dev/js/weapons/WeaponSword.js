@@ -89,10 +89,9 @@ js13k.WeaponSword = class extends js13k.Weapon {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D}              ctx
-	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	draw( ctx, image ) {
+	draw( ctx ) {
 		let dx = this.pos.x;
 		let dy = this.pos.y;
 
@@ -137,7 +136,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		}
 
 		ctx.drawImage(
-			image || js13k.Renderer.images,
+			js13k.Renderer.images,
 			32, 16, 8, 32,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE * 2
 		);
@@ -163,7 +162,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 	 * @return {function}
 	 */
 	getHitEffect( target ) {
-		if( !( target instanceof js13k.Character ) ) {
+		if( !target.isSolid ) {
 			return;
 		}
 
@@ -179,7 +178,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		dir.normalize();
 
 		const timer = new js13k.Timer( this.owner.level, 0.3 );
-		const distance = js13k.TILE_SIZE * 1.5;
+		const distance = js13k.TILE_SIZE * 1.5 - target.weight;
 
 		target.afflicted.stun = true;
 
@@ -190,11 +189,13 @@ js13k.WeaponSword = class extends js13k.Weapon {
 			}
 
 			const progress = timer.progress();
+			const oldPos = target.pos.clone();
 
 			target.pos.set(
 				startPos.x + dir.x * distance * progress,
 				startPos.y + dir.y * distance * progress
 			);
+			target.fixPosition( oldPos );
 
 			return false;
 		};

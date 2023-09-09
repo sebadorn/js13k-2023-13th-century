@@ -19,19 +19,21 @@ js13k.LevelObject = class {
 		this.h = data.h || 0;
 
 		this._animTimerState = 0;
-		/** @type {js13k.Timer} */
-		this.noDamageTimer = null;
+
+		// /** @type {js13k.Timer} */
+		// this.noDamageTimer = null;
 
 		this.afflicted = {};
-		this.canInteract = false;
+		// this.canInteract = false;
 		this.effects = [];
 		this.facing = new js13k.Vector2D( 1, 0 );
 		this.healthTotal = Infinity;
 		this.health = Infinity;
-		this.highlight = false;
-		this.level = null;
-		this.speed = new js13k.Vector2D();
+		// this.highlight = false;
+		// this.level = null;
+		this.speed = new js13k.Vector2D( 4, 4 );
 		this.state = js13k.STATE_IDLE;
+		this.weight = 0;
 	}
 
 
@@ -75,6 +77,50 @@ js13k.LevelObject = class {
 
 	/**
 	 *
+	 * @private
+	 * @param {js13k.Vector2D} oldPos
+	 */
+	fixPosition( oldPos ) {
+		if( !this.level ) {
+			return;
+		}
+
+		const pos = this.pos;
+
+		pos.x = Math.min(
+			this.level.limits.w - this.w,
+			Math.max( 0, pos.x )
+		);
+
+		pos.y = Math.min(
+			this.level.limits.h - this.h - 8,
+			Math.max( -js13k.TILE_SIZE_HALF, pos.y )
+		);
+
+		const aabb = this.getInteractHitbox();
+
+		this.level.objects.forEach( lo => {
+			if( lo === this || !lo.isSolid || lo.health <= 0 ) {
+				return;
+			}
+
+			// Dodging through characters is possible
+			if( lo instanceof js13k.Character && this.isDodging ) {
+				return;
+			}
+
+			const itemHb = lo.getInteractHitbox();
+
+			// Position overlap, needs correction
+			if( js13k.overlap( aabb, itemHb ) ) {
+				this.pos.set( oldPos.x, oldPos.y );
+			}
+		} );
+	}
+
+
+	/**
+	 *
 	 * @return {object}
 	 */
 	getInteractHitbox() {
@@ -113,6 +159,7 @@ js13k.LevelObject = class {
 			return newState;
 		}
 
+		const oldPos = this.pos.clone();
 		this.pos.x += Math.round( dt * dir.x * this.speed.x );
 		this.pos.y += Math.round( dt * dir.y * this.speed.y );
 
@@ -126,6 +173,8 @@ js13k.LevelObject = class {
 			);
 		}
 
+		this.fixPosition( oldPos );
+
 		return newState;
 	}
 
@@ -136,6 +185,25 @@ js13k.LevelObject = class {
 	 */
 	prio() {
 		return this.pos.y + this.h;
+	}
+
+
+	/**
+	 *
+	 * @return {boolean}
+	 */
+	shouldBlinkFromDamage() {
+		if( !this.noDamageTimer || this.noDamageTimer.elapsed() ) {
+			return false;
+		}
+
+		const progress = this.noDamageTimer.progress();
+
+		return (
+			( progress >= 0 && progress <= 0.2 ) ||
+			( progress >= 0.4 && progress <= 0.6 ) ||
+			( progress >= 0.8 && progress <= 1 )
+		);
 	}
 
 
@@ -164,7 +232,7 @@ js13k.LevelObject = class {
 		}
 
 		if( this.health <= 0 ) {
-			this.dropItem();
+			this.dropItem && this.dropItem();
 		}
 	}
 

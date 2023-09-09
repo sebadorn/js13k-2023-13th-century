@@ -13,13 +13,8 @@ js13k.Dummy = class extends js13k.Enemy {
 	constructor( data ) {
 		super( data );
 
-		this.imgSX = 0;
-		this.imgSY = 48;
-		this.imgSW = 16;
-		this.imgSH = 16;
-
-		this.health = 1000;
-		this.healthTotal = 1000;
+		this.images = js13k.Renderer.imagesDummy;
+		this.healthTotal = this.health = 1000;
 	}
 
 

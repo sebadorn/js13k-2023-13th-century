@@ -12,7 +12,7 @@ js13k.Weapon = class extends js13k.LevelObject {
 	constructor( data ) {
 		super( data );
 
-		this.owner = null;
+		// this.owner = null;
 	}
 
 

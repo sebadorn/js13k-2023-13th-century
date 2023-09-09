@@ -9,7 +9,9 @@ js13k.Level = class {
 	 * @constructor
 	 */
 	constructor() {
-		this.isGameOver = false;
+		// this.isGameOver = false;
+		// this.locked = false;
+
 		this.limits = {};
 		this.timer = 0;
 
@@ -19,8 +21,6 @@ js13k.Level = class {
 		this.characters = [];
 		/** @type {js13k.LevelObject[]} */
 		this.items = [];
-
-		this.player;
 	}
 
 
@@ -133,6 +133,36 @@ js13k.Level = class {
 
 	/**
 	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {number}                   offsetX
+	 */
+	drawWater( ctx, offsetX ) {
+		/** @type {js13k.Renderer} */
+		const R = js13k.Renderer;
+
+		if( !this._cnvWater ) {
+			const [cnvWater, ctxWater] = R.getOffscreenCanvas(
+				R.center.x * 2 + js13k.TILE_SIZE * 2,
+				R.center.y * 2 + js13k.TILE_SIZE * 2
+			);
+			ctxWater.fillStyle = R.patternWater;
+			ctxWater.fillRect( 0, 0, cnvWater.width, cnvWater.height );
+			this._cnvWater = cnvWater;
+		}
+
+		let x = Math.ceil( -R.translateX / R.scale / js13k.TILE_SIZE ) * js13k.TILE_SIZE;
+		let y = Math.ceil( -R.translateY / R.scale / js13k.TILE_SIZE ) * js13k.TILE_SIZE;
+
+		ctx.drawImage(
+			this._cnvWater,
+			x - js13k.TILE_SIZE - offsetX,
+			y - js13k.TILE_SIZE
+		);
+	}
+
+
+	/**
+	 *
 	 * @param {number} dt
 	 */
 	update( dt ) {
@@ -143,7 +173,7 @@ js13k.Level = class {
 				js13k.Renderer.reloadLevel();
 			}
 		}
-		else {
+		else if( !this.locked ) {
 			const p1 = this.player;
 
 			if( p1 ) {

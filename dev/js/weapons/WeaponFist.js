@@ -52,10 +52,9 @@ js13k.WeaponFist = class extends js13k.Weapon {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D}              ctx
-	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	draw( ctx, image ) {
+	draw( ctx ) {
 		let dx = this.pos.x;
 		let dy = this.pos.y;
 
@@ -70,7 +69,7 @@ js13k.WeaponFist = class extends js13k.Weapon {
 		}
 
 		ctx.drawImage(
-			image || js13k.Renderer.images,
+			js13k.Renderer.images,
 			40, 16, 8, 8,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
 		);

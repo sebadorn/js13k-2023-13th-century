@@ -11,7 +11,7 @@ js13k.Level.Port = class extends js13k.Level {
 	constructor() {
 		super();
 
-		this.numTilesX = 24;
+		this.numTilesX = 36;
 		this.numTilesY = 2;
 
 		this.limits = {
@@ -19,20 +19,47 @@ js13k.Level.Port = class extends js13k.Level {
 			h: js13k.TILE_SIZE * this.numTilesY
 		};
 
-		const fighter1 = new js13k.Fighter( {
-			x: js13k.TILE_SIZE * 2,
-			y: 0,
-			item: new js13k.WeaponFist()
-		} );
-		const enem1 = new js13k.Enemy( {
-			x: js13k.TILE_SIZE * 12,
-			y: 0,
+		let fighter1 = new js13k.Fighter( {
+			x: js13k.TILE_SIZE,
 			item: new js13k.WeaponSword()
 		} );
+		let enem1 = new js13k.Pirate( {
+			x: js13k.TILE_SIZE * 12,
+			item: new js13k.WeaponSword()
+		} );
+		let enem2 = new js13k.Pirate( {
+			x: js13k.TILE_SIZE * 13
+		} );
 		enem1.facing.x = -1;
-		this.addCharacters( fighter1, enem1 );
+		enem2.facing.x = -1;
+		this.addCharacters( fighter1, enem1, enem2 );
+
+		this.addItems(
+			new js13k.Crate( { x: js13k.TILE_SIZE * 3 } )
+		);
 
 		this.player = fighter1;
+		this.introTimer = new js13k.Timer( this, 10 );
+	}
+
+
+	/**
+	 *
+	 * @private
+	 * @param {CanvasRenderingContext2D} ctx
+	 * @param {number}                   x
+	 * @param {number}                   y
+	 * @param {number}                   w
+	 * @param {number}                   h
+	 */
+	_drawPillar( ctx, x, y, w, h ) {
+		const color = ctx.fillStyle;
+		ctx.fillRect( x, y, w, h );
+		ctx.fillStyle = '#0001';
+		ctx.fillRect( x, y, 12, h );
+		ctx.fillStyle = '#fff1';
+		ctx.fillRect( x + w - 12, y, 12, h );
+		ctx.fillStyle = color;
 	}
 
 
@@ -41,34 +68,86 @@ js13k.Level.Port = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
+		/** @type {js13k.Renderer} */
 		const R = js13k.Renderer;
 
-		// Water
 		const waterMovement = Math.sin( this.timer / 50 ) * 12;
-		ctx.fillStyle = R.patternWater;
-		ctx.translate( -waterMovement, 0 );
-		R.fillBackground();
-		ctx.translate( waterMovement, 0 );
+		this.drawWater( ctx, waterMovement );
 
-		// TODO: cache as canvas
-		// Pier
-		for( let x = 0; x < this.numTilesX; x++ ) {
-			for( let y = 0; y < this.numTilesY; y++ ) {
-				let dx = x * js13k.TILE_SIZE;
-				let dy = y * js13k.TILE_SIZE;
+		if( this._cnvPier ) {
+			ctx.drawImage( this._cnvPier, 0, -js13k.TILE_SIZE_HALF / 2 );
+		}
+		else {
+			const [cnvPier, ctxPier] = R.getOffscreenCanvas( this.limits.w, this.limits.h + js13k.TILE_SIZE * 4 );
+			const offsetY = js13k.TILE_SIZE_HALF;
 
-				ctx.drawImage(
-					R.images,
-					0, 0, 16, 16,
-					dx, dy, js13k.TILE_SIZE, js13k.TILE_SIZE
+			ctxPier.fillStyle = '#0003';
+			ctxPier.fillRect( 0, offsetY + js13k.TILE_SIZE * 1.25, this.limits.w, this.limits.h );
+
+			ctxPier.fillStyle = '#544';
+
+			for( let x = 0; x < this.numTilesX; x += 4 ) {
+				this._drawPillar(
+					ctxPier,
+					x * js13k.TILE_SIZE, 4,
+					js13k.TILE_SIZE_HALF, js13k.TILE_SIZE * 2
 				);
 			}
+
+			for( let x = 0; x < this.numTilesX; x++ ) {
+				for( let y = 0; y < this.numTilesY; y++ ) {
+					let dx = x * js13k.TILE_SIZE;
+					let dy = y * js13k.TILE_SIZE + offsetY;
+
+					ctxPier.drawImage(
+						R.images,
+						0, 0, 16, 16,
+						dx, dy, js13k.TILE_SIZE, js13k.TILE_SIZE
+					);
+				}
+			}
+
+			ctxPier.fillStyle = R.createLinearGradient( 0, offsetY, 0, this.limits.h, '#0001' );
+			ctxPier.fillRect( 0, offsetY, this.limits.w, this.limits.h );
+
+			ctxPier.fillStyle = '#544';
+			ctxPier.fillRect( 0, this.limits.h - 6 + offsetY, this.limits.w, 24 );
+
+			this._cnvPier = cnvPier;
+		}
+	}
+
+
+	/**
+	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	drawForeground( ctx ) {
+		if( !this.introTimer.elapsed() ) {
+			js13k.Renderer.drawMonologueBox(
+				this.player,
+				[
+					'My crew is already waiting. I',
+					'just have to make it to the ship.',
+					'But it seems there are pirates',
+					'in the harbor.'
+				],
+				2
+			);
 		}
 
-		ctx.fillStyle = '#655';
-		ctx.fillRect( 0, this.limits.h - 6, this.limits.w, 24 );
+		ctx.fillStyle = '#544';
 
-		// TODO: shadow like on ship tiles
+		let y = this.numTilesY * js13k.TILE_SIZE - js13k.TILE_SIZE_HALF / 2;
+		let h = js13k.TILE_SIZE * 2;
+
+		for( let x = 0; x < this.numTilesX; x += 4 ) {
+			this._drawPillar(
+				ctx,
+				x * js13k.TILE_SIZE, y,
+				js13k.TILE_SIZE_HALF, h
+			);
+		}
 	}
 
 

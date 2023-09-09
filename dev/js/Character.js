@@ -17,13 +17,15 @@ js13k.Character = class extends js13k.LevelObject {
 		this._walkAnimSpeed = 42 / js13k.TARGET_FPS;
 
 		// Action to perform, NPCs only
-		this.action = null;
+		// this.action = null;
 
-		this.attackTimer = null;
-		this.isAttacking = false;
+		// this.attackTimer = null;
+		// this.isAttacking = false;
 
-		this.healthTotal = 100;
-		this.health = 100;
+		this.images = js13k.Renderer.imagesFighter;
+
+		this.healthTotal = this.health = 100;
+		this.isSolid = true;
 
 		this.item = data.item;
 		this.speed.set( 12, 12 );
@@ -87,17 +89,16 @@ js13k.Character = class extends js13k.LevelObject {
 	/**
 	 *
 	 * @private
-	 * @param {CanvasRenderingContext2D}              ctx
-	 * @param {(HTMLImageElement|HTMLCanvasElement)?} image
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	_drawItem( ctx, image ) {
+	_drawItem( ctx ) {
 		const mirror = this.facing.x < 0;
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
 		}
 
-		this.item?.draw( ctx, image );
+		this.item?.draw( ctx );
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
@@ -162,8 +163,9 @@ js13k.Character = class extends js13k.LevelObject {
 			return;
 		}
 
-		let sx = this.imgSX + ( this.facing.x < 0 ? 16 : 0 );
-		let image = js13k.Renderer.images;
+		let sx = this.facing.x < 0 ? 16 : 0;
+		let sy = 0;
+		let image = this.images;
 
 		this._drawShadow( ctx );
 
@@ -177,16 +179,8 @@ js13k.Character = class extends js13k.LevelObject {
 			js13k.Renderer.rotateCenter( ctx, rotate, this.getOffsetCenter() );
 		}
 		else {
-			if( this.noDamageTimer && !this.noDamageTimer.elapsed() ) {
-				const progress = this.noDamageTimer.progress();
-
-				if(
-					( progress >= 0 && progress <= 0.2 ) ||
-					( progress >= 0.4 && progress <= 0.6 ) ||
-					( progress >= 0.8 && progress <= 1 )
-				) {
-					image = js13k.Renderer.imagesWhite;
-				}
+			if( this.shouldBlinkFromDamage() ) {
+				sy = 16;
 			}
 
 			if( this.state === js13k.STATE_WALKING ) {
@@ -202,11 +196,34 @@ js13k.Character = class extends js13k.LevelObject {
 
 		ctx.drawImage(
 			image,
-			sx, this.imgSY, this.imgSW, this.imgSH,
+			sx, sy, 16, 16,
 			this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
 		);
 
 		js13k.Renderer.resetTransform();
+	}
+
+
+	/**
+	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	static drawFace( ctx ) {
+		ctx.fillStyle = '#000';
+
+		let y = 6;
+
+		// Looking right
+		let x = 11;
+		ctx.fillRect( x, y, 1, 4 );
+		ctx.fillRect( x - 2, y, 1, 4 );
+		ctx.fillRect( x - 4, y, 1, 4 );
+
+		// Looking left
+		x = 21;
+		ctx.fillRect( x, y, 1, 4 );
+		ctx.fillRect( x + 2, y, 1, 4 );
+		ctx.fillRect( x + 4, y, 1, 4 );
 	}
 
 
@@ -306,17 +323,6 @@ js13k.Character = class extends js13k.LevelObject {
 				dir = new js13k.Vector2D( this.facing.x < 0 ? -1 : 1, 0 );
 				this.moveInDir( dir, dt, newState );
 			}
-		}
-
-		if( this.level ) {
-			this.pos.x = Math.min(
-				this.level.limits.w - this.w,
-				Math.max( 0, this.pos.x )
-			);
-			this.pos.y = Math.min(
-				this.level.limits.h - this.h - 8,
-				Math.max( -js13k.TILE_SIZE_HALF, this.pos.y )
-			);
 		}
 
 		this.state = newState;

@@ -170,15 +170,20 @@ js13k.Puppeteer = {
 	 * @param {js13k.Character} p1   - Player character
 	 */
 	decideAction( char, p1 ) {
-		if( char instanceof js13k.Dummy || !p1 || char.afflicted.stun || p1.health <= 0 ) {
+		if(
+			char instanceof js13k.Dummy ||
+			!( char instanceof js13k.Character ) ||
+			!p1 ||
+			char.afflicted.stun ||
+			p1.health <= 0
+		) {
 			return;
 		}
 
-		if( this._checkForPickUpAction( char ) ) {
-			return;
-		}
-
-		if( this._checkForAttackAction( char, p1 ) ) {
+		if(
+			this._checkForPickUpAction( char ) ||
+			this._checkForAttackAction( char, p1 )
+		) {
 			return;
 		}
 
