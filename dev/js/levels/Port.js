@@ -19,27 +19,45 @@ js13k.Level.Port = class extends js13k.Level {
 			h: js13k.TILE_SIZE * this.numTilesY
 		};
 
-		let fighter1 = new js13k.Fighter( {
-			x: js13k.TILE_SIZE,
-			item: new js13k.WeaponSword()
+		const fighter1 = new js13k.Fighter( {
+			x: js13k.TILE_SIZE
 		} );
-		let enem1 = new js13k.Pirate( {
-			x: js13k.TILE_SIZE * 12,
-			item: new js13k.WeaponSword()
-		} );
-		let enem2 = new js13k.Pirate( {
-			x: js13k.TILE_SIZE * 13
-		} );
-		enem1.facing.x = -1;
-		enem2.facing.x = -1;
-		this.addCharacters( fighter1, enem1, enem2 );
+
+		this.addCharacters(
+			fighter1,
+			new js13k.Pirate( {
+				x: js13k.TILE_SIZE * 11,
+				y: js13k.TILE_SIZE - 8,
+				facingX: -1,
+				item: new js13k.WeaponSword()
+			} ),
+			new js13k.Pirate( {
+				x: js13k.TILE_SIZE * 20,
+				y: js13k.TILE_SIZE - 8,
+				facingX: -1
+			} ),
+			new js13k.Pirate( {
+				x: js13k.TILE_SIZE * 31,
+				facingX: -1,
+				item: new js13k.WeaponSword()
+			} ),
+			new js13k.Pirate( {
+				x: js13k.TILE_SIZE * 31,
+				y: js13k.TILE_SIZE - 8,
+				facingX: -1
+			} ),
+		);
 
 		this.addItems(
-			new js13k.Crate( { x: js13k.TILE_SIZE * 3 } )
+			new js13k.Crate( { x: js13k.TILE_SIZE * 11 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 22, y: js13k.TILE_SIZE + 8 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 32 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 32, y: js13k.TILE_SIZE + 8 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 33, y: js13k.TILE_SIZE / 2 } ),
 		);
 
 		this.player = fighter1;
-		this.introTimer = new js13k.Timer( this, 10 );
+		this.introTimer = new js13k.Timer( this, 14 );
 	}
 
 

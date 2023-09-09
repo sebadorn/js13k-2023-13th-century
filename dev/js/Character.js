@@ -121,10 +121,11 @@ js13k.Character = class extends js13k.LevelObject {
 
 	/**
 	 * Start an attack with the current weapon.
+	 * @return {boolean}
 	 */
 	attack() {
-		if( this.isAttacking || this.isDodging || !this.item ) {
-			return;
+		if( this.isAttacking || this.isDodging || !this.item || this.afflicted?.stun ) {
+			return false;
 		}
 
 		js13k.Audio.play( js13k.Audio.ATTACK );
@@ -133,6 +134,8 @@ js13k.Character = class extends js13k.LevelObject {
 		this.attackTimer.set( this.item.animDuration );
 
 		this.isAttacking = true;
+
+		return true;
 	}
 
 
@@ -140,16 +143,19 @@ js13k.Character = class extends js13k.LevelObject {
 	 *
 	 */
 	dodge() {
-		if( this.isDodging ) {
-			return;
+		if( this.isDodging || this.afflicted?.stun ) {
+			return false;
 		}
 
 		js13k.Audio.play( js13k.Audio.DODGE );
 
 		this.dodgeTimer = this.dodgeTimer || new js13k.Timer( this.level );
 		this.dodgeTimer.set( 0.5 );
+		this.posBeforeDodge = this.pos.clone();
 
 		this.isDodging = true;
+
+		return true;
 	}
 
 
@@ -299,7 +305,17 @@ js13k.Character = class extends js13k.LevelObject {
 		this._animTimerState += dt;
 		this._updateEffects( dt );
 
-		if( dir ) {
+		if( this.isDodging ) {
+			if( this.dodgeTimer.elapsed() ) {
+				this.isDodging = false;
+				this.fixPosition( this.posBeforeDodge, true );
+			}
+			else {
+				dir = new js13k.Vector2D( this.facing.x < 0 ? -1 : 1, 0 );
+				this.moveInDir( dir, dt, newState );
+			}
+		}
+		else if( dir ) {
 			newState = this.moveInDir( dir, dt, newState );
 		}
 
@@ -313,16 +329,6 @@ js13k.Character = class extends js13k.LevelObject {
 
 		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
-		}
-
-		if( this.isDodging ) {
-			if( this.dodgeTimer.elapsed() ) {
-				this.isDodging = false;
-			}
-			else {
-				dir = new js13k.Vector2D( this.facing.x < 0 ? -1 : 1, 0 );
-				this.moveInDir( dir, dt, newState );
-			}
 		}
 
 		this.state = newState;

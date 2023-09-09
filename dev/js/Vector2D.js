@@ -78,4 +78,17 @@ js13k.Vector2D = class {
 	}
 
 
+	/**
+	 * Subtract a vector.
+	 * @param  {js13k.Vector2D} v
+	 * @return {js13k.Vector2D}
+	 */
+	sub( v ) {
+		this.x -= v.x;
+		this.y -= v.y;
+
+		return this;
+	}
+
+
 };

@@ -69,15 +69,15 @@ js13k.Input = {
 				gamepad: [0]
 			},
 			[this.ACTION.DODGE]: {
-				keyboard: ['KeyR'],
+				keyboard: ['ShiftLeft', 'ShiftRight'],
 				gamepad: []
 			},
 			[this.ACTION.DO]: {
-				keyboard: ['Enter'],
+				keyboard: ['Space', 'Enter'],
 				gamepad: [0]
 			},
 			[this.ACTION.INTERACT]: {
-				keyboard: ['KeyE'],
+				keyboard: ['KeyE', 'CtrlLeft'],
 				gamepad: [0]
 			},
 		};

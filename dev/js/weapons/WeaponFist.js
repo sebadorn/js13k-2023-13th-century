@@ -12,7 +12,7 @@ js13k.WeaponFist = class extends js13k.Weapon {
 	constructor( data = {} ) {
 		super( data );
 
-		this.animDuration = 0.15;
+		this.animDuration = 0.2;
 		this.damage = 10;
 	}
 
@@ -55,24 +55,23 @@ js13k.WeaponFist = class extends js13k.Weapon {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		let dx = this.pos.x;
-		let dy = this.pos.y;
-
-		if( this.owner ) {
-			dx = this.owner.pos.x + this.owner.w - 32;
-			dy = this.owner.pos.y + this.owner.h / 2 - 16;
+		if( !this.owner?.isAttacking ) {
+			return;
 		}
 
-		if( this.owner.isAttacking ) {
-			const offsetX = Math.sin( this.owner.attackTimer.progress() * Math.PI * 2 ) * js13k.TILE_SIZE_HALF;
-			dx += Math.max( 0, offsetX );
-		}
+		let dx = this.owner.pos.x + this.owner.w - 32;
+		let dy = this.owner.pos.y + this.owner.h / 2 - 16;
 
+		let progress = this.owner.attackTimer.progress();
+		dx += progress * progress * js13k.TILE_SIZE_HALF * 1.5;
+
+		ctx.globalAlpha = Math.min( 1, progress + 0.5 );
 		ctx.drawImage(
 			js13k.Renderer.images,
 			40, 16, 8, 8,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
 		);
+		ctx.globalAlpha = 1;
 	}
 
 
@@ -87,10 +86,17 @@ js13k.WeaponFist = class extends js13k.Weapon {
 			return;
 		}
 
-		return function() {
-			target.dropItem();
+		const timer = new js13k.Timer( this.owner.level, 0.4 );
+		target.afflicted.stun = true;
+		target.dropItem();
 
-			return true;
+		return function() {
+			if( timer.elapsed() ) {
+				target.afflicted.stun = false;
+				return true;
+			}
+
+			return false;
 		};
 	}
 

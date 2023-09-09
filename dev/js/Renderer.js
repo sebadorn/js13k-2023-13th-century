@@ -227,8 +227,8 @@ js13k.Renderer = {
 		this.ctxUI.textAlign = 'left';
 		this.ctxUI.textBaseline = 'alphabetic';
 
-		let xText = x + 24;
-		let yText = y + 38;
+		let xText = x + 28;
+		let yText = y + 48;
 
 		text.forEach( line => {
 			this.ctxUI.fillText( line, xText + js13k.TILE_SIZE * 2, yText );

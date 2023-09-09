@@ -167,7 +167,6 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		}
 
 		const startPos = target.pos.clone();
-
 		const c1 = this.owner.getOffsetCenter();
 		const c2 = target.getOffsetCenter();
 
@@ -177,7 +176,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		);
 		dir.normalize();
 
-		const timer = new js13k.Timer( this.owner.level, 0.3 );
+		const timer = new js13k.Timer( this.owner.level, 0.5 );
 		const distance = js13k.TILE_SIZE * 1.5 - target.weight;
 
 		target.afflicted.stun = true;

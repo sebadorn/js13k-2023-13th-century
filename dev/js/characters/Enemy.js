@@ -10,7 +10,8 @@ js13k.Enemy = class extends js13k.Character {
 	 * @override
 	 * @param {object?} data
 	 */
-	constructor( data ) {
+	constructor( data = {} ) {
+		data.item = data.item || new js13k.WeaponFist();
 		super( data );
 
 		this.images = js13k.Renderer.imagesEnemy;

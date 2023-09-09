@@ -12,33 +12,37 @@ js13k.Puppeteer = {
 	 * @return {boolean}
 	 */
 	_checkForAttackAction( char, p1 ) {
-		if( char.isAttacking || !char.item ) {
+		if( char.isAttacking || !char.item || !char.item.checkHit( p1 ) ) {
 			return false;
 		}
 
-		if( char.item.checkHit( p1 ) ) {
-			const timer = new js13k.Timer( char.level, 0.3 );
-
-			char.action = function() {
-				if( !timer.elapsed() ) {
-					return;
-				}
-
-				if( char.isAttacking && char.attackTimer && char.attackTimer.elapsed() ) {
-					char.action = null;
-					return;
-				}
-
-				if( !char.isAttacking ) {
-					char.attack();
-					p1.takeDamage( char.item );
-				}
-			};
-
+		// Cooldown after last attack. But also do not look for any other action.
+		if( char.coolDownTimerAttack && !char.coolDownTimerAttack.elapsed() ) {
 			return true;
 		}
 
-		return false;
+		const timer = new js13k.Timer( char.level, 0.3 );
+
+		char.action = function() {
+			if( !timer.elapsed() ) {
+				return;
+			}
+
+			if( char.isAttacking && char.attackTimer && char.attackTimer.elapsed() ) {
+				char.action = null;
+				return;
+			}
+
+			if( !char.isAttacking ) {
+				char.attack();
+				p1.takeDamage( char.item );
+
+				char.coolDownTimerAttack = char.coolDownTimerAttack || new js13k.Timer( char.level );
+				char.coolDownTimerAttack.set( 0.8 );
+			}
+		};
+
+		return true;
 	},
 
 
@@ -137,7 +141,7 @@ js13k.Puppeteer = {
 			c2.y - c1.y
 		);
 
-		if( dir.length() > js13k.TILE_SIZE * 5 ) {
+		if( dir.length() > js13k.TILE_SIZE * 7 ) {
 			return false;
 		}
 
@@ -171,9 +175,9 @@ js13k.Puppeteer = {
 	 */
 	decideAction( char, p1 ) {
 		if(
+			!p1 ||
 			char instanceof js13k.Dummy ||
 			!( char instanceof js13k.Character ) ||
-			!p1 ||
 			char.afflicted.stun ||
 			p1.health <= 0
 		) {

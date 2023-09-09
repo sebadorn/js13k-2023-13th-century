@@ -8,10 +8,11 @@ js13k.LevelObject = class {
      * 
      * @constructor
      * @param {object?} data
-     * @param {number}  data.x - X coordinate
-     * @param {number}  data.y - Y coordinate
-     * @param {number}  data.w - Width
-     * @param {number}  data.h - Height
+     * @param {number?} data.facingX
+     * @param {number}  data.x       - X coordinate
+     * @param {number}  data.y       - Y coordinate
+     * @param {number}  data.w       - Width
+     * @param {number}  data.h       - Height
      */
 	constructor( data = {} ) {
 		this.pos = new js13k.Vector2D( data.x, data.y );
@@ -26,7 +27,7 @@ js13k.LevelObject = class {
 		this.afflicted = {};
 		// this.canInteract = false;
 		this.effects = [];
-		this.facing = new js13k.Vector2D( 1, 0 );
+		this.facing = new js13k.Vector2D( data.facingX || 1, 0 );
 		this.healthTotal = Infinity;
 		this.health = Infinity;
 		// this.highlight = false;
@@ -79,23 +80,26 @@ js13k.LevelObject = class {
 	 *
 	 * @private
 	 * @param {js13k.Vector2D} oldPos
+	 * @param {boolean?}       isAfterDodge
 	 */
-	fixPosition( oldPos ) {
+	fixPosition( oldPos, isAfterDodge ) {
 		if( !this.level ) {
 			return;
 		}
 
-		const pos = this.pos;
-
-		pos.x = Math.min(
+		this.pos.x = Math.min(
 			this.level.limits.w - this.w,
-			Math.max( 0, pos.x )
+			Math.max( 0, this.pos.x )
 		);
 
-		pos.y = Math.min(
+		this.pos.y = Math.min(
 			this.level.limits.h - this.h - 8,
-			Math.max( -js13k.TILE_SIZE_HALF, pos.y )
+			Math.max( -js13k.TILE_SIZE_HALF, this.pos.y )
 		);
+
+		const dir = this.pos.clone().sub( oldPos );
+		dir.x = dir.x < 0 ? -dir.x : dir.x;
+		dir.y = dir.y < 0 ? -dir.y : dir.y;
 
 		const aabb = this.getInteractHitbox();
 
@@ -110,10 +114,21 @@ js13k.LevelObject = class {
 			}
 
 			const itemHb = lo.getInteractHitbox();
+			const overlap = js13k.calcOverlap( aabb, itemHb );
 
 			// Position overlap, needs correction
-			if( js13k.overlap( aabb, itemHb ) ) {
-				this.pos.set( oldPos.x, oldPos.y );
+			if( overlap > Number.EPSILON ) {
+				// Objects are stuck inside each other. Could happen
+				// through a dodge roll that ends inside an enemy.
+				if( isAfterDodge && overlap >= 8 ) {
+					this.pos.set(
+						dir.x > 0 ? itemHb.x + itemHb.w : itemHb.x - aabb.w,
+						oldPos.y
+					);
+				}
+				else {
+					this.pos.set( oldPos.x, oldPos.y );
+				}
 			}
 		} );
 	}
@@ -155,7 +170,7 @@ js13k.LevelObject = class {
 	 */
 	moveInDir( dir, dt, newState ) {
 		// Cannot move at the moment
-		if( this.afflicted.stun ) {
+		if( this.afflicted.stun && this !== this.level?.player ) {
 			return newState;
 		}
 

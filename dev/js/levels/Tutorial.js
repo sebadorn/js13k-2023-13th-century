@@ -56,17 +56,13 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const oc = p1.getOffsetCenter();
 		const enemOC = this.tutorialEnemy.getOffsetCenter();
 
-		if( this.tutStep < 0 ) {
-			ctx.fillStyle = '#111';
-			js13k.Renderer.fillBackground();
-		}
 		// Walking
-		else if( this.tutStep === 0 ) {
+		if( this.tutStep === 0 ) {
 			ctx.fillText( 'Move with [W][A][S][D] or arrow keys', oc.x, oc.y - p1.h );
 		}
 		// Disarm
 		else if( this.tutStep === 1 ) {
-			ctx.fillText( 'Attack with [ENTER]', enemOC.x, enemOC.y - this.tutorialEnemy.h * 2 );
+			ctx.fillText( 'Attack with [ENTER] or [SPACE]', enemOC.x, enemOC.y - this.tutorialEnemy.h * 2 );
 		}
 		// Pick up weapon
 		else if( this.tutStep === 2 ) {
@@ -83,11 +79,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		}
 		// Dodge
 		else if( this.tutStep === 4 ) {
-			ctx.fillText( 'You can dodge roll with [R]', oc.x, oc.y - p1.h - js13k.TILE_SIZE );
-		}
-		// Continue
-		else if( this.tutStep === 5 ) {
-			ctx.fillText( 'Right, that’s how it goes!', js13k.Renderer.center.x, 0 );
+			ctx.fillText( 'You can dodge roll with [SHIFT]', oc.x, oc.y - p1.h - js13k.TILE_SIZE );
 		}
 	}
 
@@ -97,10 +89,6 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawBackground( ctx ) {
-		if( this.tutStep < 0 ) {
-			return;
-		}
-
 		const p1 = this.player;
 		const te = this.tutorialEnemy;
 		const item = this.items[0];
@@ -111,11 +99,14 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			p1.pos.y + p1.h - js13k.TILE_SIZE_HALF,
 			js13k.TILE_SIZE * 2, js13k.TILE_SIZE
 		);
-		ctx.fillRect(
-			te.pos.x - js13k.TILE_SIZE_HALF,
-			te.pos.y + te.h - js13k.TILE_SIZE_HALF,
-			js13k.TILE_SIZE * 2, js13k.TILE_SIZE
-		);
+
+		if( te.health > 0 ) {
+			ctx.fillRect(
+				te.pos.x - js13k.TILE_SIZE_HALF,
+				te.pos.y + te.h - js13k.TILE_SIZE_HALF,
+				js13k.TILE_SIZE * 2, js13k.TILE_SIZE
+			);
+		}
 
 		if( item ) {
 			const hb = item.getInteractHitbox();
@@ -135,13 +126,10 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawForeground( ctx ) {
+		/** @type {js13k.Renderer} */
 		const R = js13k.Renderer;
 
 		if( this.tutStep < 0 ) {
-			const progress = this.introTimer.progress();
-			const scale = 1 - ( progress >= 0.5 ? 2 - progress * 2 : 1 );
-
-			R.scaleCenter( R.ctxUI, 1, 1 - scale, R.center );
 			R.drawMonologueBox(
 				this.player,
 				[
@@ -149,14 +137,22 @@ js13k.Level.Tutorial = class extends js13k.Level {
 					'think back on my training.',
 					'How did it go again?',
 				],
-				0
+				2
 			);
-			R.ctxUI.setTransform( R.scale, 0, 0, R.scale, 0, 0 );
 		}
 
 		if( this.tutStep !== 5 ) {
 			return;
 		}
+
+		R.drawMonologueBox(
+			this.player,
+			[
+				'Right, that’s how it goes!',
+				'Now I am prepared!',
+			],
+			2
+		);
 
 		const progress = Math.sin( this.timer / 25 );
 		let x = this.limits.w - js13k.TILE_SIZE + progress * 8;
@@ -189,6 +185,8 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const Input = js13k.Input;
 
 		if( this.tutStep === -1 ) {
+			js13k.Renderer.centerOn( p1 );
+
 			if( Input.isPressed( Input.ACTION.DO, true ) ) {
 				this.introTimer.set( 0 );
 			}
@@ -200,19 +198,31 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		}
 		// Check for walking
 		else if( this.tutStep === 0 ) {
-			if(
+			// Ignore further attack inputs by querying and
+			// forgetting it to avoid a sequence break.
+			Input.isPressed( Input.ACTION.ATTACK, true );
+
+			if( this.tutStepTimer0 ) {
+				if( this.tutStepTimer0.elapsed() ) {
+					this.tutStep = 1;
+				}
+			}
+			else if(
 				Input.isPressed( Input.ACTION.UP ) ||
 				Input.isPressed( Input.ACTION.RIGHT ) ||
 				Input.isPressed( Input.ACTION.DOWN ) ||
 				Input.isPressed( Input.ACTION.LEFT )
 			) {
-				this.tutStep = 1;
+				this.tutStepTimer0 = new js13k.Timer( this, 3 );
 			}
 		}
 		// Check if enemy has been disarmed
 		else if( this.tutStep === 1 ) {
 			if( !( this.tutorialEnemy.item instanceof js13k.WeaponSword ) ) {
-				this.items[0].pos.x = this.tutorialEnemy.pos.x + js13k.TILE_SIZE * 2;
+				const weapon = this.items[0];
+				weapon.pos.x = this.tutorialEnemy.pos.x + js13k.TILE_SIZE * 2;
+				weapon.pos.y += js13k.TILE_SIZE_HALF;
+
 				this.tutStep = 2;
 			}
 		}

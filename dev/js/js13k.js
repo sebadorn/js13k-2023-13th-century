@@ -20,6 +20,31 @@ const js13k = {
 
 
 	/**
+	 * Calculate the overlapping area of two axis-aligned bounding boxes.
+	 * @param  {object} a   - An axis-aligned bounding box.
+	 * @param  {number} a.h - Height.
+	 * @param  {number} a.w - Width.
+	 * @param  {number} a.x - Position on X axis.
+	 * @param  {number} a.y - Position on Y axis.
+	 * @param  {object} b   - An axis-aligned bounding box.
+	 * @param  {number} b.h - Height.
+	 * @param  {number} b.w - Width.
+	 * @param  {number} b.x - Position on X axis.
+	 * @param  {number} b.y - Position on Y axis.
+	 * @return {number}
+	 */
+	calcOverlap( a, b ) {
+		let overlapX = Math.min( a.x + a.w, b.x + b.w ) - Math.max( a.x, b.x );
+		overlapX = ( overlapX < 0 ) ? 0 : overlapX;
+
+		let overlapY = Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y );
+		overlapY = ( overlapY < 0 ) ? 0 : overlapY;
+
+		return overlapX * overlapY;
+	},
+
+
+	/**
 	 *
 	 */
 	init() {
@@ -27,7 +52,7 @@ const js13k = {
 
 		js13k.Renderer.init( () => {
 			// js13k.Renderer.level = new js13k.Level.Start();
-			js13k.Renderer.level = new js13k.Level.Port();
+			js13k.Renderer.level = new js13k.Level.Ship();
 			js13k.Renderer.mainLoop();
 		} );
 	},
@@ -48,13 +73,7 @@ const js13k = {
 	 * @return {boolean}
 	 */
 	overlap( a, b ) {
-		let overlapX = Math.min( a.x + a.w, b.x + b.w ) - Math.max( a.x, b.x );
-		overlapX = ( overlapX < 0 ) ? 0 : overlapX;
-
-		let overlapY = Math.min( a.y + a.h, b.y + b.h ) - Math.max( a.y, b.y );
-		overlapY = ( overlapY < 0 ) ? 0 : overlapY;
-
-		return ( overlapX * overlapY > Number.EPSILON );
+		return this.calcOverlap( a, b ) > Number.EPSILON;
 	},
 
 

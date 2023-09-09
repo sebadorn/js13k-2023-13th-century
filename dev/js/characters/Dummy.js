@@ -14,7 +14,7 @@ js13k.Dummy = class extends js13k.Enemy {
 		super( data );
 
 		this.images = js13k.Renderer.imagesDummy;
-		this.healthTotal = this.health = 1000;
+		this.healthTotal = this.health = 300;
 	}
 
 
