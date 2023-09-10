@@ -30,10 +30,12 @@ js13k.WeaponSword = class extends js13k.Weapon {
 			return;
 		}
 
-		this.pos.set(
-			this.owner.pos.x + this.owner.w / 2,
-			this.owner.pos.y - this.owner.h + this.h / 2
-		);
+		this.pos.x = this.owner.pos.x - js13k.TILE_SIZE_HALF;
+		this.pos.y = this.owner.pos.y - this.owner.h + this.h / 2;
+
+		if( this.owner.facing.x > 0 ) {
+			this.pos.x += js13k.TILE_SIZE_HALF * 1.5 + this.owner.w;
+		}
 	}
 
 
@@ -177,7 +179,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		dir.normalize();
 
 		const timer = new js13k.Timer( this.owner.level, 0.5 );
-		const distance = js13k.TILE_SIZE * 1.5 - target.weight;
+		const distance = js13k.TILE_SIZE * 1.35 - target.weight;
 
 		target.afflicted.stun = true;
 

@@ -12,12 +12,12 @@ js13k.Puppeteer = {
 	 * @return {boolean}
 	 */
 	_checkForAttackAction( char, p1 ) {
-		if( char.isAttacking || !char.item || !char.item.checkHit( p1 ) ) {
+		if( !char.item || !char.item.checkHit( p1 ) ) {
 			return false;
 		}
 
 		// Cooldown after last attack. But also do not look for any other action.
-		if( char.coolDownTimerAttack && !char.coolDownTimerAttack.elapsed() ) {
+		if( char.coolDownAttack && !char.coolDownAttack.elapsed() ) {
 			return true;
 		}
 
@@ -37,8 +37,57 @@ js13k.Puppeteer = {
 				char.attack();
 				p1.takeDamage( char.item );
 
-				char.coolDownTimerAttack = char.coolDownTimerAttack || new js13k.Timer( char.level );
-				char.coolDownTimerAttack.set( 0.8 );
+				char.coolDownAttack = char.coolDownAttack || new js13k.Timer( char.level );
+				char.coolDownAttack.set( 0.8 );
+			}
+		};
+
+		return true;
+	},
+
+
+	/**
+	 *
+	 * @override
+	 * @param  {js13k.Character} char 
+	 * @param  {js13k.Player}    p1 
+	 * @return {boolean}
+	 */
+	_checkForDodgeAction( char, p1 ) {
+		if( !( char instanceof js13k.Knight ) || Math.random() < 0.8 ) {
+			return false;
+		}
+
+		// Cooldown after last dodge
+		if( char.coolDownDodge && !char.coolDownDodge.elapsed() ) {
+			return false;
+		}
+
+		const c1 = char.getOffsetCenter();
+		const c2 = p1.getOffsetCenter();
+		const dir = new js13k.Vector2D(
+			c2.x - c1.x,
+			c2.y - c1.y
+		);
+
+		if(
+			Math.abs( dir.y ) > js13k.TILE_SIZE_HALF ||
+			dir.length() > js13k.TILE_SIZE * 2
+		) {
+			return false;
+		}
+
+		char.facing.x = dir.x < 0 ? -1 : 1;
+		char.speed.set( 11, 11 );
+		char.dodge();
+
+		char.coolDownDodge = char.coolDownDodge || new js13k.Timer( char.level );
+		char.coolDownDodge.set( 1.5 );
+
+		char.action = function() {
+			if( !char.isDodging ) {
+				char.speed.set( 3, 3 );
+				char.action = null;
 			}
 		};
 
@@ -179,6 +228,8 @@ js13k.Puppeteer = {
 			char instanceof js13k.Dummy ||
 			!( char instanceof js13k.Character ) ||
 			char.afflicted.stun ||
+			char.isAttacking ||
+			char.isDodging ||
 			p1.health <= 0
 		) {
 			return;
@@ -186,6 +237,7 @@ js13k.Puppeteer = {
 
 		if(
 			this._checkForPickUpAction( char ) ||
+			this._checkForDodgeAction( char, p1 ) ||
 			this._checkForAttackAction( char, p1 )
 		) {
 			return;

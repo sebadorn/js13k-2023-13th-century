@@ -19,7 +19,7 @@ js13k.Level.Port = class extends js13k.Level {
 			h: js13k.TILE_SIZE * this.numTilesY
 		};
 
-		const fighter1 = new js13k.Fighter( {
+		const fighter1 = new js13k.Player( {
 			x: js13k.TILE_SIZE
 		} );
 

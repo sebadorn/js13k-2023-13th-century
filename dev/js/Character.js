@@ -22,7 +22,7 @@ js13k.Character = class extends js13k.LevelObject {
 		// this.attackTimer = null;
 		// this.isAttacking = false;
 
-		this.images = js13k.Renderer.imagesFighter;
+		this.images = js13k.Renderer.imagesPlayer;
 
 		this.healthTotal = this.health = 100;
 		this.isSolid = true;

@@ -1,7 +1,7 @@
 'use strict';
 
 
-js13k.Fighter = class extends js13k.Character {
+js13k.Player = class extends js13k.Character {
 
 
 	/**
@@ -14,8 +14,6 @@ js13k.Fighter = class extends js13k.Character {
 		data.item = data.item || new js13k.WeaponFist();
 		super( data );
 		this.health = this.healthTotal = Infinity;
-
-		this.coolDown = {};
 	}
 
 
@@ -25,7 +23,7 @@ js13k.Fighter = class extends js13k.Character {
 	 * @return {boolean}
 	 */
 	attack() {
-		if( this.coolDown.attack && !this.coolDown.attack.elapsed() ) {
+		if( this.coolDownAttack && !this.coolDownAttack.elapsed() ) {
 			return false;
 		}
 
@@ -33,8 +31,8 @@ js13k.Fighter = class extends js13k.Character {
 			return false;
 		}
 
-		this.coolDown.attack = this.coolDown.attack || new js13k.Timer( this.level );
-		this.coolDown.attack.set( 0.65 );
+		this.coolDownAttack = this.coolDownAttack || new js13k.Timer( this.level );
+		this.coolDownAttack.set( 0.65 );
 
 		return true;
 	}
@@ -46,7 +44,7 @@ js13k.Fighter = class extends js13k.Character {
 	 * @return {boolean}
 	 */
 	dodge() {
-		if( this.coolDown.dodge && !this.coolDown.dodge.elapsed() ) {
+		if( this.coolDownDodge && !this.coolDownDodge.elapsed() ) {
 			return false;
 		}
 
@@ -54,8 +52,8 @@ js13k.Fighter = class extends js13k.Character {
 			return false;
 		}
 
-		this.coolDown.dodge = this.coolDown.dodge || new js13k.Timer( this.level );
-		this.coolDown.dodge.set( 0.8 );
+		this.coolDownDodge = this.coolDownDodge || new js13k.Timer( this.level );
+		this.coolDownDodge.set( 0.8 );
 
 		return true;
 	}

@@ -19,15 +19,28 @@ js13k.Level.Ship = class extends js13k.Level {
 			h: js13k.TILE_SIZE * this.numTilesY,
 		};
 
-		const fighter1 = new js13k.Fighter( { x: js13k.TILE_SIZE * 2, y: js13k.TILE_SIZE * 2, item: new js13k.WeaponFist() } );
-		const enem1 = new js13k.Enemy( { x: js13k.TILE_SIZE * 12, y: js13k.TILE_SIZE * 2, item: new js13k.WeaponSword() } );
-		enem1.facing.x = -1;
-		this.addCharacters( fighter1, enem1 );
+		this.player = new js13k.Player( {
+			x: js13k.TILE_SIZE * 2,
+			y: js13k.TILE_SIZE * 2,
+			item: new js13k.WeaponFist()
+		} );
 
-		const sword1 = new js13k.WeaponSword( { x: js13k.TILE_SIZE * 4, y: js13k.TILE_SIZE * 4.5 } );
-		this.addItems( sword1 );
+		this.addCharacters(
+			this.player,
+			new js13k.Knight( {
+				x: js13k.TILE_SIZE * 12,
+				y: js13k.TILE_SIZE * 2,
+				facingX: -1,
+				item: new js13k.WeaponSword()
+			} ),
+		);
 
-		this.player = fighter1;
+		this.addItems(
+			new js13k.WeaponSword( {
+				x: js13k.TILE_SIZE * 4,
+				y: js13k.TILE_SIZE * 4.5
+			} ),
+		);
 	}
 
 

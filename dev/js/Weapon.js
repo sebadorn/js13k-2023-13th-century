@@ -59,12 +59,14 @@ js13k.Weapon = class extends js13k.LevelObject {
 	 * @private
 	 */
 	_setDropPos() {
-		if( this.owner ) {
-			this.pos.set(
-				this.owner.pos.x + this.owner.w / 2,
-				this.owner.pos.y - this.owner.h
-			);
+		if( !this.owner ) {
+			return;
 		}
+
+		this.pos.set(
+			this.owner.pos.x - js13k.TILE_SIZE_HALF,
+			this.owner.pos.y + this.owner.h
+		);
 	}
 
 

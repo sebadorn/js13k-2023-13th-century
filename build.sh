@@ -44,9 +44,10 @@ terser \
 	'Puppeteer.js' \
 	'Weapon.js' \
 	'characters/Enemy.js' \
+	'characters/Knight.js' \
 	'characters/Pirate.js' \
 	'characters/Dummy.js' \
-	'characters/Fighter.js' \
+	'characters/Player.js' \
 	'weapons/WeaponFist.js' \
 	'weapons/WeaponSword.js' \
 	'levels/Start.js' \

@@ -14,7 +14,7 @@ js13k.Enemy = class extends js13k.Character {
 		data.item = data.item || new js13k.WeaponFist();
 		super( data );
 
-		this.images = js13k.Renderer.imagesEnemy;
+		this.images = js13k.Renderer.imagesKnight;
 		this._walkAnimSpeed = 32 / js13k.TARGET_FPS;
 
 		this.speed.set( 3, 3 );

@@ -349,8 +349,8 @@ js13k.Renderer = {
 
 
 			// Characters
-			this.imagesFighter = this._getCharacter( [255, 255, 0], 16, js13k.Fighter );
-			this.imagesEnemy = this._getCharacter( [255, 0, 0], 16, js13k.Enemy );
+			this.imagesPlayer = this._getCharacter( [255, 255, 0], 16, js13k.Player );
+			this.imagesKnight = this._getCharacter( [255, 0, 0], 16, js13k.Knight );
 			this.imagesDummy = this._getCharacter( [0, 0, 0], 48 );
 			this.imagesPirate = this._getCharacter( [255, 255, 255], 32 );
 			this.imagesCrate = this._getCharacter( [0, 0, 0], 48, null, 32 );

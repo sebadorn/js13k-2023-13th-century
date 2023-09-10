@@ -16,7 +16,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			h: js13k.TILE_SIZE * 8,
 		};
 
-		const fighter1 = new js13k.Fighter( {
+		const fighter1 = new js13k.Player( {
 			x: js13k.TILE_SIZE * 6,
 			y: js13k.TILE_SIZE * 3,
 			item: new js13k.WeaponFist()
