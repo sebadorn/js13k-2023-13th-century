@@ -27,9 +27,8 @@ js13k.LevelObject = class {
 		this.afflicted = {};
 		// this.canInteract = false;
 		this.effects = [];
-		this.facing = new js13k.Vector2D( data.facingX || 1, 0 );
-		this.healthTotal = Infinity;
-		this.health = Infinity;
+		this.facingX = data.facingX || 1;
+		this.health = this.healthTotal = Infinity;
 		// this.highlight = false;
 		// this.level = null;
 		this.speed = new js13k.Vector2D( 4, 4 );
@@ -71,9 +70,9 @@ js13k.LevelObject = class {
 
 	/**
 	 *
-	 * @param {CanvasRenderingContext2D} _ctx
+	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	draw( _ctx ) {}
+	draw() {}
 
 
 	/**
@@ -83,7 +82,7 @@ js13k.LevelObject = class {
 	 * @param {boolean?}       isAfterDodge
 	 */
 	fixPosition( oldPos, isAfterDodge ) {
-		if( !this.level ) {
+		if( !this.level || this.noFixPos ) {
 			return;
 		}
 
@@ -182,10 +181,8 @@ js13k.LevelObject = class {
 		if( dir.x || dir.y ) {
 			newState = js13k.STATE_WALKING;
 
-			this.facing.set(
-				dir.x == 0 ? this.facing.x : ( dir.x > 0 ? 1 : -1 ), // 1: facing right, -1: facing left
-				dir.y == 0 ? this.facing.y : ( dir.y > 0 ? 1 : -1 )  // 1: facing down,  -1: facing up
-			);
+			// 1: facing right, -1: facing left
+			this.facingX = dir.x == 0 ? this.facingX : ( dir.x > 0 ? 1 : -1 );
 		}
 
 		this.fixPosition( oldPos );

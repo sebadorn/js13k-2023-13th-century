@@ -6,6 +6,7 @@ js13k.Level.Intro = class extends js13k.Level {
 
 	/**
      *
+	 * @override
      * @constructor
      */
 	constructor() {
@@ -78,7 +79,7 @@ js13k.Level.Intro = class extends js13k.Level {
 			width, height
 		);
 
-		ctx.font = 'italic 40px "Times New Roman", serif';
+		ctx.font = 'italic 40px ' + js13k.FONT_SERIF;
 		ctx.textAlign = 'center';
 		ctx.fillStyle = '#000';
 
@@ -120,7 +121,7 @@ js13k.Level.Intro = class extends js13k.Level {
 			x = width + js13k.TILE_SIZE * 2.5;
 			y = js13k.TILE_SIZE * 2 + ( 1 - progress ) * js13k.TILE_SIZE_HALF;
 
-			ctx.font = '32px ' + js13k.FONT;
+			ctx.font = '32px ' + js13k.FONT_SANS;
 			ctx.textAlign = 'left';
 			ctx.fillStyle = '#ffffff' + Math.round( progress * 255 ).toString( 16 ).padStart( 2, '0' );
 
@@ -152,7 +153,7 @@ js13k.Level.Intro = class extends js13k.Level {
 
 				js13k.Renderer.resetTransform();
 		
-				ctx.font = '32px ' + js13k.FONT;
+				ctx.font = '32px ' + js13k.FONT_SANS;
 				ctx.fillStyle = '#fa0';
 				ctx.textBaseline = 'middle';
 				ctx.fillText( 'Continue', x + dh + 32, y );

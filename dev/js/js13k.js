@@ -10,7 +10,9 @@ const js13k = {
 
 	// Config
 	DEBUG: true,
-	FONT: 'Arial, sans-serif',
+	FONT_SANS: 'Arial, sans-serif',
+	FONT_SERIF: '"Times New Roman", serif',
+	FONT_MONO: '"Courier New", monospace',
 	TARGET_FPS: 60,
 	TILE_SIZE: 96,
 	TILE_SIZE_HALF: 48,

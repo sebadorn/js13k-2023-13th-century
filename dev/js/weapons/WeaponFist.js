@@ -35,7 +35,7 @@ js13k.WeaponFist = class extends js13k.Weapon {
 		};
 
 		// Adjust for facing the other direction
-		if( this.owner.facing.x < 0 ) {
+		if( this.owner.facingX < 0 ) {
 			wpAABB.x -= this.owner.w + wpAABB.w;
 		}
 

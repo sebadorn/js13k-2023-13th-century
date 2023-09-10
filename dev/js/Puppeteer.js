@@ -77,7 +77,7 @@ js13k.Puppeteer = {
 			return false;
 		}
 
-		char.facing.x = dir.x < 0 ? -1 : 1;
+		char.facingX = dir.x < 0 ? -1 : 1;
 		char.speed.set( 11, 11 );
 		char.dodge();
 

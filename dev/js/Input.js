@@ -66,19 +66,19 @@ js13k.Input = {
 			},
 			[this.ACTION.ATTACK]: {
 				keyboard: ['Space', 'Enter'],
-				gamepad: [0]
+				gamepad: [0, 2] // X, Square
 			},
 			[this.ACTION.DODGE]: {
 				keyboard: ['ShiftLeft', 'ShiftRight'],
-				gamepad: []
+				gamepad: [4, 5] // R1, R2
 			},
 			[this.ACTION.DO]: {
 				keyboard: ['Space', 'Enter'],
-				gamepad: [0]
+				gamepad: [0, 2] // X, Square
 			},
 			[this.ACTION.INTERACT]: {
 				keyboard: ['KeyE', 'CtrlLeft'],
-				gamepad: [0]
+				gamepad: [1, 3] // Triangle, Circle
 			},
 		};
 	},

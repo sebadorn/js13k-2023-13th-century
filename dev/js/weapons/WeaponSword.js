@@ -33,7 +33,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		this.pos.x = this.owner.pos.x - js13k.TILE_SIZE_HALF;
 		this.pos.y = this.owner.pos.y - this.owner.h + this.h / 2;
 
-		if( this.owner.facing.x > 0 ) {
+		if( this.owner.facingX > 0 ) {
 			this.pos.x += js13k.TILE_SIZE_HALF * 1.5 + this.owner.w;
 		}
 	}
@@ -67,7 +67,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		];
 
 		// Adjust for facing the other direction
-		if( this.owner.facing.x < 0 ) {
+		if( this.owner.facingX < 0 ) {
 			wpAABB[0].x -= this.owner.w + wpAABB[0].w;
 			wpAABB[1].x -= this.owner.w + wpAABB[1].w;
 		}

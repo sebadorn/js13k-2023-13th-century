@@ -6,6 +6,7 @@ js13k.Level.Ship = class extends js13k.Level {
 
 	/**
      *
+	 * @override
      * @constructor
      */
 	constructor() {
@@ -20,27 +21,156 @@ js13k.Level.Ship = class extends js13k.Level {
 		};
 
 		this.player = new js13k.Player( {
-			x: js13k.TILE_SIZE * 2,
-			y: js13k.TILE_SIZE * 2,
+			x: this.limits.w / 2 - js13k.TILE_SIZE * 2,
+			y: this.limits.h / 2 - js13k.TILE_SIZE,
 			item: new js13k.WeaponFist()
 		} );
 
-		this.addCharacters(
-			this.player,
-			new js13k.Knight( {
-				x: js13k.TILE_SIZE * 12,
-				y: js13k.TILE_SIZE * 2,
-				facingX: -1,
-				item: new js13k.WeaponSword()
-			} ),
-		);
+		this.addCharacters( this.player );
+
+		const yBottom = this.limits.h - js13k.TILE_SIZE;
 
 		this.addItems(
+			this._buildMast(),
 			new js13k.WeaponSword( {
 				x: js13k.TILE_SIZE * 4,
 				y: js13k.TILE_SIZE * 4.5
 			} ),
+			new js13k.Crate( { x: this.limits.w / 2 - js13k.TILE_SIZE_HALF, y: this.limits.h / 2 - js13k.TILE_SIZE } ),
+			new js13k.Crate( { y: yBottom } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 4 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 2, y: js13k.TILE_SIZE } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 2, y: js13k.TILE_SIZE } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 18 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 19 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 18.5, y: js13k.TILE_SIZE } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 8.5, y: yBottom } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 9.5, y: yBottom } ),
+			new js13k.Crate( { x: this.limits.w - js13k.TILE_SIZE * 2, y: yBottom } ),
 		);
+
+		this.introTimer = new js13k.Timer( this, 10 );
+		this.waveTimer = new js13k.Timer( this );
+		this.nextWaveTimer = new js13k.Timer( this, 4 );
+		this.waveCounter = 0;
+		this.numWaves = 3;
+	}
+
+
+	/**
+	 *
+	 * @private
+	 * @return {js13k.LevelObject}
+	 */
+	_buildMast() {
+		const mast = new js13k.LevelObject( {
+			x: this.limits.w / 2 + js13k.TILE_SIZE_HALF + 8,
+			y: this.limits.h / 2 - js13k.TILE_SIZE_HALF * 1.25,
+			w: js13k.TILE_SIZE - 16,
+			h: js13k.TILE_SIZE_HALF * 1.25
+		} );
+
+		mast.isSolid = true;
+
+		mast.draw = function( ctx ) {
+			const y = this.pos.y - js13k.TILE_SIZE * 8;
+			const h = this.h + js13k.TILE_SIZE * 8;
+			const lw = this.w / 3;
+
+			ctx.fillStyle = '#5a3c2e';
+			ctx.fillRect( this.pos.x, y, this.w, h );
+			ctx.fillStyle = '#0002';
+			ctx.fillRect( this.pos.x, y, lw, h );
+			ctx.fillStyle = '#fff1';
+			ctx.fillRect( this.pos.x + this.w - lw, y, lw, h );
+		};
+
+		return mast;
+	}
+
+
+	/**
+	 *
+	 * @private
+	 */
+	_startWave() {
+		this.waveCounter++;
+		this.waveTimer.set( 2 );
+		this.waveEnemies = [];
+
+		if( this.waveCounter === 1 ) {
+			this.waveEnemies.push(
+				new js13k.Pirate( {
+					x: -js13k.TILE_SIZE,
+					y: js13k.TILE_SIZE * 1.5
+				} ),
+				new js13k.Pirate( {
+					x: -js13k.TILE_SIZE,
+					y: js13k.TILE_SIZE * 3
+				} ),
+				new js13k.Pirate( {
+					x: this.limits.w,
+					y: js13k.TILE_SIZE * 2.5,
+					facingX: -1
+				} ),
+			);
+		}
+		else if( this.waveCounter === 2 ) {
+			this.waveEnemies.push(
+				new js13k.Pirate( {
+					x: this.limits.w,
+					y: js13k.TILE_SIZE * 1.5,
+					facingX: -1
+				} ),
+				new js13k.Pirate( {
+					x: this.limits.w,
+					y: js13k.TILE_SIZE * 3,
+					facingX: -1
+				} ),
+				new js13k.Pirate( {
+					x: -js13k.TILE_SIZE,
+					y: js13k.TILE_SIZE * 2.5
+				} ),
+			);
+		}
+		else if( this.waveCounter === 3 ) {
+			this.waveEnemies.push(
+				new js13k.Pirate( {
+					x: this.limits.w,
+					y: js13k.TILE_SIZE * 1.5,
+					facingX: -1
+				} ),
+				new js13k.Knight( {
+					x: this.limits.w,
+					y: js13k.TILE_SIZE * 3,
+					facingX: -1,
+					item: new js13k.WeaponSword()
+				} ),
+				new js13k.Knight( {
+					x: -js13k.TILE_SIZE,
+					y: js13k.TILE_SIZE * 2.5,
+					item: new js13k.WeaponSword()
+				} ),
+			);
+		}
+
+		this.waveEnemies.forEach( enemy => {
+			enemy.noFixPos = true;
+			const dir = new js13k.Vector2D( enemy.facingX / 2 );
+
+			enemy.action = dt => {
+				if( this.waveTimer.elapsed() ) {
+					enemy.action = null;
+					delete enemy.noFixPos;
+
+					return;
+				}
+
+				return enemy.moveInDir( dir, dt, js13k.STATE_WALKING );
+			};
+		} );
+
+		this.addCharacters( ...this.waveEnemies );
 	}
 
 
@@ -65,7 +195,7 @@ js13k.Level.Ship = class extends js13k.Level {
 			const lineWidth = 6;
 			const [cnvShip, ctxShip] = js13k.Renderer.getOffscreenCanvas(
 				this.limits.w + lineWidth * 1.5,
-				this.limits.h + lineWidth * 0.5 + js13k.TILE_SIZE
+				this.limits.h + lineWidth * 0.5 + js13k.TILE_SIZE * 2
 			);
 
 			// Ship outline
@@ -96,16 +226,16 @@ js13k.Level.Ship = class extends js13k.Level {
 			ctxShip.fillStyle = '#5a3c2e';
 			ctxShip.fillRect(
 				offset - ctxShip.lineWidth, this.limits.h,
-				this.limits.w + ctxShip.lineWidth * 2, js13k.TILE_SIZE
+				this.limits.w + ctxShip.lineWidth * 2, js13k.TILE_SIZE * 2
 			);
 
 			ctxShip.fillStyle = js13k.Renderer.createLinearGradient(
-				0, this.limits.h, 0, this.limits.h + js13k.TILE_SIZE,
+				0, this.limits.h, 0, this.limits.h + js13k.TILE_SIZE * 2,
 				'#0003', '#4b73ac30'
 			);
 			ctxShip.fillRect(
 				offset - ctxShip.lineWidth, this.limits.h,
-				this.limits.w + ctxShip.lineWidth * 2, js13k.TILE_SIZE
+				this.limits.w + ctxShip.lineWidth * 2, js13k.TILE_SIZE * 2
 			);
 
 			// Dark to light gradient on tiles for depth
@@ -123,13 +253,23 @@ js13k.Level.Ship = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawForeground( ctx ) {
+		/** @type {CanvasRenderingContext2D} */
+		const ctxUI = js13k.Renderer.ctxUI;
+		ctxUI.fillStyle = '#fff';
+		ctxUI.font = '600 23px ' + js13k.FONT_MONO;
+		ctxUI.textAlign = 'left';
+		ctxUI.fillText(
+			`Wave ${this.waveCounter}/${this.numWaves}`,
+			js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
+		);
+
 		const lineWidth = 6;
 
 		// Waves against the ship
 		if( this._cnvWaves ) {
 			ctx.drawImage(
 				this._cnvWaves,
-				-this.waterMovement, this.limits.h + 0.5,
+				-this.waterMovement, this.limits.h + js13k.TILE_SIZE + 0.5,
 				js13k.TILE_SIZE * ( this.numTilesX + 1 ), js13k.TILE_SIZE
 			);
 		}
@@ -212,6 +352,35 @@ js13k.Level.Ship = class extends js13k.Level {
 
 			this._cnvRailing = canvasFg;
 		}
+
+		if( !this.introTimer.elapsed() ) {
+			js13k.Renderer.drawMonologueBox(
+				this.player,
+				[
+					'The Rhine has become a',
+					'battlefield! I have to',
+					'to defend the ship!',
+				],
+				2
+			);
+		}
+	}
+
+
+	/**
+	 *
+	 * @return {number}
+	 */
+	numEnemiesAlive() {
+		let alive = 0;
+
+		this.objects.forEach( o => {
+			if( o instanceof js13k.Enemy ) {
+				alive += o.health > 0 ? 1 : 0;
+			}
+		} );
+
+		return alive;
 	}
 
 
@@ -222,7 +391,18 @@ js13k.Level.Ship = class extends js13k.Level {
 	 */
 	update( dt ) {
 		super.update( dt );
-		this.waterMovement = ( this.timer % 25 ) / 25 * js13k.TILE_SIZE;
+		this.waterMovement = ( this.timer % 20 ) / 20 * js13k.TILE_SIZE;
+
+		// More waves to come and wait for next one is over
+		if( this.waveCounter <= this.numWaves && this.nextWaveTimer.elapsed() ) {
+			this._startWave();
+			this.nextWaveTimer.set( 20 );
+		}
+
+		// No more waves coming and all enemies are defeated
+		if( this.waveCounter > this.numWaves && this.numEnemiesAlive() === 0 ) {
+			js13k.Renderer.changeLevel( new js13k.Level.Finale() );
+		}
 	}
 
 

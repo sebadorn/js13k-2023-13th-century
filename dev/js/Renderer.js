@@ -180,7 +180,7 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = '56px ' + js13k.FONT;
+		this.ctxUI.font = '56px ' + js13k.FONT_SANS;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 56 );
@@ -223,7 +223,7 @@ js13k.Renderer = {
 		this.ctxUI.strokeRect( x + 6, y + 6, js13k.TILE_SIZE * 2 - 12, js13k.TILE_SIZE * 2 - 12 );
 
 		this.ctxUI.fillStyle = '#fff';
-		this.ctxUI.font = '600 31px "Courier New", monospace';
+		this.ctxUI.font = '600 31px ' + js13k.FONT_MONO;
 		this.ctxUI.textAlign = 'left';
 		this.ctxUI.textBaseline = 'alphabetic';
 
@@ -249,7 +249,7 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = '56px ' + js13k.FONT;
+		this.ctxUI.font = '56px ' + js13k.FONT_SANS;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'PAUSED', this.center.x, this.center.y - 56 );
@@ -429,7 +429,7 @@ js13k.Renderer = {
 				this.ctxUI.fillRect( 60, this.cnv.height / this.scale - 74, 140, 28 );
 
 				this.ctxUI.fillStyle = '#FFF';
-				this.ctxUI.font = '16px monospace';
+				this.ctxUI.font = '600 16px ' + js13k.FONT_MONO;
 				this.ctxUI.textAlign = 'right';
 				this.ctxUI.textBaseline = 'bottom';
 				this.ctxUI.fillText(

@@ -6,6 +6,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 
 	/**
 	 *
+	 * @override
 	 * @constructor
 	 */
 	constructor() {
@@ -48,7 +49,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		/** @type {CanvasRenderingContext2D} */
 		const ctx = js13k.Renderer.ctx;
 
-		ctx.font = '600 23px "Courier New", monospace';
+		ctx.font = '600 23px ' + js13k.FONT_MONO;
 		ctx.fillStyle = '#fffc';
 		ctx.textAlign = 'center';
 

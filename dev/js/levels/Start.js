@@ -6,6 +6,7 @@ js13k.Level.Start = class extends js13k.Level {
 
 	/**
      *
+	 * @override
      * @constructor
      */
 	constructor() {
@@ -69,14 +70,14 @@ js13k.Level.Start = class extends js13k.Level {
 		ctx.fillStyle = '#0d161e';
 		js13k.Renderer.fillBackground();
 
-		ctx.font = '600 64px ' + js13k.FONT;
+		ctx.font = '600 64px ' + js13k.FONT_SANS;
 		ctx.textAlign = 'left';
 		ctx.fillStyle = '#fa0';
 		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y + 3 );
 		ctx.fillStyle = '#777';
 		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y );
 
-		ctx.font = '42px ' + js13k.FONT;
+		ctx.font = '42px ' + js13k.FONT_SANS;
 		x += js13k.TILE_SIZE_HALF / 2 + 114;
 		y += 96;
 		this._drawButton( ctx, 'New Game', x, y, this.selectedButton === 0 );

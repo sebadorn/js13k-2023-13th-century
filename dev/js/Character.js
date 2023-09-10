@@ -24,7 +24,7 @@ js13k.Character = class extends js13k.LevelObject {
 
 		this.images = js13k.Renderer.imagesPlayer;
 
-		this.healthTotal = this.health = 100;
+		this.health = this.healthTotal = 100;
 		this.isSolid = true;
 
 		this.item = data.item;
@@ -92,7 +92,7 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	_drawItem( ctx ) {
-		const mirror = this.facing.x < 0;
+		const mirror = this.facingX < 0;
 
 		if( mirror ) {
 			this._applyMirroring( ctx, -1 );
@@ -169,7 +169,7 @@ js13k.Character = class extends js13k.LevelObject {
 			return;
 		}
 
-		let sx = this.facing.x < 0 ? 16 : 0;
+		let sx = this.facingX < 0 ? 16 : 0;
 		let sy = 0;
 		let image = this.images;
 
@@ -178,7 +178,7 @@ js13k.Character = class extends js13k.LevelObject {
 		if( this.isDodging ) {
 			let rotate = this.dodgeTimer.progress() * 360 * 3 * Math.PI / 180;
 
-			if( this.facing.x < 0 ) {
+			if( this.facingX < 0 ) {
 				rotate = -rotate;
 			}
 
@@ -257,9 +257,9 @@ js13k.Character = class extends js13k.LevelObject {
 	 */
 	getInteractHitbox() {
 		const hb = {
-			x: this.pos.x,
+			x: this.pos.x + 16,
 			y: this.pos.y + this.h,
-			w: this.w,
+			w: this.w - 32,
 			h: js13k.TILE_SIZE_HALF / 2
 		};
 
@@ -311,7 +311,7 @@ js13k.Character = class extends js13k.LevelObject {
 				this.fixPosition( this.posBeforeDodge, true );
 			}
 			else {
-				dir = new js13k.Vector2D( this.facing.x < 0 ? -1 : 1, 0 );
+				dir = new js13k.Vector2D( this.facingX < 0 ? -1 : 1, 0 );
 				this.moveInDir( dir, dt, newState );
 			}
 		}
