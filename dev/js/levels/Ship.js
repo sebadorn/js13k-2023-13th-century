@@ -23,7 +23,7 @@ js13k.Level.Ship = class extends js13k.Level {
 		this.player = new js13k.Player( {
 			x: this.limits.w / 2 - js13k.TILE_SIZE * 2,
 			y: this.limits.h / 2 - js13k.TILE_SIZE,
-			item: new js13k.WeaponFist()
+			item: new js13k.WeaponSaber()
 		} );
 
 		this.addCharacters( this.player );
@@ -32,7 +32,7 @@ js13k.Level.Ship = class extends js13k.Level {
 
 		this.addItems(
 			this._buildMast(),
-			new js13k.WeaponSword( {
+			new js13k.WeaponSaber( {
 				x: js13k.TILE_SIZE * 4,
 				y: js13k.TILE_SIZE * 4.5
 			} ),
@@ -72,6 +72,8 @@ js13k.Level.Ship = class extends js13k.Level {
 
 		mast.isSolid = true;
 
+		mast.canTakeDamage = () => false;
+
 		mast.draw = function( ctx ) {
 			const y = this.pos.y - js13k.TILE_SIZE * 8;
 			const h = this.h + js13k.TILE_SIZE * 8;
@@ -102,7 +104,8 @@ js13k.Level.Ship = class extends js13k.Level {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
 					x: -js13k.TILE_SIZE,
-					y: js13k.TILE_SIZE * 1.5
+					y: js13k.TILE_SIZE * 1.5,
+					item: new js13k.WeaponSaber()
 				} ),
 				new js13k.Pirate( {
 					x: -js13k.TILE_SIZE,

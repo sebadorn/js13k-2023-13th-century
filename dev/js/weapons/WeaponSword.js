@@ -10,13 +10,14 @@ js13k.WeaponSword = class extends js13k.Weapon {
 	 * @param {object} data
 	 */
 	constructor( data = {} ) {
-		data.w = js13k.TILE_SIZE_HALF;
-		data.h = js13k.TILE_SIZE * 2;
+		data.w = data.w || js13k.TILE_SIZE_HALF;
+		data.h = data.h || ( js13k.TILE_SIZE * 2 );
 		super( data );
 
 		this.animDuration = 0.25;
 		this.canInteract = true;
 		this.damage = 34;
+		this.hitMoveDistance = js13k.TILE_SIZE * 1.35;
 	}
 
 
@@ -112,8 +113,8 @@ js13k.WeaponSword = class extends js13k.Weapon {
 			rotate = 80 * Math.PI / 180;
 		}
 		else if( this.owner?.isAttacking ) {
-			oc.x = dx + js13k.TILE_SIZE / 4;
-			oc.y = dy + js13k.TILE_SIZE * 2;
+			oc.x = dx + this.w / 2;
+			oc.y = dy + this.h;
 
 			let progress = this.owner.attackTimer.progress();
 			const hitAngle = Math.PI;
@@ -140,7 +141,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		ctx.drawImage(
 			js13k.Renderer.images,
 			32, 16, 8, 32,
-			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE * 2
+			dx, dy, this.w, this.h
 		);
 
 		if( rotate && this.owner?.isAttacking ) {
@@ -179,7 +180,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 		dir.normalize();
 
 		const timer = new js13k.Timer( this.owner.level, 0.5 );
-		const distance = js13k.TILE_SIZE * 1.35 - target.weight;
+		const distance = Math.max( 0, this.hitMoveDistance - target.weight );
 
 		target.afflicted.stun = true;
 

@@ -152,8 +152,8 @@ js13k.Puppeteer = {
 			return false;
 		}
 
-		const timer = new js13k.Timer( char.level, 1 );
-		closestDistVec.normalize();
+		const timer = new js13k.Timer( char.level, 0.5 );
+		closestDistVec.normalize().mul( 0.5 );
 
 		// Walk in direction of weapon
 		char.action = function( dt ) {

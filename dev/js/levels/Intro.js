@@ -189,7 +189,7 @@ js13k.Level.Intro = class extends js13k.Level {
 			}
 			else {
 				js13k.Audio.play( js13k.Audio.SELECT );
-				js13k.Renderer.level = new js13k.Level.Ship();
+				js13k.Renderer.level = new js13k.Level.Tutorial();
 			}
 		}
 	}

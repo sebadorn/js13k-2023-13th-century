@@ -50,6 +50,7 @@ terser \
 	'characters/Player.js' \
 	'weapons/WeaponFist.js' \
 	'weapons/WeaponSword.js' \
+	'weapons/WeaponSaber.js' \
 	'levels/Start.js' \
 	'levels/Tutorial.js' \
 	'levels/Intro.js' \
