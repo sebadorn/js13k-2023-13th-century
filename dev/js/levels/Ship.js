@@ -96,6 +96,10 @@ js13k.Level.Ship = class extends js13k.Level {
 	 * @private
 	 */
 	_startWave() {
+		if( this.waveCounter >= this.numWaves ) {
+			return;
+		}
+
 		this.waveCounter++;
 		this.waveTimer.set( 2 );
 		this.waveEnemies = [];

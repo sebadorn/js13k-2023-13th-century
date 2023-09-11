@@ -45,6 +45,7 @@ terser \
 	'Weapon.js' \
 	'characters/Enemy.js' \
 	'characters/Knight.js' \
+	'characters/Boss.js' \
 	'characters/Pirate.js' \
 	'characters/Dummy.js' \
 	'characters/Player.js' \
@@ -57,6 +58,7 @@ terser \
 	'levels/Port.js' \
 	'levels/Ship.js' \
 	'levels/Finale.js' \
+	'levels/Ending.js' \
 	--ecma 12 --warn \
 	--compress --toplevel \
 	--mangle --mangle-props \

@@ -351,6 +351,7 @@ js13k.Renderer = {
 			// Characters
 			this.imagesPlayer = this._getCharacter( [255, 255, 0], 16, js13k.Player );
 			this.imagesKnight = this._getCharacter( [255, 0, 0], 16, js13k.Knight );
+			this.imagesBoss = this._getCharacter( [127, 0, 0], 16, js13k.Boss );
 			this.imagesDummy = this._getCharacter( [0, 0, 0], 48 );
 			this.imagesPirate = this._getCharacter( [255, 255, 255], 32 );
 			this.imagesCrate = this._getCharacter( [0, 0, 0], 48, null, 32 );
@@ -425,16 +426,12 @@ js13k.Renderer = {
 
 			// Draw FPS info
 			if( js13k.DEBUG ) {
-				this.ctxUI.fillStyle = '#000';
-				this.ctxUI.fillRect( 60, this.cnv.height / this.scale - 74, 140, 28 );
-
-				this.ctxUI.fillStyle = '#FFF';
+				this.ctxUI.fillStyle = '#fff';
 				this.ctxUI.font = '600 16px ' + js13k.FONT_MONO;
-				this.ctxUI.textAlign = 'right';
-				this.ctxUI.textBaseline = 'bottom';
+				this.ctxUI.textAlign = 'left';
 				this.ctxUI.fillText(
 					~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 1000 ) / 1000,
-					192, this.cnv.height / this.scale - 50
+					js13k.TILE_SIZE, this.cnv.height / this.scale - js13k.TILE_SIZE
 				);
 			}
 		}

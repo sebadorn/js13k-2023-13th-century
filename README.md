@@ -1,4 +1,4 @@
-# js13k 2023: ???
+# js13k 2023: Treasure of the Nibelungs
 
 Entry for the [js13k competition of 2023](https://2023.js13kgames.com/).  
 Theme: **13th Century**
@@ -9,6 +9,19 @@ Theme: **13th Century**
 
 
 
-## Controls
+## Controls keyboard
 
-* Escape to pause/unpause
+* [W][A][S][D] or arrows keys to move
+* [Enter] or [Space] to attack
+* [E] to pick up items
+* [Shift] to dodge roll
+* [Escape] to pause/unpause
+
+
+## Controls gamepad
+
+* D-pad or sticks to move
+* X or Square to attack
+* Triangle or Circle to pick up items
+* R1 or R2 to dodge roll
+* Options to pause/unpause
