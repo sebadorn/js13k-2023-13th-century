@@ -11,6 +11,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 */
 	constructor() {
 		super();
+		this.id = 1;
 
 		this.limits = {
 			w: js13k.Renderer.center.x * 2,

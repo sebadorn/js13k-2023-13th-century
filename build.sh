@@ -40,6 +40,7 @@ terser \
 	'Level.js' \
 	'LevelObject.js' \
 	'Crate.js' \
+	'Gold.js' \
 	'Character.js' \
 	'Puppeteer.js' \
 	'Weapon.js' \

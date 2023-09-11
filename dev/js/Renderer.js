@@ -45,18 +45,25 @@ js13k.Renderer = {
 	 * @param  {js13k.Character?} char
 	 * @return {HTMLCanvasElement}
 	 */
-	_getCharacter( color, sy, char, sx = 0 ) {
-		const [cnv, ctx] = this.getOffscreenCanvas( 32, 32 );
+	_getCharacterCanvas( color, sy, char, sx = 0 ) {
+		// Include a 1px transparent border around each cell (2x2)
+		// to fix jagged borders when applying rotation.
+		const [cnv, ctx] = this.getOffscreenCanvas( 36, 36 );
 
 		ctx.drawImage(
 			this.images,
-			sx, sy, 32, 16,
-			0, 0, 32, 16
+			sx, sy, 16, 16,
+			1, 1, 16, 16
+		);
+		ctx.drawImage(
+			this.images,
+			sx + 16, sy, 16, 16,
+			18, 1, 16, 16
 		);
 
 		char && char.drawFace( ctx );
 
-		let imgData = ctx.getImageData( 0, 0, 32, 16 );
+		let imgData = ctx.getImageData( 1, 1, 35, 16 );
 
 		for( let i = 0; i < imgData.data.length; i += 4 ) {
 			let r = imgData.data[i];
@@ -71,11 +78,11 @@ js13k.Renderer = {
 			}
 		}
 
-		ctx.putImageData( imgData, 0, 0 );
-		ctx.putImageData( imgData, 0, 16 ); // Copy top row for bottom
+		ctx.putImageData( imgData, 1, 1 );
+		ctx.putImageData( imgData, 1, 18 ); // Copy top row for bottom
 
 		// Get bottom row to convert to white
-		imgData = ctx.getImageData( 0, 16, 32, 16 );
+		imgData = ctx.getImageData( 1, 18, 34, 16 );
 
 		for( let i = 0; i < imgData.data.length; i += 4 ) {
 			const alpha = imgData.data[i + 3];
@@ -88,7 +95,31 @@ js13k.Renderer = {
 			}
 		}
 
-		ctx.putImageData( imgData, 0, 16 );
+		ctx.putImageData( imgData, 1, 18 );
+
+		return cnv;
+	},
+
+
+	/**
+	 *
+	 * @private
+	 * @param  {number} sx 
+	 * @param  {number} sy 
+	 * @param  {number} sw 
+	 * @param  {number} sh 
+	 * @return {HTMLCanvasElement} 
+	 */
+	_getObjectCanvas( sx, sy, sw, sh ) {
+		// Include a 1px transparent border to fix
+		// jagged borders when applying rotation.
+		const [cnv, ctx] = this.getOffscreenCanvas( sw + 2, sh + 2 );
+
+		ctx.drawImage(
+			this.images,
+			sx, sy, sw, sh,
+			1, 1, sw, sh
+		);
 
 		return cnv;
 	},
@@ -122,7 +153,7 @@ js13k.Renderer = {
 	 * @param {js13k.Level} level
 	 */
 	changeLevel( level ) {
-		// TODO: transition animation
+		js13k.saveGame( level );
 		this.level = level;
 	},
 
@@ -349,12 +380,17 @@ js13k.Renderer = {
 
 
 			// Characters
-			this.imagesPlayer = this._getCharacter( [255, 255, 0], 16, js13k.Player );
-			this.imagesKnight = this._getCharacter( [255, 0, 0], 16, js13k.Knight );
-			this.imagesBoss = this._getCharacter( [127, 0, 0], 16, js13k.Boss );
-			this.imagesDummy = this._getCharacter( [0, 0, 0], 48 );
-			this.imagesPirate = this._getCharacter( [255, 255, 255], 32 );
-			this.imagesCrate = this._getCharacter( [0, 0, 0], 48, null, 32 );
+			this.imagesPlayer = this._getCharacterCanvas( [255, 255, 0], 16, js13k.Player );
+			this.imagesKnight = this._getCharacterCanvas( [255, 0, 0], 16, js13k.Knight );
+			this.imagesBoss = this._getCharacterCanvas( [127, 0, 0], 16, js13k.Boss );
+			this.imagesDummy = this._getCharacterCanvas( [0, 0, 0], 48 );
+			this.imagesPirate = this._getCharacterCanvas( [255, 255, 255], 32 );
+			this.imagesCrate = this._getCharacterCanvas( [0, 0, 0], 48, null, 32 );
+
+			// Weapons
+			this.imageWeaponFist = this._getObjectCanvas( 41, 16, 7, 6 );
+			this.imageWeaponSword = this._getObjectCanvas( 32, 16, 8, 32 );
+			this.imageWeaponSaber = this._getObjectCanvas( 40, 32, 6, 14 );
 
 
 			// Repeating water pattern

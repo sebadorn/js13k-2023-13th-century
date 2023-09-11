@@ -121,8 +121,8 @@ js13k.WeaponSaber = class extends js13k.WeaponSword {
 		}
 
 		ctx.drawImage(
-			js13k.Renderer.images,
-			40, 32, 6, 14,
+			js13k.Renderer.imageWeaponSaber,
+			1, 1, 6, 14,
 			dx, dy, this.w, this.h
 		);
 

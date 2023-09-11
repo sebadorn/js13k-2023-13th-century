@@ -11,6 +11,7 @@ js13k.Level.Finale = class extends js13k.Level {
      */
 	constructor() {
 		super();
+		this.id = 4;
 
 		this.numTilesX = 24;
 		this.numTilesY = 6;
@@ -21,13 +22,13 @@ js13k.Level.Finale = class extends js13k.Level {
 		};
 
 		this.player = new js13k.Player( {
-			x: this.limits.w / 2 - js13k.TILE_SIZE * 2,
+			x: js13k.TILE_SIZE * 4,
 			y: this.limits.h / 2 - js13k.TILE_SIZE,
 			item: new js13k.WeaponSaber()
 		} );
 
 		this.boss = new js13k.Boss( {
-			x: this.player.pos.x + js13k.TILE_SIZE * 8,
+			x: this.limits.w - js13k.TILE_SIZE * 5,
 			y: this.player.pos.y,
 			facingX: -1,
 			item: new js13k.WeaponSword()
@@ -38,9 +39,9 @@ js13k.Level.Finale = class extends js13k.Level {
 		let x = this.limits.w - js13k.TILE_SIZE + 6;
 
 		const items = [
-			this._buildMast(),
 			new js13k.Crate( { x: js13k.TILE_SIZE * 4, y: 0 } ),
 			new js13k.Crate( { x: js13k.TILE_SIZE * 5, y: 0 } ),
+			new js13k.Crate( { x: js13k.TILE_SIZE * 12, y: 0 } ),
 			new js13k.Crate( { x: js13k.TILE_SIZE * 16, y: this.limits.h - js13k.TILE_SIZE } ),
 			new js13k.Crate( { x: js13k.TILE_SIZE * 17, y: this.limits.h - js13k.TILE_SIZE * 2 } ),
 			new js13k.Crate( { x: js13k.TILE_SIZE * 18, y: this.limits.h - js13k.TILE_SIZE * 2 } ),
@@ -75,40 +76,6 @@ js13k.Level.Finale = class extends js13k.Level {
 	/**
 	 *
 	 * @private
-	 * @return {js13k.LevelObject}
-	 */
-	_buildMast() {
-		const mast = new js13k.LevelObject( {
-			x: this.limits.w / 2 + js13k.TILE_SIZE_HALF + 8,
-			y: this.limits.h / 2 - js13k.TILE_SIZE_HALF * 1.25,
-			w: js13k.TILE_SIZE - 16,
-			h: js13k.TILE_SIZE_HALF * 1.25
-		} );
-
-		mast.isSolid = true;
-
-		mast.canTakeDamage = () => false;
-
-		mast.draw = function( ctx ) {
-			const y = this.pos.y - js13k.TILE_SIZE * 8;
-			const h = this.h + js13k.TILE_SIZE * 8;
-			const lw = this.w / 3;
-
-			ctx.fillStyle = '#5a3c2e';
-			ctx.fillRect( this.pos.x, y, this.w, h );
-			ctx.fillStyle = '#0002';
-			ctx.fillRect( this.pos.x, y, lw, h );
-			ctx.fillStyle = '#fff1';
-			ctx.fillRect( this.pos.x + this.w - lw, y, lw, h );
-		};
-
-		return mast;
-	}
-
-
-	/**
-	 *
-	 * @private
 	 */
 	_drawBossHealth() {
 		if( this.drawnHealth <= 0 ) {
@@ -124,17 +91,22 @@ js13k.Level.Finale = class extends js13k.Level {
 		let x = js13k.TILE_SIZE * 3;
 		let y = R.cnvUI.height / R.scale - js13k.TILE_SIZE * 2;
 		let w = R.cnvUI.width / R.scale - js13k.TILE_SIZE * 6;
-		let h = js13k.TILE_SIZE_HALF;
+		let h = 24;
 
-		ctxUI.fillStyle = '#000';
+		ctxUI.fillStyle = '#000a';
 		ctxUI.fillRect( x, y, w, h );
 
 		ctxUI.fillStyle = '#f00';
 		ctxUI.fillRect( x, y, w * percent, h );
 
-		ctxUI.fillStyle = '#fff7';
+		ctxUI.fillStyle = '#fff2';
+		ctxUI.fillRect( x, y, w * percent, h / 2 );
+
+		ctxUI.fillStyle = '#fffa';
+		ctxUI.fillRect( x, y, 2, h );
 		ctxUI.fillRect( x + w / 3, y, 2, h );
 		ctxUI.fillRect( x + w * 2 / 3, y, 2, h );
+		ctxUI.fillRect( x + w, y, 2, h );
 	}
 
 
@@ -415,44 +387,6 @@ js13k.Level.Finale = class extends js13k.Level {
 		else if( percent === 0 ) {
 			js13k.Renderer.changeLevel( new js13k.Level.Ending() );
 		}
-	}
-
-
-};
-
-
-
-js13k.Gold = class extends js13k.LevelObject {
-
-
-	/**
-	 *
-	 * @override
-	 * @constructor
-	 * @param {object?} data
-	 */
-	constructor( data ) {
-		data.w = js13k.TILE_SIZE - 6;
-		data.h = js13k.TILE_SIZE - 12;
-		super( data );
-
-		this.isSolid = true;
-		this.noFixPos = true;
-		this.weight = js13k.TILE_SIZE * 2;
-	}
-
-
-	/**
-	 *
-	 * @override
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	draw( ctx ) {
-		ctx.drawImage(
-			js13k.Renderer.images,
-			16, 50, 15, 14,
-			this.pos.x, this.pos.y, this.w, this.h
-		);
 	}
 
 

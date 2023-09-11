@@ -9,6 +9,8 @@ js13k.Level = class {
 	 * @constructor
 	 */
 	constructor() {
+		this.id = 0;
+
 		// this.isGameOver = false;
 		// this.locked = false;
 

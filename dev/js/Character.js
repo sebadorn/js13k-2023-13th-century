@@ -28,6 +28,7 @@ js13k.Character = class extends js13k.LevelObject {
 		this.isSolid = true;
 
 		this.item = data.item;
+		this.perception = js13k.TILE_SIZE * 7;
 		this.speed.set( 12, 12 );
 
 		if( this.item ) {
@@ -169,8 +170,8 @@ js13k.Character = class extends js13k.LevelObject {
 			return;
 		}
 
-		let sx = this.facingX < 0 ? 16 : 0;
-		let sy = 0;
+		let sx = this.facingX < 0 ? 18 : 1;
+		let sy = 1;
 		let image = this.images;
 
 		this._drawShadow( ctx );
@@ -186,7 +187,7 @@ js13k.Character = class extends js13k.LevelObject {
 		}
 		else {
 			if( this.shouldBlinkFromDamage() ) {
-				sy = 16;
+				sy = 18;
 			}
 
 			if( this.state === js13k.STATE_WALKING ) {
@@ -207,29 +208,6 @@ js13k.Character = class extends js13k.LevelObject {
 		);
 
 		js13k.Renderer.resetTransform();
-	}
-
-
-	/**
-	 *
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	static drawFace( ctx ) {
-		ctx.fillStyle = '#000';
-
-		let y = 6;
-
-		// Looking right
-		let x = 11;
-		ctx.fillRect( x, y, 1, 4 );
-		ctx.fillRect( x - 2, y, 1, 4 );
-		ctx.fillRect( x - 4, y, 1, 4 );
-
-		// Looking left
-		x = 21;
-		ctx.fillRect( x, y, 1, 4 );
-		ctx.fillRect( x + 2, y, 1, 4 );
-		ctx.fillRect( x + 4, y, 1, 4 );
 	}
 
 

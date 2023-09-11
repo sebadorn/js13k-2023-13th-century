@@ -88,6 +88,38 @@ js13k.Level.Start = class extends js13k.Level {
 
 	/**
 	 *
+	 */
+	loadGame() {
+		const data = js13k.loadGame();
+
+		if( !data ) {
+			return;
+		}
+
+		let level = null;
+
+		if( data.level === 1 ) {
+			level = new js13k.Level.Tutorial();
+		}
+		else if( data.level === 2 ) {
+			level = new js13k.Level.Port();
+		}
+		else if( data.level === 3 ) {
+			level = new js13k.Level.Ship();
+		}
+		else if( data.level === 4 ) {
+			level = new js13k.Level.Finale();
+		}
+		else {
+			return;
+		}
+
+		js13k.Renderer.changeLevel( level );
+	}
+
+
+	/**
+	 *
 	 * @override
 	 * @param {number} dt
 	 */
@@ -103,8 +135,13 @@ js13k.Level.Start = class extends js13k.Level {
 		else if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 			js13k.Audio.play( js13k.Audio.SELECT );
 
+			// New Game
 			if( this.selectedButton === 0 ) {
-				js13k.Renderer.level = new js13k.Level.Intro();
+				js13k.Renderer.changeLevel( new js13k.Level.Intro() );
+			}
+			// Continue
+			else if( this.selectedButton === 1 ) {
+				this.loadGame();
 			}
 		}
 

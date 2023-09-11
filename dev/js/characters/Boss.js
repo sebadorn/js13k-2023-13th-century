@@ -15,6 +15,7 @@ js13k.Boss = class extends js13k.Knight {
 
 		this.health = this.healthTotal = 300;
 		this.images = js13k.Renderer.imagesBoss;
+		this.perception = js13k.TILE_SIZE * 14;
 	}
 
 
@@ -25,10 +26,10 @@ js13k.Boss = class extends js13k.Knight {
 	static drawFace( ctx ) {
 		ctx.fillStyle = '#000';
 
-		let y = 6;
+		let y = 7;
 
 		// Looking right
-		let x = 7;
+		let x = 8;
 		ctx.fillRect( x, y, 3, 1 );
 		ctx.fillRect( x + 1, y, 2, 2 );
 		ctx.fillRect( x + 2, y, 1, 3 );
@@ -36,7 +37,7 @@ js13k.Boss = class extends js13k.Knight {
 		ctx.fillRect( x + 4, y, 2, 2 );
 
 		// Looking left
-		x = 20;
+		x = 22;
 		ctx.fillRect( x, y, 2, 2 );
 		ctx.fillRect( x + 1, y, 1, 3 );
 		ctx.fillRect( x + 3, y, 1, 3 );

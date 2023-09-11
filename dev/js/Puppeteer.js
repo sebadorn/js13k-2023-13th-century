@@ -190,7 +190,7 @@ js13k.Puppeteer = {
 			c2.y - c1.y
 		);
 
-		if( dir.length() > js13k.TILE_SIZE * 7 ) {
+		if( dir.length() > char.perception ) {
 			return false;
 		}
 

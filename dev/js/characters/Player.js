@@ -59,4 +59,27 @@ js13k.Player = class extends js13k.Character {
 	}
 
 
+	/**
+	 *
+	 * @param {CanvasRenderingContext2D} ctx
+	 */
+	static drawFace( ctx ) {
+		ctx.fillStyle = '#000';
+
+		let y = 7;
+
+		// Looking right
+		let x = 12;
+		ctx.fillRect( x, y, 1, 4 );
+		ctx.fillRect( x - 2, y, 1, 4 );
+		ctx.fillRect( x - 4, y, 1, 4 );
+
+		// Looking left
+		x = 23;
+		ctx.fillRect( x, y, 1, 4 );
+		ctx.fillRect( x + 2, y, 1, 4 );
+		ctx.fillRect( x + 4, y, 1, 4 );
+	}
+
+
 };

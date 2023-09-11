@@ -11,15 +11,15 @@ js13k.Knight = class extends js13k.Enemy {
 	static drawFace( ctx ) {
 		ctx.fillStyle = '#000';
 
-		let y = 7;
+		let y = 8;
 
 		// Looking right
-		let x = 6;
+		let x = 7;
 		ctx.fillRect( x, y, 6, 1 );
 		ctx.fillRect( x + 2, y, 3, 2 );
 
 		// Looking left
-		x = 20;
+		x = 22;
 		ctx.fillRect( x, y, 6, 1 );
 		ctx.fillRect( x + 1, y, 3, 2 );
 	}

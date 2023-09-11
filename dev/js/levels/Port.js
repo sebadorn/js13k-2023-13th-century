@@ -11,6 +11,7 @@ js13k.Level.Port = class extends js13k.Level {
 	 */
 	constructor() {
 		super();
+		this.id = 2;
 
 		this.numTilesX = 36;
 		this.numTilesY = 2;

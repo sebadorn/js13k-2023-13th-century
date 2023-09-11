@@ -11,6 +11,7 @@ js13k.Level.Ship = class extends js13k.Level {
      */
 	constructor() {
 		super();
+		this.id = 3;
 
 		this.numTilesX = 24;
 		this.numTilesY = 6;

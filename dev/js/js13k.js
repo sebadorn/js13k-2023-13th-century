@@ -61,6 +61,16 @@ const js13k = {
 
 
 	/**
+	 *
+	 * @return {object?}
+	 */
+	loadGame() {
+		const json = localStorage.getItem( '2023_sd_nibelungs.save' );
+		return json ? JSON.parse( json ) : null;
+	},
+
+
+	/**
 	 * Check if two axis-aligned bounding boxes overlap.
 	 * @param  {object} a   - An axis-aligned bounding box.
 	 * @param  {number} a.h - Height.
@@ -76,6 +86,23 @@ const js13k = {
 	 */
 	overlap( a, b ) {
 		return this.calcOverlap( a, b ) > Number.EPSILON;
+	},
+
+
+	/**
+	 *
+	 * @param {js13k.Level} level
+	 */
+	saveGame( level ) {
+		if( !level || level.id == 0 ) {
+			return;
+		}
+
+		const data = {
+			level: level.id
+		};
+
+		localStorage.setItem( '2023_sd_nibelungs.save', JSON.stringify( data ) );
 	},
 
 
