@@ -6,7 +6,7 @@ Theme: **13th Century**
 
 ## Description
 
-Spurned on by The Songs of the Nibelungs, many set off searching for the legendary treasure said to still lay hidden in the Rhine river.
+Spurred on by The Songs of the Nibelungs, many set off searching for the legendary treasure said to still lay hidden in the Rhine river.
 
 
 ## Controls keyboard
@@ -17,11 +17,4 @@ Spurned on by The Songs of the Nibelungs, many set off searching for the legenda
 * [Shift] to dodge roll
 * [Escape] to pause/unpause
 
-
-## Controls gamepad
-
-* D-pad or sticks to move
-* X or Square to attack
-* Triangle or Circle to pick up items
-* R1 or R2 to dodge roll
-* Options to pause/unpause
+GAMEPAD is also supported.
