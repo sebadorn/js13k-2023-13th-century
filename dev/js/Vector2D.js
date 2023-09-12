@@ -30,7 +30,7 @@ js13k.Vector2D = class {
 	 * @return {number} Length of the vector.
 	 */
 	length() {
-		if( this.x + this.y === 0 ) {
+		if( this.x + this.y == 0 ) {
 			return 0;
 		}
 

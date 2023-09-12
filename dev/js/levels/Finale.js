@@ -52,7 +52,7 @@ js13k.Level.Finale = class extends js13k.Level {
 		];
 
 		for( let i = 0; i < 8; i++ ) {
-			if( i === 3 || i === 4 ) {
+			if( i == 3 || i == 4 ) {
 				continue;
 			}
 
@@ -63,7 +63,7 @@ js13k.Level.Finale = class extends js13k.Level {
 
 		this.addItems( ...items );
 
-		this.introTimer = new js13k.Timer( this, 1 );
+		this.introTimer = new js13k.Timer( this, 6 );
 		this.locked = true;
 		this.stage = 1;
 		this.waveTimer = new js13k.Timer( this );
@@ -118,7 +118,7 @@ js13k.Level.Finale = class extends js13k.Level {
 		this.waveTimer.set( 2 );
 		this.waveEnemies = [];
 
-		if( this.stage === 2 ) {
+		if( this.stage == 2 ) {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
 					x: -js13k.TILE_SIZE,
@@ -132,7 +132,7 @@ js13k.Level.Finale = class extends js13k.Level {
 				} ),
 			);
 		}
-		else if( this.stage === 3 ) {
+		else if( this.stage == 3 ) {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
 					x: this.limits.w,
@@ -343,11 +343,20 @@ js13k.Level.Finale = class extends js13k.Level {
 			R.drawMonologueBox(
 				this.player,
 				[
-					'The Rhine has become a',
-					'battlefield! I have to',
-					'to defend the ship!',
-				],
-				2
+					'So much gold! What a treasure!',
+					'There is only one other group left',
+					'opposing us. Let’s finish this!'
+				]
+			);
+		}
+
+		if( this.endingTimer && !this.endingTimer.elapsed() ) {
+			R.drawMonologueBox(
+				this.player,
+				[
+					'Cast off, crew!',
+					'Before even more arrive!'
+				]
 			);
 		}
 	}
@@ -359,7 +368,7 @@ js13k.Level.Finale = class extends js13k.Level {
 	 * @param {number} dt
 	 */
 	update( dt ) {
-		if( this.introTimer.elapsed() ) {
+		if( this.introTimer.progress() > 0.3 ) {
 			this.locked = false;
 		}
 
@@ -372,20 +381,25 @@ js13k.Level.Finale = class extends js13k.Level {
 
 		const percent = Math.max( 0, this.drawnHealth / this.boss.healthTotal );
 
-		if( this.stage === 1 ) {
+		if( this.stage == 1 ) {
 			if( percent < 0.67 ) {
 				this.stage = 2;
 				this._nextEnemies();
 			}
 		}
-		else if( this.stage === 2 ) {
+		else if( this.stage == 2 ) {
 			if( percent < 0.34 ) {
 				this.stage = 3;
 				this._nextEnemies();
 			}
 		}
-		else if( percent === 0 ) {
-			js13k.Renderer.changeLevel( new js13k.Level.Ending() );
+		else if( percent == 0 && this.numEnemiesAlive() == 0 ) {
+			if( !this.endingTimer ) {
+				this.endingTimer = new js13k.Timer( this, 5 );
+			}
+			else if( this.endingTimer?.elapsed() ) {
+				js13k.Renderer.changeLevel( new js13k.Level.Ending() );
+			}
 		}
 	}
 

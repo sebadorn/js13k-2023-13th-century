@@ -87,9 +87,7 @@ js13k.Weapon = class extends js13k.LevelObject {
 	 *
 	 * @return {function?}
 	 */
-	getHitEffect() {
-		return null;
-	}
+	getHitEffect() {}
 
 
 	/**

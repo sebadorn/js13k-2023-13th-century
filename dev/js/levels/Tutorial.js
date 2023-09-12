@@ -36,7 +36,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 
 		this.locked = true;
 		this.tutStep = -1;
-		this.introTimer = new js13k.Timer( this, 6 );
+		this.introTimer = new js13k.Timer( this, 5 );
 	}
 
 
@@ -59,15 +59,15 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const enemOC = this.tutorialEnemy.getOffsetCenter();
 
 		// Walking
-		if( this.tutStep === 0 ) {
+		if( this.tutStep == 0 ) {
 			ctx.fillText( 'Move with [W][A][S][D] or arrow keys', oc.x, oc.y - p1.h );
 		}
 		// Disarm
-		else if( this.tutStep === 1 ) {
+		else if( this.tutStep == 1 ) {
 			ctx.fillText( 'Attack with [ENTER] or [SPACE]', enemOC.x, enemOC.y - this.tutorialEnemy.h * 2 );
 		}
 		// Pick up weapon
-		else if( this.tutStep === 2 ) {
+		else if( this.tutStep == 2 ) {
 			const lo = this.items[0];
 
 			if( lo ) {
@@ -76,11 +76,11 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			}
 		}
 		// Attack
-		else if( this.tutStep === 3 ) {
+		else if( this.tutStep == 3 ) {
 			ctx.fillText( 'Attack with the sword', enemOC.x, enemOC.y - this.tutorialEnemy.h );
 		}
 		// Dodge
-		else if( this.tutStep === 4 ) {
+		else if( this.tutStep == 4 ) {
 			ctx.fillText( 'You can dodge roll with [SHIFT]', oc.x, oc.y - p1.h - js13k.TILE_SIZE );
 		}
 	}
@@ -138,8 +138,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 					'Before heading out, let’s',
 					'think back on my training.',
 					'How did it go again?',
-				],
-				2
+				]
 			);
 		}
 
@@ -152,8 +151,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			[
 				'Right, that’s how it goes!',
 				'Now I am prepared!',
-			],
-			2
+			]
 		);
 
 		const progress = Math.sin( this.timer / 25 );
@@ -186,7 +184,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 		const p1 = this.player;
 		const Input = js13k.Input;
 
-		if( this.tutStep === -1 ) {
+		if( this.tutStep == -1 ) {
 			js13k.Renderer.centerOn( p1 );
 
 			if( Input.isPressed( Input.ACTION.DO, true ) ) {
@@ -199,7 +197,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			}
 		}
 		// Check for walking
-		else if( this.tutStep === 0 ) {
+		else if( this.tutStep == 0 ) {
 			// Ignore further attack inputs by querying and
 			// forgetting it to avoid a sequence break.
 			Input.isPressed( Input.ACTION.ATTACK, true );
@@ -215,11 +213,11 @@ js13k.Level.Tutorial = class extends js13k.Level {
 				Input.isPressed( Input.ACTION.DOWN ) ||
 				Input.isPressed( Input.ACTION.LEFT )
 			) {
-				this.tutStepTimer0 = new js13k.Timer( this, 3 );
+				this.tutStepTimer0 = new js13k.Timer( this, 2 );
 			}
 		}
 		// Check if enemy has been disarmed
-		else if( this.tutStep === 1 ) {
+		else if( this.tutStep == 1 ) {
 			if( !( this.tutorialEnemy.item instanceof js13k.WeaponSword ) ) {
 				const weapon = this.items[0];
 				weapon.pos.x = this.tutorialEnemy.pos.x + js13k.TILE_SIZE * 2;
@@ -229,25 +227,25 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			}
 		}
 		// Check if weapon has been picked up
-		else if( this.tutStep === 2 ) {
+		else if( this.tutStep == 2 ) {
 			if( p1.item instanceof js13k.WeaponSword ) {
 				this.tutStep = 3;
 			}
 		}
 		// Check if enemy has taken damage
-		else if( this.tutStep === 3 ) {
+		else if( this.tutStep == 3 ) {
 			if( this.tutorialEnemy.health < this.tutorialEnemy.healthTotal - p1.item.damage ) {
 				this.tutStep = 4;
 			}
 		}
 		// Check for dodge roll execution
-		else if( this.tutStep === 4 ) {
+		else if( this.tutStep == 4 ) {
 			if( Input.isPressed( Input.ACTION.DODGE ) ) {
 				this.tutStep = 5;
 			}
 		}
 		// Check if level end has been reached
-		else if( this.tutStep === 5 ) {
+		else if( this.tutStep == 5 ) {
 			const oc = p1.getOffsetCenter();
 
 			if( oc.x >= this.limits.w - js13k.TILE_SIZE_HALF ) {

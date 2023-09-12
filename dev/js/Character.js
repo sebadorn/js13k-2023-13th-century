@@ -25,10 +25,12 @@ js13k.Character = class extends js13k.LevelObject {
 		this.images = js13k.Renderer.imagesPlayer;
 
 		this.health = this.healthTotal = 100;
+		this.healthColor = '#f00';
+		this.drawnHealth = null;
 		this.isSolid = true;
 
 		this.item = data.item;
-		this.perception = js13k.TILE_SIZE * 7;
+		this.perception = js13k.TILE_SIZE * 8;
 		this.speed.set( 12, 12 );
 
 		if( this.item ) {
@@ -68,11 +70,11 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	_drawHealth( ctx ) {
-		if( this.health == this.healthTotal || this.isDodging ) {
+		if( this.drawnHealth == this.healthTotal || this.isDodging ) {
 			return;
 		}
 
-		let percent = this.health / this.healthTotal;
+		let percent = this.drawnHealth / this.healthTotal;
 		let x = this.pos.x + 16;
 		let y = this.pos.y - 24;
 		let w = this.w - 32;
@@ -82,8 +84,10 @@ js13k.Character = class extends js13k.LevelObject {
 		ctx.fillRect( x, y, w, 8 );
 
 		// Fill level
-		ctx.fillStyle = '#f00';
+		ctx.fillStyle = this.healthColor;
 		ctx.fillRect( x, y, w * percent, 8 );
+		ctx.fillStyle = '#0001';
+		ctx.fillRect( x, y + 4, w * percent, 4 );
 	}
 
 
@@ -190,7 +194,7 @@ js13k.Character = class extends js13k.LevelObject {
 				sy = 18;
 			}
 
-			if( this.state === js13k.STATE_WALKING ) {
+			if( this.state == js13k.STATE_WALKING ) {
 				this._applyWalking( ctx );
 			}
 		}
@@ -274,6 +278,10 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {js13k.Vector2D} dir 
 	 */
 	update( dt, dir ) {
+		if( this.drawnHealth === null ) {
+			this.drawnHealth = this.health;
+		}
+
 		if( this.health <= 0 ) {
 			return;
 		}
@@ -307,6 +315,10 @@ js13k.Character = class extends js13k.LevelObject {
 
 		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
+		}
+
+		if( this.drawnHealth > this.health ) {
+			this.drawnHealth = Math.max( this.health, this.drawnHealth - dt * 1.5 );
 		}
 
 		this.state = newState;

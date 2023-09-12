@@ -31,7 +31,7 @@ js13k.Level.Port = class extends js13k.Level {
 				x: js13k.TILE_SIZE * 11,
 				y: js13k.TILE_SIZE - 8,
 				facingX: -1,
-				item: new js13k.WeaponSword()
+				item: new js13k.WeaponSaber()
 			} ),
 			new js13k.Pirate( {
 				x: js13k.TILE_SIZE * 20,
@@ -151,8 +151,7 @@ js13k.Level.Port = class extends js13k.Level {
 					'just have to make it to the ship.',
 					'But it seems there are pirates',
 					'in the harbor.'
-				],
-				2
+				]
 			);
 		}
 

@@ -103,7 +103,7 @@ js13k.LevelObject = class {
 		const aabb = this.getInteractHitbox();
 
 		this.level.objects.forEach( lo => {
-			if( lo === this || !lo.isSolid || lo.health <= 0 ) {
+			if( lo == this || !lo.isSolid || lo.health <= 0 ) {
 				return;
 			}
 
@@ -224,11 +224,11 @@ js13k.LevelObject = class {
 	 * @param {js13k.Weapon} fromItem
 	 */
 	takeDamage( fromItem ) {
-		if( !this.canTakeDamage() ) {
+		if( !fromItem || !this.canTakeDamage() ) {
 			return;
 		}
 
-		if( this === this.level.player ) {
+		if( this == this.level.player ) {
 			js13k.Audio.play( js13k.Audio.DAMAGE_TAKEN );
 		}
 

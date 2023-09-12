@@ -13,7 +13,7 @@ js13k.WeaponFist = class extends js13k.Weapon {
 		super( data );
 
 		this.animDuration = 0.2;
-		this.damage = 10;
+		this.damage = 15;
 	}
 
 
@@ -63,15 +63,13 @@ js13k.WeaponFist = class extends js13k.Weapon {
 		let dy = this.owner.pos.y + this.owner.h / 2 - 16;
 
 		let progress = this.owner.attackTimer.progress();
-		dx += progress * progress * js13k.TILE_SIZE_HALF * 1.5;
+		dx += Math.sin( progress * Math.PI ) * js13k.TILE_SIZE_HALF * 1.5;
 
-		ctx.globalAlpha = Math.min( 1, progress + 0.5 );
 		ctx.drawImage(
 			js13k.Renderer.imageWeaponFist,
 			1, 1, 7, 6,
 			dx, dy, js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
 		);
-		ctx.globalAlpha = 1;
 	}
 
 

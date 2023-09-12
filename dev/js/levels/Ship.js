@@ -23,8 +23,7 @@ js13k.Level.Ship = class extends js13k.Level {
 
 		this.player = new js13k.Player( {
 			x: this.limits.w / 2 - js13k.TILE_SIZE * 2,
-			y: this.limits.h / 2 - js13k.TILE_SIZE,
-			item: new js13k.WeaponSaber()
+			y: this.limits.h / 2 - js13k.TILE_SIZE
 		} );
 
 		this.addCharacters( this.player );
@@ -97,15 +96,11 @@ js13k.Level.Ship = class extends js13k.Level {
 	 * @private
 	 */
 	_startWave() {
-		if( this.waveCounter >= this.numWaves ) {
-			return;
-		}
-
 		this.waveCounter++;
 		this.waveTimer.set( 2 );
 		this.waveEnemies = [];
 
-		if( this.waveCounter === 1 ) {
+		if( this.waveCounter == 1 ) {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
 					x: -js13k.TILE_SIZE,
@@ -123,7 +118,7 @@ js13k.Level.Ship = class extends js13k.Level {
 				} ),
 			);
 		}
-		else if( this.waveCounter === 2 ) {
+		else if( this.waveCounter == 2 ) {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
 					x: this.limits.w,
@@ -141,21 +136,21 @@ js13k.Level.Ship = class extends js13k.Level {
 				} ),
 			);
 		}
-		else if( this.waveCounter === 3 ) {
+		else if( this.waveCounter == 3 ) {
 			this.waveEnemies.push(
 				new js13k.Pirate( {
-					x: this.limits.w,
+					x: this.limits.w + js13k.TILE_SIZE,
 					y: js13k.TILE_SIZE * 1.5,
 					facingX: -1
 				} ),
 				new js13k.Knight( {
-					x: this.limits.w,
+					x: this.limits.w + js13k.TILE_SIZE,
 					y: js13k.TILE_SIZE * 3,
 					facingX: -1,
 					item: new js13k.WeaponSword()
 				} ),
 				new js13k.Knight( {
-					x: -js13k.TILE_SIZE,
+					x: -js13k.TILE_SIZE * 2,
 					y: js13k.TILE_SIZE * 2.5,
 					item: new js13k.WeaponSword()
 				} ),
@@ -261,15 +256,17 @@ js13k.Level.Ship = class extends js13k.Level {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	drawForeground( ctx ) {
-		/** @type {CanvasRenderingContext2D} */
-		const ctxUI = js13k.Renderer.ctxUI;
-		ctxUI.fillStyle = '#fff';
-		ctxUI.font = '600 23px ' + js13k.FONT_MONO;
-		ctxUI.textAlign = 'left';
-		ctxUI.fillText(
-			`Wave ${this.waveCounter}/${this.numWaves}`,
-			js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
-		);
+		if( this.waveCounter <= this.numWaves ) {
+			/** @type {CanvasRenderingContext2D} */
+			const ctxUI = js13k.Renderer.ctxUI;
+			ctxUI.fillStyle = '#fff';
+			ctxUI.font = '600 23px ' + js13k.FONT_MONO;
+			ctxUI.textAlign = 'left';
+			ctxUI.fillText(
+				`Wave ${this.waveCounter}/${this.numWaves}`,
+				js13k.TILE_SIZE_HALF, js13k.TILE_SIZE_HALF
+			);
+		}
 
 		const lineWidth = 6;
 
@@ -368,27 +365,20 @@ js13k.Level.Ship = class extends js13k.Level {
 					'The Rhine has become a',
 					'battlefield! I have to',
 					'to defend the ship!',
-				],
-				2
+				]
 			);
 		}
-	}
 
-
-	/**
-	 *
-	 * @return {number}
-	 */
-	numEnemiesAlive() {
-		let alive = 0;
-
-		this.objects.forEach( o => {
-			if( o instanceof js13k.Enemy ) {
-				alive += o.health > 0 ? 1 : 0;
-			}
-		} );
-
-		return alive;
+		if( this.endingTimer && !this.endingTimer.elapsed() ) {
+			js13k.Renderer.drawMonologueBox(
+				this.player,
+				[
+					'A tough battle, but finally...',
+					'Wait, do I see a golden',
+					'shimmer below the water?'
+				]
+			);
+		}
 	}
 
 
@@ -402,14 +392,19 @@ js13k.Level.Ship = class extends js13k.Level {
 		this.waterMovement = ( this.timer % 20 ) / 20 * js13k.TILE_SIZE;
 
 		// More waves to come and wait for next one is over
-		if( this.waveCounter <= this.numWaves && this.nextWaveTimer.elapsed() ) {
+		if( this.waveCounter < this.numWaves && this.nextWaveTimer.elapsed() ) {
 			this._startWave();
-			this.nextWaveTimer.set( 20 );
+			this.nextWaveTimer.set( 16 );
 		}
 
 		// No more waves coming and all enemies are defeated
-		if( this.waveCounter > this.numWaves && this.numEnemiesAlive() === 0 ) {
-			js13k.Renderer.changeLevel( new js13k.Level.Finale() );
+		if( this.waveCounter >= this.numWaves && this.numEnemiesAlive() == 0 ) {
+			if( !this.endingTimer ) {
+				this.endingTimer = new js13k.Timer( this, 5 );
+			}
+			else if( this.endingTimer?.elapsed() ) {
+				js13k.Renderer.changeLevel( new js13k.Level.Finale() );
+			}
 		}
 	}
 

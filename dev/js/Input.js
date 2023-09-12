@@ -27,9 +27,8 @@ js13k.Input = {
 	_gpButtons: {},
 	_ignoreUntilReleased: {},
 	_on: {
-		click: [],
-		gp_connect: [],
-		gp_disconnect: []
+		'gp_connect': [],
+		'gp_disconnect': []
 	},
 	_onKeyDown: {},
 	_onKeyUp: {},
@@ -177,7 +176,7 @@ js13k.Input = {
 		// Has to be done as workaround for Firefox which does
 		// not recognize D-Pad input as buttons on Linux.
 		// @see https://bugzilla.mozilla.org/show_bug.cgi?id=1464940
-		if( action === this.ACTION.LEFT ) {
+		if( action == this.ACTION.LEFT ) {
 			for( const index in this.gamepads ) {
 				const gp = this.gamepads[index];
 
@@ -194,7 +193,7 @@ js13k.Input = {
 				}
 			}
 		}
-		else if( action === this.ACTION.RIGHT ) {
+		else if( action == this.ACTION.RIGHT ) {
 			for( const index in this.gamepads ) {
 				const gp = this.gamepads[index];
 
@@ -211,7 +210,7 @@ js13k.Input = {
 				}
 			}
 		}
-		else if( action === this.ACTION.UP ) {
+		else if( action == this.ACTION.UP ) {
 			for( const index in this.gamepads ) {
 				const gp = this.gamepads[index];
 
@@ -228,7 +227,7 @@ js13k.Input = {
 				}
 			}
 		}
-		else if( action === this.ACTION.DOWN ) {
+		else if( action == this.ACTION.DOWN ) {
 			for( const index in this.gamepads ) {
 				const gp = this.gamepads[index];
 
@@ -385,14 +384,14 @@ js13k.Input = {
 			this.numGamepads++;
 			this.gamepads[ev.gamepad.index] = ev.gamepad;
 
-			this._on.gp_connect.forEach( cb => cb() );
+			this._on['gp_connect'].forEach( cb => cb() );
 		} );
 
 		window.addEventListener( 'gamepaddisconnected', ev => {
 			this.numGamepads--;
 			delete this.gamepads[ev.gamepad.index];
 
-			this._on.gp_disconnect.forEach( cb => cb() );
+			this._on['gp_disconnect'].forEach( cb => cb() );
 		} );
 	},
 
@@ -412,12 +411,12 @@ js13k.Input = {
 			this.gamepads[gamepad.index] = gamepad;
 
 			for( const code in this._ignoreUntilReleased ) {
-				if( code === 'axis6-' || code === 'axis6+' ) {
+				if( code == 'axis6-' || code == 'axis6+' ) {
 					if( !gamepad.axes[6] ) {
 						delete this._ignoreUntilReleased[code];
 					}
 				}
-				else if( code === 'axis7-' || code === 'axis7+' ) {
+				else if( code == 'axis7-' || code == 'axis7+' ) {
 					if( !gamepad.axes[7] ) {
 						delete this._ignoreUntilReleased[code];
 					}

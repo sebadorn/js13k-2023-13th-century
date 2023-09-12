@@ -44,15 +44,7 @@ js13k.Level.Intro = class extends js13k.Level {
 			'many set off to look for the treasure.',
 		];
 
-		this.longestLine = 0;
-		this.timerFadeIn1 = new js13k.Timer( this, 2 );
-
-		const allText = this.textTreasureOldGerman.concat( this.textSunkenOldGerman );
-
-		allText.forEach( text => {
-			const metric = js13k.Renderer.ctx.measureText( text );
-			this.longestLine = Math.max( this.longestLine, metric.width );
-		} );
+		this.timerFadeIn = new js13k.Timer( this, 2 );
 	}
 
 
@@ -70,94 +62,114 @@ js13k.Level.Intro = class extends js13k.Level {
 		// Background scroll
 		let x = js13k.TILE_SIZE * 2;
 		let y = x;
-		let width = this.longestLine + js13k.TILE_SIZE;
-		let height = ( this.textTreasureOldGerman.length + this.textSunkenOldGerman.length ) * 49 + js13k.TILE_SIZE * 1.5 + 16;
+		let width = 500 + js13k.TILE_SIZE;
+		let height = ( this.textTreasureOldGerman.length + this.textSunkenOldGerman.length ) * 49 + js13k.TILE_SIZE * 2 + 16;
+
+		let bgX = x - js13k.TILE_SIZE_HALF;
+		let bgY = y - js13k.TILE_SIZE;
 
 		ctx.fillStyle = '#e5c382';
-		ctx.fillRect(
-			x - js13k.TILE_SIZE_HALF, y - js13k.TILE_SIZE,
-			width, height
-		);
+		ctx.fillRect( bgX, bgY, width, height );
 
-		ctx.font = 'italic 40px ' + js13k.FONT_SERIF;
+		ctx.fillStyle = js13k.Renderer.createLinearGradient(
+			bgX, bgY,
+			bgX, bgY + height / 2,
+			'#0002', '#0000'
+		);
+		ctx.fillRect( bgX, bgY, width, height / 2 );
+
+		ctx.fillStyle = js13k.Renderer.createLinearGradient(
+			bgX, bgY + height / 2,
+			bgX, bgY + height,
+			'#0000', '#0002'
+		);
+		ctx.fillRect( bgX, bgY + height / 2, width, height / 2 );
+
+		ctx.fillStyle = '#e5c382';
+		ctx.fillRect( bgX - 36, bgY - 72, width + 72, js13k.TILE_SIZE * 1.5 );
+		ctx.fillRect( bgX - 36, bgY + height - 72, width + 72, js13k.TILE_SIZE * 1.5 );
+
+		let gradient = ctx.createLinearGradient(
+			bgX - 36, bgY - 72,
+			bgX - 36, bgY - 72 + js13k.TILE_SIZE * 1.5
+		);
+		gradient.addColorStop( 0, '#0000' );
+		gradient.addColorStop( 1, '#0003' );
+		ctx.fillStyle = gradient;
+		ctx.fillRect( bgX - 36, bgY - 72, width + 72, js13k.TILE_SIZE * 1.5 );
+
+		gradient = ctx.createLinearGradient(
+			bgX - 36, bgY + height - 72,
+			bgX - 36, bgY + height - 72 + js13k.TILE_SIZE * 1.5
+		);
+		gradient.addColorStop( 0, '#0003' );
+		gradient.addColorStop( 1, '#0000' );
+		ctx.fillStyle = gradient;
+		ctx.fillRect( bgX - 36, bgY + height - 72, width + 72, js13k.TILE_SIZE * 1.5 );
+
+		ctx.font = 'italic 38px ' + js13k.FONT_SERIF;
 		ctx.textAlign = 'center';
 		ctx.fillStyle = '#000';
+		const lh = 47;
 
-		x += this.longestLine / 2;
+		x += 500 / 2;
+		y += 36;
 
 		// First part
-		if( !this.timerFadeIn1.elapsed() ) {
-			const progress = this.timerFadeIn1.progress();
-			y += ( 1 - progress ) * js13k.TILE_SIZE_HALF;
-
-			ctx.fillStyle = '#000000' + Math.round( progress * 255 ).toString( 16 ).padStart( 2, '0' );
-		}
-
 		this.textTreasureOldGerman.forEach( text => {
+			ctx.fillText( text, x, y );
+			y += lh;
+		} );
+
+		// Second part
+		y += lh;
+
+		this.textSunkenOldGerman.forEach( text => {
+			ctx.fillText( text, x, y );
+			y += lh;
+		} );
+
+		// English summary
+		const progress = this.timerFadeIn.progress();
+		x = width + js13k.TILE_SIZE * 2.75;
+		y = js13k.TILE_SIZE * 3.25 + ( 1 - progress ) * js13k.TILE_SIZE;
+
+		ctx.font = '32px ' + js13k.FONT_SANS;
+		ctx.textAlign = 'left';
+		ctx.fillStyle = '#ffffff' + Math.round( progress * 255 ).toString( 16 ).padStart( 2, '0' );
+
+		this.textSummaryEngl.forEach( text => {
 			ctx.fillText( text, x, y );
 			y += 49;
 		} );
 
-		// Second part
-		if( this.timerFadeIn1.elapsed() ) {
+		// Continue button
+		if( this.timerFadeIn.elapsed() ) {
 			y += 49;
+			let dw = js13k.TILE_SIZE_HALF / 2;
+			let dh = js13k.TILE_SIZE;
+			let dx = x + dh / 2;
+			let dy = y - dh / 2;
+			let c = {
+				x: dx + dw / 2,
+				y: dy + dh / 2
+			};
 
-			if( !this.timerFadeIn2.elapsed() ) {
-				const progress = this.timerFadeIn2.progress();
-				y += ( 1 - progress ) * js13k.TILE_SIZE_HALF;
+			js13k.Renderer.rotateCenter( ctx, Math.PI / 2, c );
+			js13k.Renderer.scaleCenter( ctx, Math.sin( this.timer * 0.08 ), 1, c );
 
-				ctx.fillStyle = '#000000' + Math.round( progress * 255 ).toString( 16 ).padStart( 2, '0' );
-			}
+			ctx.drawImage(
+				js13k.Renderer.images,
+				32, 16, 8, 32,
+				dx, dy, dw, dh
+			);
 
-			this.textSunkenOldGerman.forEach( text => {
-				ctx.fillText( text, x, y );
-				y += 49;
-			} );
-		}
-
-		// English summary
-		if( this.timerFadeIn2?.elapsed() ) {
-			const progress = this.timerFadeIn3.progress();
-			x = width + js13k.TILE_SIZE * 2.5;
-			y = js13k.TILE_SIZE * 2 + ( 1 - progress ) * js13k.TILE_SIZE_HALF;
-
+			js13k.Renderer.resetTransform();
+	
 			ctx.font = '32px ' + js13k.FONT_SANS;
-			ctx.textAlign = 'left';
-			ctx.fillStyle = '#ffffff' + Math.round( progress * 255 ).toString( 16 ).padStart( 2, '0' );
-
-			this.textSummaryEngl.forEach( text => {
-				ctx.fillText( text, x, y );
-				y += 49;
-			} );
-
-			// Continue button
-			if( this.timerFadeIn3.elapsed() ) {
-				y += 49;
-				let dw = js13k.TILE_SIZE_HALF / 2;
-				let dh = js13k.TILE_SIZE;
-				let dx = x + dh / 2;
-				let dy = y - dh / 2;
-				let c = {
-					x: dx + dw / 2,
-					y: dy + dh / 2
-				};
-
-				js13k.Renderer.rotateCenter( ctx, Math.PI / 2, c );
-				js13k.Renderer.scaleCenter( ctx, Math.sin( this.timer * 0.08 ), 1, c );
-
-				ctx.drawImage(
-					js13k.Renderer.images,
-					32, 16, 8, 32,
-					dx, dy, dw, dh
-				);
-
-				js13k.Renderer.resetTransform();
-		
-				ctx.font = '32px ' + js13k.FONT_SANS;
-				ctx.fillStyle = '#fa0';
-				ctx.textBaseline = 'middle';
-				ctx.fillText( 'Continue', x + dh + 32, y );
-			}
+			ctx.fillStyle = '#fa0';
+			ctx.textBaseline = 'middle';
+			ctx.fillText( 'Continue', x + dh + 32, y );
 		}
 	}
 
@@ -170,22 +182,9 @@ js13k.Level.Intro = class extends js13k.Level {
 	update( dt ) {
 		this.timer += dt;
 
-		if( this.timerFadeIn1.elapsed() && !this.timerFadeIn2 ) {
-			this.timerFadeIn2 = new js13k.Timer( this, 2 );
-		}
-		else if ( this.timerFadeIn2 && this.timerFadeIn2.elapsed() && !this.timerFadeIn3 ) {
-			this.timerFadeIn3 = new js13k.Timer( this, 2 );
-		}
-
 		if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
-			if( !this.timerFadeIn1.elapsed() ) {
-				this.timerFadeIn1.set( 0 );
-			}
-			else if( this.timerFadeIn2 && !this.timerFadeIn2.elapsed() ) {
-				this.timerFadeIn2.set( 0 );
-			}
-			else if( this.timerFadeIn3 && !this.timerFadeIn3.elapsed() ) {
-				this.timerFadeIn3.set( 0 );
+			if( !this.timerFadeIn.elapsed() ) {
+				this.timerFadeIn.set( 0 );
 			}
 			else {
 				js13k.Audio.play( js13k.Audio.SELECT );

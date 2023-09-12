@@ -15,7 +15,14 @@ js13k.Level.Start = class extends js13k.Level {
 		// 0: New Game
 		// 1: Continue
 		this.selectedButton = 0;
-		this.numButtons = 2;
+		this.numButtons = 1;
+
+		this._hasGameData = !!js13k.loadGame();
+
+		if( this._hasGameData ) {
+			this.selectedButton = 1;
+			this.numButtons = 2;
+		}
 	}
 
 
@@ -70,19 +77,25 @@ js13k.Level.Start = class extends js13k.Level {
 		ctx.fillStyle = '#0d161e';
 		js13k.Renderer.fillBackground();
 
-		ctx.font = '600 64px ' + js13k.FONT_SANS;
+		ctx.font = '600 64px ' + js13k.FONT_MONO;
 		ctx.textAlign = 'left';
 		ctx.fillStyle = '#fa0';
 		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y + 3 );
 		ctx.fillStyle = '#777';
 		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y );
 
-		ctx.font = '42px ' + js13k.FONT_SANS;
+		ctx.font = '600 42px ' + js13k.FONT_MONO;
 		x += js13k.TILE_SIZE_HALF / 2 + 114;
 		y += 96;
-		this._drawButton( ctx, 'New Game', x, y, this.selectedButton === 0 );
+		this._drawButton( ctx, 'New Game', x, y, this.selectedButton == 0 );
+
+		if( !this._hasGameData ) {
+			ctx.globalAlpha = 0.5;
+		}
+
 		y += 72;
-		this._drawButton( ctx, 'Continue', x, y, this.selectedButton === 1 );
+		this._drawButton( ctx, 'Continue', x, y, this.selectedButton == 1 );
+		ctx.globalAlpha = 1;
 	}
 
 
@@ -98,16 +111,16 @@ js13k.Level.Start = class extends js13k.Level {
 
 		let level = null;
 
-		if( data.level === 1 ) {
+		if( data.level == 1 ) {
 			level = new js13k.Level.Tutorial();
 		}
-		else if( data.level === 2 ) {
+		else if( data.level == 2 ) {
 			level = new js13k.Level.Port();
 		}
-		else if( data.level === 3 ) {
+		else if( data.level == 3 ) {
 			level = new js13k.Level.Ship();
 		}
-		else if( data.level === 4 ) {
+		else if( data.level == 4 ) {
 			level = new js13k.Level.Finale();
 		}
 		else {
@@ -136,11 +149,11 @@ js13k.Level.Start = class extends js13k.Level {
 			js13k.Audio.play( js13k.Audio.SELECT );
 
 			// New Game
-			if( this.selectedButton === 0 ) {
+			if( this.selectedButton == 0 ) {
 				js13k.Renderer.changeLevel( new js13k.Level.Intro() );
 			}
 			// Continue
-			else if( this.selectedButton === 1 ) {
+			else if( this.selectedButton == 1 ) {
 				this.loadGame();
 			}
 		}

@@ -1,4 +1,4 @@
-# js13k 2023: Treasure of the Nibelungs
+# js13k 2023: The Treasure of the Nibelungs
 
 Entry for the [js13k competition of 2023](https://2023.js13kgames.com/).  
 Theme: **13th Century**
@@ -6,7 +6,7 @@ Theme: **13th Century**
 
 ## Description
 
-
+Spurned on by The Songs of the Nibelungs, many set off searching for the legendary treasure said to still lay hidden in the Rhine river.
 
 
 ## Controls keyboard

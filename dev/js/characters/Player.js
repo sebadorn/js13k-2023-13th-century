@@ -13,7 +13,8 @@ js13k.Player = class extends js13k.Character {
 	constructor( data = {} ) {
 		data.item = data.item || new js13k.WeaponFist();
 		super( data );
-		this.health = this.healthTotal = Infinity;
+		this.health = this.healthTotal = 200;
+		this.healthColor = '#fe0';
 	}
 
 

@@ -16,7 +16,7 @@ js13k.Crate = class extends js13k.LevelObject {
 		super( data );
 
 		this.images = js13k.Renderer.imagesCrate;
-		this.health = this.healthTotal = 50;
+		this.health = this.healthTotal = 55;
 		this.isSolid = true;
 		this.weight = js13k.TILE_SIZE;
 	}
@@ -32,11 +32,11 @@ js13k.Crate = class extends js13k.LevelObject {
 			return;
 		}
 
-		let sy = this.shouldBlinkFromDamage() ? 16 : 0;
+		let sy = this.shouldBlinkFromDamage() ? 18 : 1;
 
 		ctx.drawImage(
 			this.images,
-			0, sy, 16, 16,
+			1, sy, 16, 16,
 			this.pos.x, this.pos.y, this.w, this.h
 		);
 	}

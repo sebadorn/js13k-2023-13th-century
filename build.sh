@@ -54,15 +54,15 @@ terser \
 	'weapons/WeaponSword.js' \
 	'weapons/WeaponSaber.js' \
 	'levels/Start.js' \
-	'levels/Tutorial.js' \
 	'levels/Intro.js' \
+	'levels/Tutorial.js' \
 	'levels/Port.js' \
 	'levels/Ship.js' \
 	'levels/Finale.js' \
 	'levels/Ending.js' \
 	--ecma 12 --warn \
 	--compress --toplevel \
-	--mangle --mangle-props \
+	--mangle --mangle-props keep_quoted \
 	-o 'i.js'
 
 sed -i'' 's/^"use strict";//' 'i.js'

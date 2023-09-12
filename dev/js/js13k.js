@@ -9,7 +9,6 @@ const js13k = {
 
 
 	// Config
-	DEBUG: true,
 	FONT_SANS: 'Arial, sans-serif',
 	FONT_SERIF: '"Times New Roman", serif',
 	FONT_MONO: '"Courier New", monospace',
@@ -54,7 +53,7 @@ const js13k = {
 
 		js13k.Renderer.init( () => {
 			// js13k.Renderer.level = new js13k.Level.Start();
-			js13k.Renderer.level = new js13k.Level.Finale();
+			js13k.Renderer.level = new js13k.Level.Ship();
 			js13k.Renderer.mainLoop();
 		} );
 	},

@@ -49,27 +49,17 @@ js13k.Level.Ending = class extends js13k.Level {
 
 		this.showText = 0;
 		this.textTimer = new js13k.Timer( this, 5 );
-
-		js13k.Renderer.centerOn( this.player );
 	}
 
 
 	/**
 	 *
 	 * @override
-	 * @param {CanvasRenderingContext2D} ctx
 	 */
-	drawBackground( ctx ) {
+	draw() {
+		const ctx = js13k.Renderer.ctxUI;
 		this.gold.forEach( gold => gold.draw( ctx ) );
-	}
 
-
-	/**
-	 *
-	 * @override
-	 * @param {CanvasRenderingContext2D} ctx
-	 */
-	drawForeground( ctx ) {
 		const cx = js13k.Renderer.center.x;
 		let y = js13k.TILE_SIZE * 2.5;
 
@@ -93,6 +83,8 @@ js13k.Level.Ending = class extends js13k.Level {
 			y += 25;
 			ctx.fillText( 'Where will you even store all that?', cx, y );
 		}
+
+		this.player.draw( ctx );
 	}
 
 
@@ -103,7 +95,6 @@ js13k.Level.Ending = class extends js13k.Level {
 	 */
 	update( dt ) {
 		this.timer += dt;
-		this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 
 		if( this.textTimer.elapsed() ) {
 			this.showText++;

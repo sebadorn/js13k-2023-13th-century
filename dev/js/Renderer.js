@@ -33,6 +33,7 @@ js13k.Renderer = {
 
 	// Scaling factor. Updated in resize().
 	scale: 1,
+	timer: 0,
 	translateX: 0,
 	translateY: 0,
 
@@ -71,7 +72,7 @@ js13k.Renderer = {
 			let b = imgData.data[i + 2];
 
 			// Set character color
-			if( r + g + b === 255 * 3 ) {
+			if( r + g + b == 255 * 3 ) {
 				imgData.data[i + 0] = color[0];
 				imgData.data[i + 1] = color[1];
 				imgData.data[i + 2] = color[2];
@@ -153,8 +154,13 @@ js13k.Renderer = {
 	 * @param {js13k.Level} level
 	 */
 	changeLevel( level ) {
+		if( this.changeTimer ) {
+			return;
+		}
+
+		this.changeTimer = new js13k.Timer( this, 2 );
+		this.nextLevel = level;
 		js13k.saveGame( level );
-		this.level = level;
 	},
 
 
@@ -175,7 +181,7 @@ js13k.Renderer = {
 	 * @param  {number} y0 
 	 * @param  {number} x1 
 	 * @param  {number} y1 
-	 * @param  {string} colorStart 
+	 * @param  {string} colorStart
 	 * @param  {string} colorEnd 
 	 * @return {CanvasGradient}
 	 */
@@ -195,7 +201,19 @@ js13k.Renderer = {
 		this.clear();
 		this.ctx.setTransform( this.scale, 0, 0, this.scale, this.translateX, this.translateY );
 		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
+
 		this.level && this.level.draw();
+
+		if( this.changeTimer ) {
+			const progress = this.changeTimer.progress() * 2;
+			const w = this.cnvUI.width / this.scale * 2;
+
+			this.ctxUI.fillStyle = '#0d161e';
+			this.ctxUI.fillRect(
+				w * ( 1 - progress ), 0,
+				w, this.cnvUI.height / this.scale 
+			);
+		}
 	},
 
 
@@ -211,10 +229,36 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = '56px ' + js13k.FONT_SANS;
+		this.ctxUI.font = '600 56px ' + js13k.FONT_MONO;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
-		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 56 );
+		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 77 );
+
+		let x = this.center.x + js13k.TILE_SIZE_HALF * 1.25;
+
+		this.ctxUI.fillStyle = '#fa0';
+		this.ctxUI.font = '600 28px ' + js13k.FONT_MONO;
+		this.ctxUI.fillText( 'Try again', x, this.center.y - 7 );
+
+		let dw = js13k.TILE_SIZE_HALF / 2;
+		let dh = js13k.TILE_SIZE;
+		let dx = x - js13k.TILE_SIZE * 1.6;
+		let dy = this.center.y - 42;
+		let c = {
+			x: dx + dw / 2,
+			y: dy + dh / 2
+		};
+
+		js13k.Renderer.rotateCenter( this.ctxUI, Math.PI / 2, c );
+		js13k.Renderer.scaleCenter( this.ctxUI, Math.sin( this.level.timer * 0.08 ), 1, c );
+
+		this.ctxUI.drawImage(
+			js13k.Renderer.imageWeaponSword,
+			1, 1, 8, 32,
+			dx, dy, dw, dh
+		);
+
+		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
 	},
 
 
@@ -222,20 +266,12 @@ js13k.Renderer = {
 	 *
 	 * @param {js13k.Character} char
 	 * @param {string[]}        text
-	 * @param {number}          position - 0: center, 1: bottom, 2: top
 	 */
-	drawMonologueBox( char, text, position ) {
+	drawMonologueBox( char, text ) {
 		let w = js13k.TILE_SIZE * 9;
 		let h = js13k.TILE_SIZE * 2;
 		let x = this.center.x - w / 2;
-		let y = this.center.y - h / 2;
-
-		if( position === 1 ) {
-			y = this.center.y * 2 - h - js13k.TILE_SIZE;
-		}
-		else if( position === 2 ) {
-			y = js13k.TILE_SIZE_HALF;
-		}
+		let y = js13k.TILE_SIZE_HALF;
 
 		this.ctxUI.fillStyle = '#0004';
 		this.ctxUI.fillRect( x - 12, y - 12, w + 24, h + 24 );
@@ -280,7 +316,7 @@ js13k.Renderer = {
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
 		this.ctxUI.fillStyle = '#FFF';
-		this.ctxUI.font = '56px ' + js13k.FONT_SANS;
+		this.ctxUI.font = '600 56px ' + js13k.FONT_MONO;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'PAUSED', this.center.x, this.center.y - 56 );
@@ -457,19 +493,30 @@ js13k.Renderer = {
 				return; // Stop the loop.
 			}
 
+			this.timer += dt;
+
+			if( this.changeTimer ) {
+				if( this.nextLevel && this.changeTimer.progress() > 0.5 ) {
+					this.level = this.nextLevel;
+					this.nextlevel = null;
+				}
+
+				if( this.changeTimer.elapsed() ) {
+					this.changeTimer = null;
+				}
+			}
+
 			this.level.update( dt );
 			this.draw();
 
-			// Draw FPS info
-			if( js13k.DEBUG ) {
-				this.ctxUI.fillStyle = '#fff';
-				this.ctxUI.font = '600 16px ' + js13k.FONT_MONO;
-				this.ctxUI.textAlign = 'left';
-				this.ctxUI.fillText(
-					~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 1000 ) / 1000,
-					js13k.TILE_SIZE, this.cnv.height / this.scale - js13k.TILE_SIZE
-				);
-			}
+			// // Draw FPS info
+			// this.ctxUI.fillStyle = '#fff';
+			// this.ctxUI.font = '600 16px ' + js13k.FONT_MONO;
+			// this.ctxUI.textAlign = 'left';
+			// this.ctxUI.fillText(
+			// 	~~( js13k.TARGET_FPS / dt ) + ' FPS, ' + Math.round( this.scale * 1000 ) / 1000,
+			// 	js13k.TILE_SIZE, this.cnv.height / this.scale - js13k.TILE_SIZE
+			// );
 		}
 
 		this.last = timestamp;
@@ -522,7 +569,7 @@ js13k.Renderer = {
 	 *
 	 */
 	reloadLevel() {
-		this.level = new this.level.constructor();
+		this.changeLevel( new this.level.constructor() );
 	},
 
 

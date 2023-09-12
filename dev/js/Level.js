@@ -102,25 +102,6 @@ js13k.Level = class {
 
 	/**
 	 *
-	 * @param {js13k.LevelObject} item
-	 */
-	removeItem( item ) {
-		let index = this.items.indexOf( item );
-
-		if( index >= 0 ) {
-			this.items.splice( index, 1 );
-		}
-
-		index = this.objects.indexOf( item );
-
-		if( index >= 0 ) {
-			this.objects.splice( index, 1 );
-		}
-	}
-
-
-	/**
-	 *
 	 */
 	draw() {
 		this.drawBackground && this.drawBackground( js13k.Renderer.ctx );
@@ -144,7 +125,7 @@ js13k.Level = class {
 
 		if( !this._cnvWater ) {
 			const [cnvWater, ctxWater] = R.getOffscreenCanvas(
-				R.center.x * 2 + js13k.TILE_SIZE * 2,
+				R.center.x * 2 + js13k.TILE_SIZE * 3,
 				R.center.y * 2 + js13k.TILE_SIZE * 2
 			);
 			ctxWater.fillStyle = R.patternWater;
@@ -157,9 +138,45 @@ js13k.Level = class {
 
 		ctx.drawImage(
 			this._cnvWater,
-			x - js13k.TILE_SIZE - offsetX,
+			x - js13k.TILE_SIZE * 1.5 - offsetX,
 			y - js13k.TILE_SIZE
 		);
+	}
+
+
+	/**
+	 *
+	 * @return {number}
+	 */
+	numEnemiesAlive() {
+		let alive = 0;
+
+		this.objects.forEach( o => {
+			if( o instanceof js13k.Enemy ) {
+				alive += o.health > 0 ? 1 : 0;
+			}
+		} );
+
+		return alive;
+	}
+
+
+	/**
+	 *
+	 * @param {js13k.LevelObject} item
+	 */
+	removeItem( item ) {
+		let index = this.items.indexOf( item );
+
+		if( index >= 0 ) {
+			this.items.splice( index, 1 );
+		}
+
+		index = this.objects.indexOf( item );
+
+		if( index >= 0 ) {
+			this.objects.splice( index, 1 );
+		}
 	}
 
 
@@ -189,7 +206,7 @@ js13k.Level = class {
 
 			this.objects.sort( ( a, b ) => a.prio() - b.prio() );
 			this.objects.forEach( o => {
-				if( o === p1 ) {
+				if( o == p1 ) {
 					return;
 				}
 
@@ -201,7 +218,7 @@ js13k.Level = class {
 					o.health > 0 &&
 					o.canTakeDamage() &&
 					// Does the attack hit?
-					p1.item.checkHit( o )
+					p1.item?.checkHit( o )
 				) {
 					o.takeDamage( p1.item );
 				}

@@ -15,7 +15,7 @@ js13k.WeaponSaber = class extends js13k.WeaponSword {
 		super( data );
 
 		this.animDuration = 0.2;
-		this.damage = 20;
+		this.damage = 25;
 		this.hitMoveDistance = js13k.TILE_SIZE * 0.8;
 	}
 
