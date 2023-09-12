@@ -1,5 +1,7 @@
 # js13k 2023: The Treasure of the Nibelungs
 
+![Screenshot from the game.](thumb_400x250.png?raw=true)
+
 Entry for the [js13k competition of 2023](https://2023.js13kgames.com/).  
 Theme: **13th Century**
 
