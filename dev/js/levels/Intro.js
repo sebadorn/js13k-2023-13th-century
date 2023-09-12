@@ -40,8 +40,8 @@ js13k.Level.Intro = class extends js13k.Level {
 			'all and sunk the treasure in the Rhine at Lochheim.',
 			'But he was killed before being able to retrieve the riches.',
 			'',
-			'Betting on its the existance,',
-			'many set off to look for the treasure.',
+			'Betting on its existance, many',
+			'set off to look for the treasure.',
 		];
 
 		this.timerFadeIn = new js13k.Timer( this, 2 );
@@ -131,8 +131,8 @@ js13k.Level.Intro = class extends js13k.Level {
 
 		// English summary
 		const progress = this.timerFadeIn.progress();
-		x = width + js13k.TILE_SIZE * 2.75;
-		y = js13k.TILE_SIZE * 3.25 + ( 1 - progress ) * js13k.TILE_SIZE;
+		x = width + 264;
+		y = 312 + ( 1 - progress ) * js13k.TILE_SIZE;
 
 		ctx.font = '32px ' + js13k.FONT_SANS;
 		ctx.textAlign = 'left';
@@ -188,10 +188,12 @@ js13k.Level.Intro = class extends js13k.Level {
 			}
 			else {
 				js13k.Audio.play( js13k.Audio.SELECT );
-				js13k.Renderer.changeLevel( new js13k.Level.Tutorial() );
+				js13k.Renderer.changeLevel( js13k.Level.Tutorial.id );
 			}
 		}
 	}
 
 
 };
+
+js13k.Level.Intro.id = 1;

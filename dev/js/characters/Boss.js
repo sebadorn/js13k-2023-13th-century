@@ -24,8 +24,6 @@ js13k.Boss = class extends js13k.Knight {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	static drawFace( ctx ) {
-		ctx.fillStyle = '#000';
-
 		let y = 7;
 
 		// Looking right

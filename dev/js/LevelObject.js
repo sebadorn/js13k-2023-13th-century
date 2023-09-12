@@ -97,18 +97,19 @@ js13k.LevelObject = class {
 		);
 
 		const dir = this.pos.clone().sub( oldPos );
-		dir.x = dir.x < 0 ? -dir.x : dir.x;
-		dir.y = dir.y < 0 ? -dir.y : dir.y;
+		dir.set(
+			dir.x < 0 ? -dir.x : dir.x,
+			dir.y < 0 ? -dir.y : dir.y
+		);
 
 		const aabb = this.getInteractHitbox();
 
 		this.level.objects.forEach( lo => {
-			if( lo == this || !lo.isSolid || lo.health <= 0 ) {
-				return;
-			}
-
-			// Dodging through characters is possible
-			if( lo instanceof js13k.Character && this.isDodging ) {
+			if(
+				lo == this || !lo.isSolid || lo.health <= 0 ||
+				// Dodging through characters is possible
+				( lo instanceof js13k.Character && this.isDodging )
+			) {
 				return;
 			}
 

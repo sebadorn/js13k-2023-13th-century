@@ -24,11 +24,7 @@ js13k.Player = class extends js13k.Character {
 	 * @return {boolean}
 	 */
 	attack() {
-		if( this.coolDownAttack && !this.coolDownAttack.elapsed() ) {
-			return false;
-		}
-
-		if( !super.attack() ) {
+		if( this.coolDownAttack && !this.coolDownAttack.elapsed() || !super.attack() ) {
 			return false;
 		}
 
@@ -45,11 +41,7 @@ js13k.Player = class extends js13k.Character {
 	 * @return {boolean}
 	 */
 	dodge() {
-		if( this.coolDownDodge && !this.coolDownDodge.elapsed() ) {
-			return false;
-		}
-
-		if( !super.dodge() ) {
+		if( this.coolDownDodge && !this.coolDownDodge.elapsed() || !super.dodge() ) {
 			return false;
 		}
 
@@ -65,8 +57,6 @@ js13k.Player = class extends js13k.Character {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	static drawFace( ctx ) {
-		ctx.fillStyle = '#000';
-
 		let y = 7;
 
 		// Looking right

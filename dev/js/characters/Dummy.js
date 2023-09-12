@@ -18,28 +18,4 @@ js13k.Dummy = class extends js13k.Enemy {
 	}
 
 
-	/**
-	 * Drop the currently hold item (if it can be dropped).
-	 * @override
-	 */
-	dropItem() {
-		this.item?.drop();
-		this.item = null;
-	}
-
-
-	/**
-	 *
-	 * @override
-	 * @param {js13k.Weapon} fromItem 
-	 */
-	takeDamage( fromItem ) {
-		if( this.health <= 0 ) {
-			return;
-		}
-
-		super.takeDamage( fromItem );
-	}
-
-
 };

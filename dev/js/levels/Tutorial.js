@@ -11,7 +11,6 @@ js13k.Level.Tutorial = class extends js13k.Level {
 	 */
 	constructor() {
 		super();
-		this.id = 1;
 
 		this.limits = {
 			w: js13k.Renderer.center.x * 2,
@@ -249,7 +248,7 @@ js13k.Level.Tutorial = class extends js13k.Level {
 			const oc = p1.getOffsetCenter();
 
 			if( oc.x >= this.limits.w - js13k.TILE_SIZE_HALF ) {
-				js13k.Renderer.changeLevel( new js13k.Level.Port() );
+				js13k.Renderer.changeLevel( js13k.Level.Port.id );
 				return;
 			}
 		}
@@ -259,3 +258,5 @@ js13k.Level.Tutorial = class extends js13k.Level {
 
 
 };
+
+js13k.Level.Tutorial.id = 2;

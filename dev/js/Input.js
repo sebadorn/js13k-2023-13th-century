@@ -42,6 +42,8 @@ js13k.Input = {
 	 *
 	 */
 	buildActionKeyMap() {
+		// I wish I knew which gamepad button is which, but it is
+		// absolutely inconsistent on Linux with Firefox and Chromium.
 		this.ACTION_KEY_MAP = {
 			[this.ACTION.PAUSE]: {
 				keyboard: ['Escape'],
@@ -65,7 +67,7 @@ js13k.Input = {
 			},
 			[this.ACTION.ATTACK]: {
 				keyboard: ['Space', 'Enter'],
-				gamepad: [0, 2] // X, Square
+				gamepad: [0, 2] // X, Square?
 			},
 			[this.ACTION.DODGE]: {
 				keyboard: ['ShiftLeft', 'ShiftRight'],
@@ -73,11 +75,11 @@ js13k.Input = {
 			},
 			[this.ACTION.DO]: {
 				keyboard: ['Space', 'Enter'],
-				gamepad: [0, 2] // X, Square
+				gamepad: [0, 2] // X, Square?
 			},
 			[this.ACTION.INTERACT]: {
 				keyboard: ['KeyE', 'CtrlLeft'],
-				gamepad: [1, 3] // Triangle, Circle
+				gamepad: [1, 3] // Triangle, Circle?
 			},
 		};
 	},
@@ -299,23 +301,23 @@ js13k.Input = {
 	},
 
 
-	/**
-	 * Remove an event listener.
-	 * @param {string}    type
-	 * @param {?function} cb
-	 */
-	off( type, cb ) {
-		if( typeof cb !== 'function' ) {
-			this._on[type] = [];
-			return;
-		}
+	// /**
+	//  * Remove an event listener.
+	//  * @param {string}    type
+	//  * @param {?function} cb
+	//  */
+	// off( type, cb ) {
+	// 	if( typeof cb !== 'function' ) {
+	// 		this._on[type] = [];
+	// 		return;
+	// 	}
 
-		const pos = this._on[type].indexOf( cb );
+	// 	const pos = this._on[type].indexOf( cb );
 
-		if( pos >= 0 ) {
-			this._on[type].splice( pos, 1 );
-		}
-	},
+	// 	if( pos >= 0 ) {
+	// 		this._on[type].splice( pos, 1 );
+	// 	}
+	// },
 
 
 	/**

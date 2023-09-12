@@ -71,6 +71,7 @@ js13k.Level.Start = class extends js13k.Level {
 	draw() {
 		/** @type {CanvasRenderingContext2D} */
 		const ctx = js13k.Renderer.ctx;
+
 		let x = Math.max( js13k.TILE_SIZE * 2, js13k.Renderer.center.x - 500 );
 		let y = Math.max( js13k.TILE_SIZE * 2, js13k.Renderer.center.y - 128 );
 
@@ -80,12 +81,12 @@ js13k.Level.Start = class extends js13k.Level {
 		ctx.font = '600 64px ' + js13k.FONT_MONO;
 		ctx.textAlign = 'left';
 		ctx.fillStyle = '#fa0';
-		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y + 3 );
+		ctx.fillText( 'THE TREASURE OF THE NIBELUNGS', x, y + 3 );
 		ctx.fillStyle = '#777';
-		ctx.fillText( 'TREASURE OF THE NIBELUNGS', x, y );
+		ctx.fillText( 'THE TREASURE OF THE NIBELUNGS', x, y );
 
 		ctx.font = '600 42px ' + js13k.FONT_MONO;
-		x += js13k.TILE_SIZE_HALF / 2 + 114;
+		x += 138;
 		y += 96;
 		this._drawButton( ctx, 'New Game', x, y, this.selectedButton == 0 );
 
@@ -109,25 +110,7 @@ js13k.Level.Start = class extends js13k.Level {
 			return;
 		}
 
-		let level = null;
-
-		if( data.level == 1 ) {
-			level = new js13k.Level.Tutorial();
-		}
-		else if( data.level == 2 ) {
-			level = new js13k.Level.Port();
-		}
-		else if( data.level == 3 ) {
-			level = new js13k.Level.Ship();
-		}
-		else if( data.level == 4 ) {
-			level = new js13k.Level.Finale();
-		}
-		else {
-			return;
-		}
-
-		js13k.Renderer.changeLevel( level );
+		js13k.Renderer.changeLevel( data.level );
 	}
 
 
@@ -150,7 +133,7 @@ js13k.Level.Start = class extends js13k.Level {
 
 			// New Game
 			if( this.selectedButton == 0 ) {
-				js13k.Renderer.changeLevel( new js13k.Level.Intro() );
+				js13k.Renderer.changeLevel( js13k.Level.Intro.id );
 			}
 			// Continue
 			else if( this.selectedButton == 1 ) {

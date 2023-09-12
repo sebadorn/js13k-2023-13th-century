@@ -11,7 +11,6 @@ js13k.Level.Ship = class extends js13k.Level {
      */
 	constructor() {
 		super();
-		this.id = 3;
 
 		this.numTilesX = 24;
 		this.numTilesY = 6;
@@ -65,9 +64,9 @@ js13k.Level.Ship = class extends js13k.Level {
 	_buildMast() {
 		const mast = new js13k.LevelObject( {
 			x: this.limits.w / 2 + js13k.TILE_SIZE_HALF + 8,
-			y: this.limits.h / 2 - js13k.TILE_SIZE_HALF * 1.25,
+			y: this.limits.h / 2 - 60,
 			w: js13k.TILE_SIZE - 16,
-			h: js13k.TILE_SIZE_HALF * 1.25
+			h: 60
 		} );
 
 		mast.isSolid = true;
@@ -203,7 +202,7 @@ js13k.Level.Ship = class extends js13k.Level {
 
 			// Ship outline
 			ctxShip.lineWidth = lineWidth;
-			let offset = lineWidth / 2;
+			const offset = 3;
 
 			ctxShip.strokeStyle = '#8f563b';
 			ctxShip.strokeRect(
@@ -274,13 +273,13 @@ js13k.Level.Ship = class extends js13k.Level {
 		if( this._cnvWaves ) {
 			ctx.drawImage(
 				this._cnvWaves,
-				-this.waterMovement, this.limits.h + js13k.TILE_SIZE + 0.5,
+				-this.waterMovement, this.limits.h + js13k.TILE_SIZE,
 				js13k.TILE_SIZE * ( this.numTilesX + 1 ), js13k.TILE_SIZE
 			);
 		}
 		else {
 			const [cnvWaves, ctxWaves] = js13k.Renderer.getOffscreenCanvas(
-				js13k.TILE_SIZE *  ( this.numTilesX + 1 ), js13k.TILE_SIZE
+				js13k.TILE_SIZE * ( this.numTilesX + 1 ), js13k.TILE_SIZE
 			);
 
 			for( let i = 0; i <= this.numTilesX; i++ ) {
@@ -303,7 +302,7 @@ js13k.Level.Ship = class extends js13k.Level {
 			);
 		}
 		else {
-			const width = 2 * lineWidth + this.limits.w;
+			const width = lineWidth * 2 + this.limits.w;
 			const height = js13k.TILE_SIZE;
 
 			const [canvasFg, ctxFg] = js13k.Renderer.getOffscreenCanvas( width, height );
@@ -403,10 +402,12 @@ js13k.Level.Ship = class extends js13k.Level {
 				this.endingTimer = new js13k.Timer( this, 5 );
 			}
 			else if( this.endingTimer?.elapsed() ) {
-				js13k.Renderer.changeLevel( new js13k.Level.Finale() );
+				js13k.Renderer.changeLevel( js13k.Level.Finale.id );
 			}
 		}
 	}
 
 
 };
+
+js13k.Level.Ship.id = 4;

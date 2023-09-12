@@ -28,17 +28,13 @@ js13k.Crate = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		if( this.health <= 0 ) {
-			return;
+		if( this.health > 0 ) {
+			ctx.drawImage(
+				this.images,
+				1, this.shouldBlinkFromDamage() ? 18 : 1, 16, 16,
+				this.pos.x, this.pos.y, this.w, this.h
+			);
 		}
-
-		let sy = this.shouldBlinkFromDamage() ? 18 : 1;
-
-		ctx.drawImage(
-			this.images,
-			1, sy, 16, 16,
-			this.pos.x, this.pos.y, this.w, this.h
-		);
 	}
 
 

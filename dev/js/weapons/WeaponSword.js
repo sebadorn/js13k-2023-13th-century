@@ -162,7 +162,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 	 *
 	 * @override
 	 * @param  {js13k.LevelObject} target
-	 * @return {function}
+	 * @return {function?}
 	 */
 	getHitEffect( target ) {
 		if( !target.isSolid ) {
@@ -184,7 +184,7 @@ js13k.WeaponSword = class extends js13k.Weapon {
 
 		target.afflicted.stun = true;
 
-		return function() {
+		return () => {
 			if( timer.elapsed() ) {
 				target.afflicted.stun = false;
 				return true;

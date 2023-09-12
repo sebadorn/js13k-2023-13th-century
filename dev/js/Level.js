@@ -9,8 +9,6 @@ js13k.Level = class {
 	 * @constructor
 	 */
 	constructor() {
-		this.id = 0;
-
 		// this.isGameOver = false;
 		// this.locked = false;
 
@@ -191,12 +189,15 @@ js13k.Level = class {
 			if( js13k.Input.isPressed( js13k.Input.ACTION.DO, true ) ) {
 				js13k.Renderer.reloadLevel();
 			}
+
+			return;
 		}
-		else if( !this.locked ) {
+
+		if( !this.locked ) {
 			const p1 = this.player;
 
 			if( p1 ) {
-				if( p1.health <= 0 ) {
+				if( p1.drawnHealth <= 0 ) {
 					this.isGameOver = true;
 					return;
 				}

@@ -11,7 +11,6 @@ js13k.Level.Finale = class extends js13k.Level {
      */
 	constructor() {
 		super();
-		this.id = 4;
 
 		this.numTilesX = 24;
 		this.numTilesY = 6;
@@ -63,7 +62,7 @@ js13k.Level.Finale = class extends js13k.Level {
 
 		this.addItems( ...items );
 
-		this.introTimer = new js13k.Timer( this, 6 );
+		this.introTimer = new js13k.Timer( this, 8 );
 		this.locked = true;
 		this.stage = 1;
 		this.waveTimer = new js13k.Timer( this );
@@ -398,10 +397,12 @@ js13k.Level.Finale = class extends js13k.Level {
 				this.endingTimer = new js13k.Timer( this, 5 );
 			}
 			else if( this.endingTimer?.elapsed() ) {
-				js13k.Renderer.changeLevel( new js13k.Level.Ending() );
+				js13k.Renderer.changeLevel( js13k.Level.Ending.id );
 			}
 		}
 	}
 
 
 };
+
+js13k.Level.Finale.id = 5;

@@ -23,7 +23,7 @@ js13k.Puppeteer = {
 
 		const timer = new js13k.Timer( char.level, 0.3 );
 
-		char.action = function() {
+		char.action = () => {
 			if( !timer.elapsed() ) {
 				return;
 			}
@@ -54,12 +54,11 @@ js13k.Puppeteer = {
 	 * @return {boolean}
 	 */
 	_checkForDodgeAction( char, p1 ) {
-		if( !( char instanceof js13k.Knight ) || Math.random() < 0.8 ) {
-			return false;
-		}
-
-		// Cooldown after last dodge
-		if( char.coolDownDodge && !char.coolDownDodge.elapsed() ) {
+		if(
+			!( char instanceof js13k.Knight ) || Math.random() < 0.7 ||
+			// Cooldown after last dodge
+			( char.coolDownDodge && !char.coolDownDodge.elapsed() )
+		) {
 			return false;
 		}
 
@@ -84,7 +83,7 @@ js13k.Puppeteer = {
 		char.coolDownDodge = char.coolDownDodge || new js13k.Timer( char.level );
 		char.coolDownDodge.set( 1.5 );
 
-		char.action = function() {
+		char.action = () => {
 			if( !char.isDodging ) {
 				char.speed.set( 3, 3 );
 				char.action = null;
@@ -113,9 +112,10 @@ js13k.Puppeteer = {
 		const c = char.getOffsetCenter();
 		const charBox = char.getInteractHitbox();
 		const distVec = new js13k.Vector2D();
+		const items = char.level.items;
 
-		for( let i = 0; i < char.level.items.length; i++ ) {
-			const item = char.level.items[i];
+		for( let i = 0; i < items.length; i++ ) {
+			const item = items[i];
 
 			if( item instanceof js13k.Weapon ) {
 				const box = item.getInteractHitbox();
@@ -124,7 +124,7 @@ js13k.Puppeteer = {
 				if( js13k.overlap( box, charBox ) ) {
 					const timer = new js13k.Timer( char.level, 0.5 );
 
-					char.action = function() {
+					char.action = () => {
 						if( timer.elapsed() ) {
 							char.takeItem( item );
 							char.action = null;
@@ -156,7 +156,7 @@ js13k.Puppeteer = {
 		closestDistVec.normalize().mul( 0.5 );
 
 		// Walk in direction of weapon
-		char.action = function( dt ) {
+		char.action = dt => {
 			if( timer.elapsed() ) {
 				char.action = null;
 				return;
@@ -197,7 +197,7 @@ js13k.Puppeteer = {
 		const timer = new js13k.Timer( char.level, 1 );
 		dir.normalize();
 
-		char.action = function( dt ) {
+		char.action = dt => {
 			if( timer.elapsed() ) {
 				char.action = null;
 				return;

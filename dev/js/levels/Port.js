@@ -11,7 +11,6 @@ js13k.Level.Port = class extends js13k.Level {
 	 */
 	constructor() {
 		super();
-		this.id = 2;
 
 		this.numTilesX = 36;
 		this.numTilesY = 2;
@@ -147,10 +146,9 @@ js13k.Level.Port = class extends js13k.Level {
 			js13k.Renderer.drawMonologueBox(
 				this.player,
 				[
-					'My crew is already waiting. I',
-					'just have to make it to the ship.',
-					'But it seems there are pirates',
-					'in the harbor.'
+					'My crew is already waiting. I just',
+					'have to make it to the ship. But',
+					'there are pirates in the harbor.'
 				]
 			);
 		}
@@ -181,9 +179,11 @@ js13k.Level.Port = class extends js13k.Level {
 		const oc = this.player.getOffsetCenter();
 
 		if( oc.x >= this.limits.w - js13k.TILE_SIZE_HALF ) {
-			js13k.Renderer.changeLevel( new js13k.Level.Ship() );
+			js13k.Renderer.changeLevel( js13k.Level.Ship.id );
 		}
 	}
 
 
 };
+
+js13k.Level.Port.id = 3;

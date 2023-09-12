@@ -98,9 +98,11 @@ js13k.Level.Ending = class extends js13k.Level {
 
 		if( this.textTimer.elapsed() ) {
 			this.showText++;
-			this.textTimer.set( 5 );
+			this.textTimer.set( 4 );
 		}
 	}
 
 
 };
+
+js13k.Level.Ending.id = 6;

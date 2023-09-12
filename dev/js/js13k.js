@@ -18,6 +18,7 @@ const js13k = {
 
 	STATE_IDLE: 1,
 	STATE_WALKING: 2,
+	STATE_DEAD: 3,
 
 
 	/**
@@ -47,13 +48,44 @@ const js13k = {
 
 	/**
 	 *
+	 * @param  {number} id
+	 * @return {js13k.Level?}
+	 */
+	getLevel( id ) {
+		if( id == 1 ) {
+			return new js13k.Level.Intro();
+		}
+
+		if( id == 2 ) {
+			return new js13k.Level.Tutorial();
+		}
+
+		if( id == 3 ) {
+			return new js13k.Level.Port();
+		}
+
+		if( id == 4 ) {
+			return new js13k.Level.Ship();
+		}
+
+		if( id == 5 ) {
+			return new js13k.Level.Finale();
+		}
+
+		if( id == 6 ) {
+			return new js13k.Level.Ending();
+		}
+	},
+
+
+	/**
+	 *
 	 */
 	init() {
 		js13k.Input.init();
 
 		js13k.Renderer.init( () => {
-			// js13k.Renderer.level = new js13k.Level.Start();
-			js13k.Renderer.level = new js13k.Level.Ship();
+			js13k.Renderer.level = new js13k.Level.Start();
 			js13k.Renderer.mainLoop();
 		} );
 	},
@@ -90,18 +122,17 @@ const js13k = {
 
 	/**
 	 *
-	 * @param {js13k.Level} level
+	 * @param {number} levelId
 	 */
-	saveGame( level ) {
-		if( !level || level.id == 0 ) {
+	saveGame( levelId ) {
+		if( levelId < 2 || levelId > 5 ) {
 			return;
 		}
 
-		const data = {
-			level: level.id
-		};
-
-		localStorage.setItem( '2023_sd_nibelungs.save', JSON.stringify( data ) );
+		localStorage.setItem(
+			'2023_sd_nibelungs.save',
+			JSON.stringify( { level: levelId } )
+		);
 	},
 
 

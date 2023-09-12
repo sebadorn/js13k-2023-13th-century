@@ -9,8 +9,6 @@ js13k.Knight = class extends js13k.Enemy {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	static drawFace( ctx ) {
-		ctx.fillStyle = '#000';
-
 		let y = 8;
 
 		// Looking right

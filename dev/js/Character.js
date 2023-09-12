@@ -26,7 +26,7 @@ js13k.Character = class extends js13k.LevelObject {
 
 		this.health = this.healthTotal = 100;
 		this.healthColor = '#f00';
-		this.drawnHealth = null;
+		this.drawnHealth = Infinity;
 		this.isSolid = true;
 
 		this.item = data.item;
@@ -70,7 +70,7 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	_drawHealth( ctx ) {
-		if( this.drawnHealth == this.healthTotal || this.isDodging ) {
+		if( this.drawnHealth >= this.healthTotal || this.isDodging ) {
 			return;
 		}
 
@@ -170,46 +170,62 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {CanvasRenderingContext2D} ctx
 	 */
 	draw( ctx ) {
-		if( this.health <= 0 ) {
-			return;
-		}
-
 		let sx = this.facingX < 0 ? 18 : 1;
 		let sy = 1;
-		let image = this.images;
 
-		this._drawShadow( ctx );
-
-		if( this.isDodging ) {
-			let rotate = this.dodgeTimer.progress() * 360 * 3 * Math.PI / 180;
-
-			if( this.facingX < 0 ) {
-				rotate = -rotate;
+		if( this.state == js13k.STATE_DEAD ) {
+			if( this.vanishTimer.elapsed() ) {
+				return;
 			}
 
-			js13k.Renderer.rotateCenter( ctx, rotate, this.getOffsetCenter() );
+			const progress = this.vanishTimer.progress();
+			const oc = this.getOffsetCenter();
+			oc.y += this.h / 2;
+
+			js13k.Renderer.rotateCenter( ctx, this.facingX * progress * Math.PI / 2, oc );
+
+			ctx.globalAlpha = 1 - progress;
+			ctx.drawImage(
+				this.images,
+				sx, sy, 16, 16,
+				this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
+			);
+			ctx.globalAlpha = 1;
 		}
 		else {
-			if( this.shouldBlinkFromDamage() ) {
-				sy = 18;
+			this._drawShadow( ctx );
+
+			if( this.isDodging ) {
+				let rotate = this.dodgeTimer.progress() * 6 * Math.PI;
+
+				if( this.facingX < 0 ) {
+					rotate = -rotate;
+				}
+
+				js13k.Renderer.rotateCenter( ctx, rotate, this.getOffsetCenter() );
+			}
+			else {
+				if( this.shouldBlinkFromDamage() ) {
+					sy = 18;
+				}
+
+				if( this.state == js13k.STATE_WALKING ) {
+					this._applyWalking( ctx );
+				}
 			}
 
-			if( this.state == js13k.STATE_WALKING ) {
-				this._applyWalking( ctx );
+			if( this.item ) {
+				this._drawItem( ctx, this.images );
 			}
+
+			this._drawHealth( ctx );
+
+			ctx.drawImage(
+				this.images,
+				sx, sy, 16, 16,
+				this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
+			);
 		}
-
-		if( this.item ) {
-			this._drawItem( ctx, image );
-		}
-
-		this._drawHealth( ctx );
-
-		ctx.drawImage(
-			image,
-			sx, sy, 16, 16,
-			this.pos.x, this.pos.y, js13k.TILE_SIZE, js13k.TILE_SIZE
-		);
 
 		js13k.Renderer.resetTransform();
 	}
@@ -278,11 +294,21 @@ js13k.Character = class extends js13k.LevelObject {
 	 * @param {js13k.Vector2D} dir 
 	 */
 	update( dt, dir ) {
-		if( this.drawnHealth === null ) {
+		if( this.drawnHealth > this.healthTotal ) {
 			this.drawnHealth = this.health;
 		}
 
+		if( this.drawnHealth > this.health ) {
+			this.drawnHealth = Math.max( this.health, this.drawnHealth - dt * 1.5 );
+		}
+
 		if( this.health <= 0 ) {
+			if( this.state != js13k.STATE_DEAD ) {
+				this.vanishTimer = new js13k.Timer( this.level, 0.7 );
+			}
+
+			this.state = js13k.STATE_DEAD;
+
 			return;
 		}
 
@@ -315,10 +341,6 @@ js13k.Character = class extends js13k.LevelObject {
 
 		if( this.isAttacking && this.attackTimer.elapsed() ) {
 			this.isAttacking = false;
-		}
-
-		if( this.drawnHealth > this.health ) {
-			this.drawnHealth = Math.max( this.health, this.drawnHealth - dt * 1.5 );
 		}
 
 		this.state = newState;

@@ -62,6 +62,7 @@ js13k.Renderer = {
 			18, 1, 16, 16
 		);
 
+		ctx.fillStyle = '#000';
 		char && char.drawFace( ctx );
 
 		let imgData = ctx.getImageData( 1, 1, 35, 16 );
@@ -73,7 +74,7 @@ js13k.Renderer = {
 
 			// Set character color
 			if( r + g + b == 255 * 3 ) {
-				imgData.data[i + 0] = color[0];
+				imgData.data[i] = color[0];
 				imgData.data[i + 1] = color[1];
 				imgData.data[i + 2] = color[2];
 			}
@@ -90,7 +91,7 @@ js13k.Renderer = {
 
 			// Set to white if not transparent
 			if( alpha !== 0 ) {
-				imgData.data[i + 0] = 255; // R
+				imgData.data[i] = 255; // R
 				imgData.data[i + 1] = 255; // G
 				imgData.data[i + 2] = 255; // B
 			}
@@ -140,8 +141,7 @@ js13k.Renderer = {
 			const limits = o.level.limits;
 
 			this.translateX = Math.min(
-				0,
-				Math.max( -limits.w + this.center.x * 2, this.translateX )
+				0, Math.max( -limits.w + this.center.x * 2, this.translateX )
 			);
 		}
 
@@ -151,16 +151,16 @@ js13k.Renderer = {
 
 	/**
 	 *
-	 * @param {js13k.Level} level
+	 * @param {number} id
 	 */
-	changeLevel( level ) {
+	changeLevel( id ) {
 		if( this.changeTimer ) {
 			return;
 		}
 
 		this.changeTimer = new js13k.Timer( this, 2 );
-		this.nextLevel = level;
-		js13k.saveGame( level );
+		this.nextLevelId = id;
+		js13k.saveGame( id );
 	},
 
 
@@ -225,16 +225,16 @@ js13k.Renderer = {
 		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
 
 		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
-		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
+		this.ctxUI.fillStyle = '#0006';
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
-		this.ctxUI.fillStyle = '#FFF';
+		this.ctxUI.fillStyle = '#fff';
 		this.ctxUI.font = '600 56px ' + js13k.FONT_MONO;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
 		this.ctxUI.fillText( 'GAME OVER', this.center.x, this.center.y - 77 );
 
-		let x = this.center.x + js13k.TILE_SIZE_HALF * 1.25;
+		let x = this.center.x + 60;
 
 		this.ctxUI.fillStyle = '#fa0';
 		this.ctxUI.font = '600 28px ' + js13k.FONT_MONO;
@@ -242,7 +242,7 @@ js13k.Renderer = {
 
 		let dw = js13k.TILE_SIZE_HALF / 2;
 		let dh = js13k.TILE_SIZE;
-		let dx = x - js13k.TILE_SIZE * 1.6;
+		let dx = x - 155;
 		let dy = this.center.y - 42;
 		let c = {
 			x: dx + dw / 2,
@@ -282,7 +282,7 @@ js13k.Renderer = {
 		this.ctxUI.drawImage(
 			char.images,
 			0, 0, 16, 16,
-			x, y + js13k.TILE_SIZE * 0.25, js13k.TILE_SIZE * 1.75, js13k.TILE_SIZE * 1.75
+			x, y + 24, 168, 168
 		);
 
 		this.ctxUI.lineWidth = 12;
@@ -299,7 +299,7 @@ js13k.Renderer = {
 
 		text.forEach( line => {
 			this.ctxUI.fillText( line, xText + js13k.TILE_SIZE * 2, yText );
-			yText +=  38;
+			yText += 38;
 		} );
 	},
 
@@ -312,10 +312,10 @@ js13k.Renderer = {
 		this.ctxUI.clearRect( 0, 0, window.innerWidth, window.innerHeight );
 
 		this.ctxUI.setTransform( this.scale, 0, 0, this.scale, 0, 0 );
-		this.ctxUI.fillStyle = 'rgba(0,0,0,0.4)';
+		this.ctxUI.fillStyle = '#0006';
 		this.ctxUI.fillRect( 0, 0, this.cnvUI.width / this.scale, this.cnvUI.height / this.scale );
 
-		this.ctxUI.fillStyle = '#FFF';
+		this.ctxUI.fillStyle = '#fff';
 		this.ctxUI.font = '600 56px ' + js13k.FONT_MONO;
 		this.ctxUI.textAlign = 'center';
 		this.ctxUI.textBaseline = 'top';
@@ -496,9 +496,10 @@ js13k.Renderer = {
 			this.timer += dt;
 
 			if( this.changeTimer ) {
-				if( this.nextLevel && this.changeTimer.progress() > 0.5 ) {
-					this.level = this.nextLevel;
-					this.nextlevel = null;
+				if( this.nextLevelId && this.changeTimer.progress() > 0.5 ) {
+					this.level = js13k.getLevel( this.nextLevelId );
+					this.levelId = this.nextLevelId;
+					this.nextLevelId = null;
 				}
 
 				if( this.changeTimer.elapsed() ) {
@@ -569,7 +570,7 @@ js13k.Renderer = {
 	 *
 	 */
 	reloadLevel() {
-		this.changeLevel( new this.level.constructor() );
+		this.changeLevel( this.levelId );
 	},
 
 
